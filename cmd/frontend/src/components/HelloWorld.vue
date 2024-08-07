@@ -1,6 +1,7 @@
 <script setup>
 import {reactive} from 'vue'
 import {Greet, SendMessage, SetCorrespondent} from '../../wailsjs/go/main/App'
+import {EventsOn} from "../../wailsjs/runtime/runtime.js";
 
 const data = reactive({
   name: "",
@@ -14,12 +15,23 @@ function greet() {
 }
 
 function setCorrespondent() {
+  console.log("Setting correspondent")
+  data.resultText = "Setting correspondent"
   SetCorrespondent("alb21005@alumchat.lol")
 }
 
 function sendMessage() {
   SendMessage(data.name)
 }
+
+const recieveMessages = async () => {
+    EventsOn("message", (message) => {
+      console.log("EVENTO DESDE EL BACKEND", message)
+      data.resultText = message
+  })
+}
+
+recieveMessages()
 
 </script>
 

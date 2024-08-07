@@ -1,6 +1,8 @@
 package chat
 
 import (
+	"RedesProyecto/backend/models"
+	"context"
 	"fmt"
 	"gosrc.io/xmpp"
 	"gosrc.io/xmpp/stanza"
@@ -19,9 +21,11 @@ const (
 	address  = "ws://alumchat.lol:7070/ws"
 )
 
-var client *xmpp.Client
+var user *models.User
+var AppContext context.Context
 
-func init() {
+func Start(ctx context.Context) {
+	AppContext = ctx
 	go startClient()
 }
 
@@ -63,11 +67,11 @@ func startClient() {
 		log.Fatalf("%+v", err)
 	}
 
-	client = newClient
-	startMessaging(client)
+	user = models.NewUser(newClient)
+	startMessaging()
 }
 
-func startMessaging(client xmpp.Sender) {
+func startMessaging() {
 	var text string
 	var correspondent string
 
@@ -76,7 +80,7 @@ func startMessaging(client xmpp.Sender) {
 		case text = <-textChannel:
 			fmt.Printf("Correspondent: %s Message: %s\n", correspondent, text)
 			msg := stanza.Message{Attrs: stanza.Attrs{To: correspondent, Type: stanza.MessageTypeChat}, Body: text}
-			err := client.Send(msg)
+			err := user.Client.Send(msg)
 			if err != nil {
 				log.Fatalf("%+v", err)
 			}
