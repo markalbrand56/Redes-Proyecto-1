@@ -1,6 +1,6 @@
 <script setup>
 import {reactive} from 'vue'
-import {Greet} from '../../wailsjs/go/main/App'
+import {Greet, SendMessage, SetCorrespondent} from '../../wailsjs/go/main/App'
 
 const data = reactive({
   name: "",
@@ -13,6 +13,14 @@ function greet() {
   })
 }
 
+function setCorrespondent() {
+  SetCorrespondent("alb21005@alumchat.lol")
+}
+
+function sendMessage() {
+  SendMessage(data.name)
+}
+
 </script>
 
 <template>
@@ -20,7 +28,8 @@ function greet() {
     <div id="result" class="result">{{ data.resultText }}</div>
     <div id="input" class="input-box">
       <input id="name" v-model="data.name" autocomplete="off" class="input" type="text"/>
-      <button class="btn" @click="greet">Greet</button>
+      <button class="btn" @click="sendMessage">Greet</button>
+      <button class="btn" @click="setCorrespondent">Set</button>
     </div>
   </main>
 </template>
