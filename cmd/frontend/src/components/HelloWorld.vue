@@ -24,14 +24,14 @@ function sendMessage() {
   SendMessage(data.name)
 }
 
-const recieveMessages = async () => {
+const receiveMessages = async () => {
     EventsOn("message", (message, from) => {
       console.log("EVENTO DESDE EL BACKEND", message)
       data.resultText = "Message from " + from + ": " + message
   })
 }
 
-recieveMessages()
+receiveMessages()
 
 </script>
 
