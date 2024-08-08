@@ -35,3 +35,7 @@ func (a *App) SetCorrespondent(correspondent string) {
 func (a *App) SendMessage(message string) {
 	chat.SendMessage(message)
 }
+
+func (a *App) RequestContacts() {
+	chat.FetchContacts()
+}

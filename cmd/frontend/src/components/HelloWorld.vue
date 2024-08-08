@@ -1,6 +1,6 @@
 <script setup>
 import {reactive} from 'vue'
-import {Greet, SendMessage, SetCorrespondent} from '../../wailsjs/go/main/App'
+import {Greet, SendMessage, SetCorrespondent, RequestContacts} from '../../wailsjs/go/main/App'
 import {EventsOn} from "../../wailsjs/runtime/runtime.js";
 
 const data = reactive({
@@ -24,6 +24,12 @@ function sendMessage() {
   SendMessage(data.name)
 }
 
+function getContacts() {
+  console.log("Getting contacts")
+  data.resultText = "Getting contacts"
+  RequestContacts()
+}
+
 const receiveMessages = async () => {
     EventsOn("message", (message, from) => {
       console.log("EVENTO DESDE EL BACKEND", message)
@@ -42,6 +48,7 @@ receiveMessages()
       <input id="name" v-model="data.name" autocomplete="off" class="input" type="text"/>
       <button class="btn" @click="sendMessage">Greet</button>
       <button class="btn" @click="setCorrespondent">Set</button>
+      <button class="btn" @click="getContacts">Set</button>
     </div>
   </main>
 </template>

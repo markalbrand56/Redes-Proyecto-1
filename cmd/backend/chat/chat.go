@@ -4,6 +4,7 @@ import (
 	"RedesProyecto/backend/models"
 	"context"
 	"fmt"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"gosrc.io/xmpp"
 	"gosrc.io/xmpp/stanza"
 	"log"
@@ -11,8 +12,9 @@ import (
 )
 
 var (
-	textChannel          = make(chan string)
-	correspondentChannel = make(chan string)
+	textChannel           = make(chan string)
+	correspondentChannel  = make(chan string)
+	requestContactChannel = make(chan bool)
 )
 
 const (
@@ -67,7 +69,7 @@ func startClient() {
 		log.Fatalf("%+v", err)
 	}
 
-	user = models.NewUser(newClient)
+	user = models.NewUser(newClient, username)
 	startMessaging()
 }
 
@@ -89,6 +91,42 @@ func startMessaging() {
 			fmt.Println("Correspondent: ", crrsp)
 			correspondent = crrsp
 
+		case <-requestContactChannel:
+			// fecth contacts from xmpp server
+			req, err := stanza.NewIQ(
+				stanza.Attrs{
+					From: user.UserName,
+					Type: stanza.IQTypeGet,
+					Id:   "roster_1",
+				},
+			)
+
+			if err != nil {
+				log.Fatalf("%+v", err)
+			}
+
+			req.RosterItems()
+
+			c, err := user.Client.SendIQ(AppContext, req)
+
+			if err != nil {
+				log.Fatalf("%+v", err)
+			}
+
+			go func() {
+				serverResp := <-c
+
+				if rosterItems, ok := serverResp.Payload.(*stanza.RosterItems); ok {
+					contacts := make([]string, 0)
+					for _, item := range rosterItems.Items {
+						contacts = append(contacts, item.Jid)
+					}
+					user.Contacts = contacts
+					fmt.Println("Contacts: ", contacts)
+					runtime.EventsEmit(AppContext, "contacts", contacts)
+				}
+			}()
+
 		default:
 			continue
 		}
@@ -101,4 +139,8 @@ func SetCorrespondent(correspondent string) {
 
 func SendMessage(message string) {
 	textChannel <- message
+}
+
+func FetchContacts() {
+	requestContactChannel <- true
 }
