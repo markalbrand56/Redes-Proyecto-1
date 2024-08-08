@@ -25,9 +25,9 @@ function sendMessage() {
 }
 
 const recieveMessages = async () => {
-    EventsOn("message", (message) => {
+    EventsOn("message", (message, from) => {
       console.log("EVENTO DESDE EL BACKEND", message)
-      data.resultText = message
+      data.resultText = "Message from " + from + ": " + message
   })
 }
 
