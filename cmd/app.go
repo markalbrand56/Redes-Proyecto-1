@@ -36,6 +36,10 @@ func (a *App) SendMessage(message string) {
 	chat.SendMessage(message)
 }
 
-func (a *App) RequestContacts() {
+func (a *App) GetContacts() []string {
+	return chat.User.Contacts
+}
+
+func (a *App) UpdateContacts() {
 	chat.FetchContacts()
 }

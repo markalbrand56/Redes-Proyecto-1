@@ -23,7 +23,7 @@ const (
 	address  = "ws://alumchat.lol:7070/ws"
 )
 
-var user *models.User
+var User *models.User
 var AppContext context.Context
 
 func Start(ctx context.Context) {
@@ -69,7 +69,7 @@ func startClient() {
 		log.Fatalf("%+v", err)
 	}
 
-	user = models.NewUser(newClient, username)
+	User = models.NewUser(newClient, username)
 	startMessaging()
 }
 
@@ -82,7 +82,7 @@ func startMessaging() {
 		case text = <-textChannel:
 			fmt.Printf("Correspondent: %s Message: %s\n", correspondent, text)
 			msg := stanza.Message{Attrs: stanza.Attrs{To: correspondent, Type: stanza.MessageTypeChat}, Body: text}
-			err := user.Client.Send(msg)
+			err := User.Client.Send(msg)
 			if err != nil {
 				log.Fatalf("%+v", err)
 			}
@@ -92,10 +92,10 @@ func startMessaging() {
 			correspondent = crrsp
 
 		case <-requestContactChannel:
-			// fecth contacts from xmpp server
+			// Para obtener la lista de contactos, se debe enviar una solicitud IQ de tipo "get"
 			req, err := stanza.NewIQ(
 				stanza.Attrs{
-					From: user.UserName,
+					From: User.UserName,
 					Type: stanza.IQTypeGet,
 					Id:   "roster_1",
 				},
@@ -107,21 +107,26 @@ func startMessaging() {
 
 			req.RosterItems()
 
-			c, err := user.Client.SendIQ(AppContext, req)
+			c, err := User.Client.SendIQ(AppContext, req)
 
 			if err != nil {
 				log.Fatalf("%+v", err)
 			}
 
+			// Para obtener la respuesta del servidor, Client.SendIQ() devuelve un canal de respuesta que se debe escuchar.
+			// Se usa una goroutine para no bloquear el flujo principal, y poder esperar la respuesta del servidor con los contactos
 			go func() {
 				serverResp := <-c
 
 				if rosterItems, ok := serverResp.Payload.(*stanza.RosterItems); ok {
 					contacts := make([]string, 0)
+
 					for _, item := range rosterItems.Items {
 						contacts = append(contacts, item.Jid)
 					}
-					user.Contacts = contacts
+
+					User.Contacts = contacts
+
 					fmt.Println("Contacts: ", contacts)
 					runtime.EventsEmit(AppContext, "contacts", contacts)
 				}
@@ -133,14 +138,17 @@ func startMessaging() {
 	}
 }
 
+// SetCorrespondent guarda el receptor del mensaje en correspondentChannel
 func SetCorrespondent(correspondent string) {
 	correspondentChannel <- correspondent
 }
 
+// SendMessage envía un mensaje al servidor, usando el canal textChannel y el receptor guardado en correspondentChannel
 func SendMessage(message string) {
 	textChannel <- message
 }
 
+// FetchContacts envía una solicitud IQ al servidor para obtener la lista de contactos y actualizar la lista de contactos del usuario
 func FetchContacts() {
 	requestContactChannel <- true
 }
