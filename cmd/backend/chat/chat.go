@@ -12,10 +12,11 @@ import (
 )
 
 var (
-	textChannel           = make(chan string)
-	correspondentChannel  = make(chan string)
-	requestContactChannel = make(chan bool)
-	subscribeToChannel    = make(chan string)
+	textChannel                = make(chan string) // Canal para enviar mensajes
+	correspondentChannel       = make(chan string) // Canal para guardar el receptor del mensaje
+	requestContactChannel      = make(chan bool)   // Canal para enviar una solicitud de lista de contactos
+	subscribeToChannel         = make(chan string) // Canal para enviar una solicitud de suscripción
+	subscriptionRequestChannel = make(chan string) // Canal para recibir solicitudes de suscripción
 )
 
 const (
@@ -147,6 +148,21 @@ func startMessaging() {
 
 			runtime.EventsEmit(AppContext, "success", "Subscription request sent")
 
+		case <-subscriptionRequestChannel:
+			u := <-subscriptionRequestChannel
+			fmt.Println("Subscription (channel) request from: ", u)
+
+			// aceptar la solicitud de suscripción
+			presence := stanza.Presence{Attrs: stanza.Attrs{To: u, Type: stanza.PresenceTypeSubscribed}}
+
+			err := User.Client.Send(presence)
+
+			if err != nil {
+				log.Fatalf("%+v", err)
+			}
+
+			runtime.EventsEmit(AppContext, "success", "Subscription accepted")
+
 		default:
 			continue
 		}
@@ -171,4 +187,8 @@ func FetchContacts() {
 // RequestContact envía una solicitud de suscripción a un contacto
 func RequestContact(username string) {
 	subscribeToChannel <- username
+}
+
+func AcceptSubscription(username string) {
+	subscriptionRequestChannel <- username
 }

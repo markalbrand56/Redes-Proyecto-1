@@ -29,6 +29,13 @@ func handlePresence(s xmpp.Sender, p stanza.Packet) {
 			// Un usuario ha solicitado suscribirse a nuestro estado de presencia.
 			_, _ = fmt.Fprintf(os.Stdout, "Subscription request from: %s\n", presence.From)
 
+			if presence.From != "" {
+				// TODO Verificar si el usuario está en la lista de contactos
+				AcceptSubscription(presence.From)
+			}
+
+			runtime.EventsEmit(AppContext, "subscription-request", presence.From)
+
 		case stanza.PresenceTypeSubscribed:
 			// El usuario al que se solicitó la suscripción ha aceptado.
 			_, _ = fmt.Fprintf(os.Stdout, "Subscription accepted from: %s\n", presence.From)
@@ -55,6 +62,13 @@ func handleIQ(s xmpp.Sender, p stanza.Packet) {
 		switch payload := iq.Payload.(type) {
 		case *stanza.Roster:
 			fmt.Println("ENTERED ROSTER")
+
+		case *stanza.RosterItems:
+			items := payload.Items
+
+			for _, item := range items {
+				fmt.Println("Item: ", item.Jid, item.Name, item.Subscription)
+			}
 
 		case *stanza.Version:
 			// Aquí puedes manejar la versión del servidor u otros IQs de versión.

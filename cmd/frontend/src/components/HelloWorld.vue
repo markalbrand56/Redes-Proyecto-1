@@ -1,6 +1,12 @@
 <script setup>
 import {reactive} from 'vue'
-import {SendMessage, SetCorrespondent, UpdateContacts, RequestContact} from '../../wailsjs/go/main/App'
+import {
+  SendMessage,
+  SetCorrespondent,
+  UpdateContacts,
+  RequestContact,
+  AcceptSubscription
+} from '../../wailsjs/go/main/App'
 import {EventsOn} from "../../wailsjs/runtime/runtime.js";
 
 const data = reactive({
@@ -25,6 +31,14 @@ function getContacts() {
   UpdateContacts()
 }
 
+function addContact() {
+  console.log("Adding contact")
+  data.resultText = "Adding contact"
+  RequestContact(data.contact)
+}
+
+// Event listeners
+
 const receiveMessages = async () => {
     EventsOn("message", (message, from) => {
       data.resultText = "Message from " + from + ": " + message
@@ -43,16 +57,21 @@ const successEvent = async () => {
   })
 }
 
-const addContact = async () => {
-  console.log("Adding contact")
-  data.resultText = "Adding contact"
-  RequestContact(data.contact)
+const subRequest = async () => {
+    EventsOn("subscription-request", (user) => {
+      data.resultText = "Subscription request from " + user
+      AcceptSubscription(user)
+  })
+
+
 }
 
 receiveMessages()
 updateContacts()
 successEvent()
+subRequest()
 
+// ************************************************************ //
 </script>
 
 <template>

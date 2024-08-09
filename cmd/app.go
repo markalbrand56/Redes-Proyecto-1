@@ -41,3 +41,7 @@ func (a *App) UpdateContacts() {
 func (a *App) RequestContact(username string) {
 	chat.RequestContact(username)
 }
+
+func (a *App) AcceptSubscription(username string) {
+	chat.AcceptSubscription(username)
+}
