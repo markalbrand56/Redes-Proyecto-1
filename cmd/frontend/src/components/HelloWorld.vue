@@ -47,7 +47,8 @@ const receiveMessages = async () => {
 
 const updateContacts = async () => {
     EventsOn("contacts", (contacts) => {
-      data.resultText = "Contacts: " + contacts
+      // contacts is an array of strings
+      data.resultText = "Contacts: " + contacts.join(", ")
   })
 }
 
