@@ -3,7 +3,6 @@ package main
 import (
 	"RedesProyecto/backend/chat"
 	"context"
-	"fmt"
 )
 
 // App struct
@@ -23,11 +22,6 @@ func (a *App) startup(ctx context.Context) {
 	chat.Start(ctx)
 }
 
-// Greet returns a greeting for the given name
-func (a *App) Greet(name string) string {
-	return fmt.Sprintf("Hello %s, It's show time!", name)
-}
-
 func (a *App) SetCorrespondent(correspondent string) {
 	chat.SetCorrespondent(correspondent)
 }
@@ -42,4 +36,8 @@ func (a *App) GetContacts() []string {
 
 func (a *App) UpdateContacts() {
 	chat.FetchContacts()
+}
+
+func (a *App) RequestContact(username string) {
+	chat.RequestContact(username)
 }

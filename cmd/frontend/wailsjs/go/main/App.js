@@ -6,8 +6,8 @@ export function GetContacts() {
   return window['go']['main']['App']['GetContacts']();
 }
 
-export function Greet(arg1) {
-  return window['go']['main']['App']['Greet'](arg1);
+export function RequestContact(arg1) {
+  return window['go']['main']['App']['RequestContact'](arg1);
 }
 
 export function SendMessage(arg1) {

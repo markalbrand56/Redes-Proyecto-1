@@ -3,7 +3,7 @@
 
 export function GetContacts():Promise<Array<string>>;
 
-export function Greet(arg1:string):Promise<string>;
+export function RequestContact(arg1:string):Promise<void>;
 
 export function SendMessage(arg1:string):Promise<void>;
 

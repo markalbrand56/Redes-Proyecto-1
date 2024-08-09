@@ -1,18 +1,13 @@
 <script setup>
 import {reactive} from 'vue'
-import {Greet, SendMessage, SetCorrespondent, UpdateContacts} from '../../wailsjs/go/main/App'
+import {SendMessage, SetCorrespondent, UpdateContacts, RequestContact} from '../../wailsjs/go/main/App'
 import {EventsOn} from "../../wailsjs/runtime/runtime.js";
 
 const data = reactive({
   name: "",
   resultText: "Please enter your name below 👇",
+  contact: ""
 })
-
-function greet() {
-  Greet(data.name).then(result => {
-    data.resultText = result
-  })
-}
 
 function setCorrespondent() {
   console.log("Setting correspondent")
@@ -32,20 +27,31 @@ function getContacts() {
 
 const receiveMessages = async () => {
     EventsOn("message", (message, from) => {
-      console.log("EVENTO DESDE EL BACKEND", message)
       data.resultText = "Message from " + from + ": " + message
   })
 }
 
 const updateContacts = async () => {
     EventsOn("contacts", (contacts) => {
-      console.log("EVENTO DESDE EL BACKEND", contacts)
       data.resultText = "Contacts: " + contacts
   })
 }
 
+const successEvent = async () => {
+    EventsOn("success", (message) => {
+      data.resultText = message
+  })
+}
+
+const addContact = async () => {
+  console.log("Adding contact")
+  data.resultText = "Adding contact"
+  RequestContact(data.contact)
+}
+
 receiveMessages()
 updateContacts()
+successEvent()
 
 </script>
 
@@ -54,10 +60,15 @@ updateContacts()
     <div id="result" class="result">{{ data.resultText }}</div>
     <div id="input" class="input-box">
       <input id="name" v-model="data.name" autocomplete="off" class="input" type="text"/>
-      <button class="btn" @click="sendMessage">Greet</button>
+      <button class="btn" @click="sendMessage">Send</button>
       <button class="btn" @click="setCorrespondent">Set</button>
-      <button class="btn" @click="getContacts">Set</button>
+      <button class="btn" @click="getContacts">Get</button>
     </div>
+    <div id="contacts" class="input-box">
+      <input id="contact" v-model="data.contact" autocomplete="off" class="input" type="text"/>
+      <button class="btn" @click="addContact">Add</button>
+    </div>
+
   </main>
 </template>
 
@@ -66,6 +77,10 @@ updateContacts()
   height: 20px;
   line-height: 20px;
   margin: 1.5rem auto;
+}
+
+.input-box {
+  padding: 1em;
 }
 
 .input-box .btn {

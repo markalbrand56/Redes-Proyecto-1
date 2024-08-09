@@ -21,7 +21,30 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 }
 
 func handlePresence(s xmpp.Sender, p stanza.Packet) {
-	_, _ = fmt.Fprintf(os.Stdout, "Presence = %s\n", p)
+	//_, _ = fmt.Fprintf(os.Stdout, "Presence = %s\n", p)
+
+	if presence, ok := p.(stanza.Presence); ok {
+		switch presence.Type {
+		case stanza.PresenceTypeSubscribe:
+			// Un usuario ha solicitado suscribirse a nuestro estado de presencia.
+			_, _ = fmt.Fprintf(os.Stdout, "Subscription request from: %s\n", presence.From)
+
+		case stanza.PresenceTypeSubscribed:
+			// El usuario al que se solicitó la suscripción ha aceptado.
+			_, _ = fmt.Fprintf(os.Stdout, "Subscription accepted from: %s\n", presence.From)
+
+		case stanza.PresenceTypeUnsubscribed:
+			_, _ = fmt.Fprintf(os.Stdout, "Unsubscribed from: %s\n", presence.From)
+
+		case stanza.PresenceTypeUnavailable:
+			_, _ = fmt.Fprintf(os.Stdout, "User %s is offline\n", presence.From)
+
+		default:
+			_, _ = fmt.Fprintf(os.Stdout, "(%s) Presence from: %s\n", presence.Type, presence.From)
+
+		}
+
+	}
 }
 
 func handleIQ(s xmpp.Sender, p stanza.Packet) {
