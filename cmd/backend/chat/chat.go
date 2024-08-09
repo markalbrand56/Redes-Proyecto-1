@@ -23,8 +23,10 @@ const (
 	address = "ws://alumchat.lol:7070/ws"
 )
 
-var User *models.User
-var AppContext context.Context
+var (
+	User       *models.User    // Usuario actual
+	AppContext context.Context // Contexto de la aplicación
+)
 
 func Start(ctx context.Context, username string, password string) {
 	AppContext = ctx
