@@ -10,6 +10,10 @@ export function GetContacts() {
   return window['go']['main']['App']['GetContacts']();
 }
 
+export function GetMessages(arg1) {
+  return window['go']['main']['App']['GetMessages'](arg1);
+}
+
 export function RequestContact(arg1) {
   return window['go']['main']['App']['RequestContact'](arg1);
 }

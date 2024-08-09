@@ -1,6 +1,7 @@
 package chat
 
 import (
+	"RedesProyecto/backend/models"
 	"fmt"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"gosrc.io/xmpp"
@@ -19,15 +20,21 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 	case stanza.MessageTypeNormal:
 		_, _ = fmt.Fprintf(os.Stdout, "(N) Message from: %s\n", msg.From)
 
+		message := models.NewMessage(msg.Body)
+
 		if msg.Body != "" {
-			runtime.EventsEmit(AppContext, "message", msg.Body, msg.From)
+			User.Messages[msg.From] = append(User.Messages[msg.From], *message)
+			runtime.EventsEmit(AppContext, "message", *message, msg.From)
 		}
 
 	case stanza.MessageTypeChat:
 		_, _ = fmt.Fprintf(os.Stdout, "(C) Message from: %s\n", msg.From)
 
+		message := models.NewMessage(msg.Body)
+
 		if msg.Body != "" {
-			runtime.EventsEmit(AppContext, "message", msg.Body, msg.From)
+			User.Messages[msg.From] = append(User.Messages[msg.From], *message)
+			runtime.EventsEmit(AppContext, "message", *message, msg.From)
 		}
 
 	default:

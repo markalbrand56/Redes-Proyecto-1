@@ -7,6 +7,7 @@ import {
   RequestContact,
   AcceptSubscription
 } from '../../wailsjs/go/main/App'
+
 import {EventsOn} from "../../wailsjs/runtime/runtime.js";
 
 const data = reactive({
@@ -41,7 +42,8 @@ function addContact() {
 
 const receiveMessages = async () => {
     EventsOn("message", (message, from) => {
-      data.resultText = "Message from " + from + ": " + message
+      data.resultText = "Message from " + from + ": " + message.body
+      console.log("Message from " + from + ": " + message.body + " at " + message.timestamp)
   })
 }
 

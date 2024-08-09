@@ -2,6 +2,7 @@ package main
 
 import (
 	"RedesProyecto/backend/chat"
+	"RedesProyecto/backend/models"
 	"context"
 )
 
@@ -32,6 +33,10 @@ func (a *App) SendMessage(message string) {
 
 func (a *App) GetContacts() []string {
 	return chat.User.Contacts
+}
+
+func (a *App) GetMessages(username string) []models.Message {
+	return chat.User.Messages[username]
 }
 
 func (a *App) UpdateContacts() {

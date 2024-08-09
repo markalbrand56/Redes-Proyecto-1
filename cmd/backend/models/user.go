@@ -7,9 +7,9 @@ import (
 
 type User struct {
 	Client   *xmpp.Client
-	UserName string              // Nombre de usuario
-	Contacts []string            // Lista de contactos
-	Messages map[string][]string // Mensajes recibidos
+	UserName string               // Nombre de usuario
+	Contacts []string             // Lista de contactos
+	Messages map[string][]Message // Mensajes recibidos
 }
 
 // NewUser crea un nuevo usuario dado un Cliente XMPP previamente conectado y un nombre de usuario
@@ -17,6 +17,8 @@ func NewUser(client *xmpp.Client, username string) *User {
 	return &User{
 		UserName: username,
 		Client:   client,
+		Contacts: make([]string, 0),
+		Messages: make(map[string][]Message),
 	}
 }
 
