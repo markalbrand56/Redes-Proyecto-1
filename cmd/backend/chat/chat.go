@@ -12,11 +12,11 @@ import (
 )
 
 var (
-	textChannel                = make(chan string) // Canal para enviar mensajes
-	correspondentChannel       = make(chan string) // Canal para guardar el receptor del mensaje
-	RequestContactChannel      = make(chan bool)   // Canal para enviar una solicitud de lista de contactos
-	subscribeToChannel         = make(chan string) // Canal para enviar una solicitud de suscripción
-	subscriptionRequestChannel = make(chan string) // Canal para recibir solicitudes de suscripción
+	TextChannel                = make(chan string) // Canal para enviar mensajes
+	CorrespondentChannel       = make(chan string) // Canal para guardar el receptor del mensaje
+	FetchContactsChannel       = make(chan bool)   // Canal para enviar una solicitud de lista de contactos
+	SubscribeToChannel         = make(chan string) // Canal para enviar una solicitud de suscripción
+	SubscriptionRequestChannel = make(chan string) // Canal para recibir solicitudes de suscripción
 )
 
 const (
@@ -81,7 +81,7 @@ func startMessaging() {
 	for {
 		select {
 		// Envío de mensaje a un contacto
-		case text = <-textChannel:
+		case text = <-TextChannel:
 			fmt.Printf("Correspondent: %s Message: %s\n", correspondent, text)
 			msg := stanza.Message{Attrs: stanza.Attrs{To: correspondent, Type: stanza.MessageTypeChat}, Body: text}
 			err := User.Client.Send(msg)
@@ -90,12 +90,12 @@ func startMessaging() {
 			}
 
 		// Guardar el receptor del mensaje
-		case csrp := <-correspondentChannel:
+		case csrp := <-CorrespondentChannel:
 			correspondent = csrp
 			fmt.Println("Correspondent: ", correspondent)
 
 		// Obtener la lista de contactos
-		case <-RequestContactChannel:
+		case <-FetchContactsChannel:
 			// Para obtener la lista de contactos, se debe enviar una solicitud IQ de tipo "get"
 			req, err := stanza.NewIQ(
 				stanza.Attrs{
@@ -137,7 +137,7 @@ func startMessaging() {
 			}()
 
 		// Suscripción a un contacto
-		case u := <-subscribeToChannel:
+		case u := <-SubscribeToChannel:
 			// Para enviar una solicitud de suscripción a un contacto, se debe enviar un mensaje de presencia con el tipo "subscribe"
 			fmt.Println("Subscribing to: ", u)
 			presence := stanza.Presence{Attrs: stanza.Attrs{To: u, Type: stanza.PresenceTypeSubscribe}}
@@ -151,7 +151,7 @@ func startMessaging() {
 			runtime.EventsEmit(AppContext, "success", "Subscription request sent")
 
 		// Aceptar solicitud de suscripción
-		case u := <-subscriptionRequestChannel:
+		case u := <-SubscriptionRequestChannel:
 			fmt.Println("Subscription (channel) request from: ", u)
 
 			// aceptar la solicitud de suscripción
@@ -169,28 +169,4 @@ func startMessaging() {
 			continue
 		}
 	}
-}
-
-// SetCorrespondent guarda el receptor del mensaje en correspondentChannel
-func SetCorrespondent(correspondent string) {
-	correspondentChannel <- correspondent
-}
-
-// SendMessage envía un mensaje al servidor, usando el canal textChannel y el receptor guardado en correspondentChannel
-func SendMessage(message string) {
-	textChannel <- message
-}
-
-// FetchContacts envía una solicitud IQ al servidor para obtener la lista de contactos y actualizar la lista de contactos del usuario
-func FetchContacts() {
-	RequestContactChannel <- true
-}
-
-// RequestContact envía una solicitud de suscripción a un contacto
-func RequestContact(username string) {
-	subscribeToChannel <- username
-}
-
-func AcceptSubscription(username string) {
-	subscriptionRequestChannel <- username
 }

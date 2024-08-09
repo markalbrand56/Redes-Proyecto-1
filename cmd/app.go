@@ -23,11 +23,11 @@ func (a *App) startup(ctx context.Context) {
 }
 
 func (a *App) SetCorrespondent(correspondent string) {
-	chat.SetCorrespondent(correspondent)
+	chat.CorrespondentChannel <- correspondent
 }
 
 func (a *App) SendMessage(message string) {
-	chat.SendMessage(message)
+	chat.TextChannel <- message
 }
 
 func (a *App) GetContacts() []string {
@@ -35,13 +35,13 @@ func (a *App) GetContacts() []string {
 }
 
 func (a *App) UpdateContacts() {
-	chat.RequestContactChannel <- true
+	chat.FetchContactsChannel <- true
 }
 
 func (a *App) RequestContact(username string) {
-	chat.RequestContact(username)
+	chat.SubscribeToChannel <- username
 }
 
 func (a *App) AcceptSubscription(username string) {
-	chat.AcceptSubscription(username)
+	chat.SubscriptionRequestChannel <- username
 }

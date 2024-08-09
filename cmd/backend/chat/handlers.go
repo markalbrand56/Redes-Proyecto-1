@@ -50,7 +50,7 @@ func handlePresence(s xmpp.Sender, p stanza.Packet) {
 
 			if presence.From != "" {
 				// TODO Verificar si el usuario está en la lista de contactos
-				AcceptSubscription(presence.From)
+				SubscriptionRequestChannel <- presence.From
 			}
 
 			runtime.EventsEmit(AppContext, "subscription-request", presence.From)
@@ -60,9 +60,11 @@ func handlePresence(s xmpp.Sender, p stanza.Packet) {
 			_, _ = fmt.Fprintf(os.Stdout, "Subscription accepted from: %s\n", presence.From)
 
 		case stanza.PresenceTypeUnsubscribed:
+			// El usuario al que se solicitó la suscripción ha rechazado.
 			_, _ = fmt.Fprintf(os.Stdout, "Unsubscribed from: %s\n", presence.From)
 
 		case stanza.PresenceTypeUnavailable:
+			// El usuario está desconectado.
 			_, _ = fmt.Fprintf(os.Stdout, "User %s is offline\n", presence.From)
 
 		default:
