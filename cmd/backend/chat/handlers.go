@@ -76,8 +76,6 @@ func handlePresence(s xmpp.Sender, p stanza.Packet) {
 }
 
 func handleIQ(s xmpp.Sender, p stanza.Packet) {
-	_, _ = fmt.Fprintf(os.Stdout, "IQ = %s\n", p)
-
 	switch iq := p.(type) {
 	case *stanza.IQ:
 		switch payload := iq.Payload.(type) {
@@ -85,15 +83,45 @@ func handleIQ(s xmpp.Sender, p stanza.Packet) {
 			fmt.Println("ENTERED ROSTER")
 
 		case *stanza.RosterItems:
+			fmt.Println("Updating contacts from IQ handler")
 			items := payload.Items
+
+			contacts := make([]string, 0)
 
 			for _, item := range items {
 				fmt.Println("Item: ", item.Jid, item.Name, item.Subscription)
+				contacts = append(contacts, item.Jid)
 			}
+
+			User.Contacts = contacts
+			runtime.EventsEmit(AppContext, "contacts", contacts)
 
 		case *stanza.Version:
 			// Aquí puedes manejar la versión del servidor u otros IQs de versión.
 			fmt.Printf("Received version request from: %s\n", iq.From)
+
+			// Responder con la versión del servidor
+			resp := stanza.IQ{
+				Attrs: stanza.Attrs{
+					Type: stanza.IQTypeResult,
+					From: iq.To,
+					To:   iq.From,
+					Id:   iq.Id,
+				},
+				Payload: &stanza.Version{
+					Name:    "Mark Albrand",
+					Version: "0.1",
+					OS:      "Windows",
+				},
+			}
+
+			err := s.Send(&resp)
+
+			if err != nil {
+				fmt.Println(err)
+			}
+
+			_, _ = fmt.Fprintf(os.Stdout, "Responded Version request from: %s\n", iq.From)
 
 		default:
 			fmt.Printf("Unhandled IQ payload type: %T\n", payload)
@@ -101,6 +129,8 @@ func handleIQ(s xmpp.Sender, p stanza.Packet) {
 
 	default:
 		fmt.Printf("Unhandled packet type: %T\n", p)
+		_, _ = fmt.Fprintf(os.Stdout, "IQ = %s\n", p)
+
 	}
 }
 
