@@ -15,9 +15,28 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 		return
 	}
 
-	runtime.EventsEmit(AppContext, "message", msg.Body, msg.From)
+	switch msg.Type {
+	case stanza.MessageTypeNormal:
+		_, _ = fmt.Fprintf(os.Stdout, "(N) Message from: %s\n", msg.From)
 
-	_, _ = fmt.Fprintf(os.Stdout, "Body = %s - from = %s\n", msg.Body, msg.From)
+		if msg.Body != "" {
+			runtime.EventsEmit(AppContext, "message", msg.Body, msg.From)
+		}
+
+	case stanza.MessageTypeChat:
+		_, _ = fmt.Fprintf(os.Stdout, "(C) Message from: %s\n", msg.From)
+
+		if msg.Body != "" {
+			runtime.EventsEmit(AppContext, "message", msg.Body, msg.From)
+		}
+
+	default:
+		if msg.Body != "" {
+			runtime.EventsEmit(AppContext, "message", msg.Body, msg.From)
+		}
+		_, _ = fmt.Fprintf(os.Stdout, "(%s) Message from: %s\n", msg.Type, msg.From)
+	}
+
 }
 
 func handlePresence(s xmpp.Sender, p stanza.Packet) {

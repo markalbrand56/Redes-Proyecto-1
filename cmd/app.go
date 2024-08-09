@@ -19,7 +19,7 @@ func NewApp() *App {
 // so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
-	chat.Start(ctx)
+	chat.Start(ctx, "alb21004@alumchat.lol", "mark123")
 }
 
 func (a *App) SetCorrespondent(correspondent string) {
@@ -35,7 +35,7 @@ func (a *App) GetContacts() []string {
 }
 
 func (a *App) UpdateContacts() {
-	chat.FetchContacts()
+	chat.RequestContactChannel <- true
 }
 
 func (a *App) RequestContact(username string) {
