@@ -9,14 +9,17 @@ import (
 	"gosrc.io/xmpp/stanza"
 	"log"
 	"os"
+	"strings"
 )
 
 var (
-	TextChannel                = make(chan string) // Canal para enviar mensajes
-	CorrespondentChannel       = make(chan string) // Canal para guardar el receptor del mensaje
-	FetchContactsChannel       = make(chan bool)   // Canal para enviar una solicitud de lista de contactos
-	SubscribeToChannel         = make(chan string) // Canal para enviar una solicitud de suscripción
-	SubscriptionRequestChannel = make(chan string) // Canal para recibir solicitudes de suscripción
+	TextChannel                 = make(chan string) // Canal para enviar mensajes
+	CorrespondentChannel        = make(chan string) // Canal para guardar el receptor del mensaje
+	FetchContactsChannel        = make(chan bool)   // Canal para enviar una solicitud de lista de contactos
+	SubscribeToChannel          = make(chan string) // Canal para enviar una solicitud de suscripción
+	SubscriptionRequestChannel  = make(chan string) // Canal para recibir solicitudes de suscripción
+	UnsubscribeFromChannel      = make(chan string) // Canal para enviar una solicitud de cancelación de suscripción
+	ConferenceInvitationChannel = make(chan string) // Canal para recibir invitaciones a salas de chat
 )
 
 const (
@@ -31,6 +34,18 @@ var (
 func Start(ctx context.Context, username string, password string) {
 	AppContext = ctx
 	go startClient(username, password)
+}
+
+func Close() {
+	close(TextChannel)
+	close(CorrespondentChannel)
+	close(FetchContactsChannel)
+	close(SubscribeToChannel)
+	close(SubscriptionRequestChannel)
+	close(UnsubscribeFromChannel)
+	close(ConferenceInvitationChannel)
+
+	User.SaveConfig()
 }
 
 func startClient(username string, password string) {
@@ -167,8 +182,54 @@ func startMessaging() {
 
 			runtime.EventsEmit(AppContext, "success", "Subscription accepted")
 
+		// Cancelar suscripción
+		case u := <-UnsubscribeFromChannel:
+			// Para cancelar la suscripción a un contacto, se debe enviar un mensaje de presencia con el tipo "unsubscribe"
+			fmt.Println("Unsubscribing from: ", u)
+			presence := stanza.Presence{Attrs: stanza.Attrs{To: u, Type: stanza.PresenceTypeUnsubscribe}}
+
+			err := User.Client.Send(presence)
+
+			if err != nil {
+				log.Fatalf("%+v", err)
+			}
+		// Invitación a sala de chat
+		case jid := <-ConferenceInvitationChannel:
+			fmt.Println("Conference invitation from: ", jid)
+
+			alias := User.UserName[:strings.Index(User.UserName, "@")]
+
+			presence := stanza.Presence{
+				Attrs: stanza.Attrs{
+					From: User.UserName,                    // El JID del usuario actual
+					To:   fmt.Sprintf("%s/%s", jid, alias), // El JID del usuario actual con el recurso
+					Id:   "join_1",
+				},
+				Extensions: []stanza.PresExtension{
+					&stanza.MucPresence{},
+				},
+			}
+
+			// Aquí enviamos el `presence` usando el cliente XMPP para unirse a la sala de chat.
+			err := User.Client.Send(presence)
+			if err != nil {
+				fmt.Println("Error al enviar presencia para unirse a la sala de chat:", err)
+			} else {
+				fmt.Println("Presencia enviada para unirse a la sala de chat:", jid)
+			}
 		default:
 			continue
 		}
 	}
 }
+
+/*
+
+Esta stanza recibida fue la invitación a unirse a una sala de chat:
+
+() Message from: ogivox@conference.alumchat.lol
+RECV:
+<message xmlns="jabber:client" to="alb21004@alumchat.lol" id="174e5fc7-8bc3-421d-8277-ef8dd605a3d6" from="alb21005@alumchat.lol/gajim.0O3D5ZZ0"><x xmlns="jabber:x:conference" jid="ogivox@conference.alumchat.lol"></x></message>
+
+() Message from: alb21005@alumchat.lol/gajim.0O3D5ZZ0
+*/

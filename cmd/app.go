@@ -23,6 +23,10 @@ func (a *App) startup(ctx context.Context) {
 	chat.Start(ctx, "alb21004@alumchat.lol", "mark123")
 }
 
+func (a *App) OnShutdown(ctx context.Context) {
+	chat.Close()
+}
+
 func (a *App) SetCorrespondent(correspondent string) {
 	chat.CorrespondentChannel <- correspondent
 }

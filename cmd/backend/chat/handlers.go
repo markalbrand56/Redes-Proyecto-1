@@ -2,6 +2,7 @@ package chat
 
 import (
 	"RedesProyecto/backend/models"
+	cstanza "RedesProyecto/backend/models/stanza"
 	"fmt"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"gosrc.io/xmpp"
@@ -14,6 +15,15 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 	if !ok {
 		_, _ = fmt.Fprintf(os.Stdout, "Ignoring packet: %T\n", p)
 		return
+	}
+
+	for _, ext := range msg.Extensions {
+		if invite, ok := ext.(*cstanza.Conference); ok {
+			// <message xmlns="jabber:client" to="alb21004@alumchat.lol" id="9946c7cb-b8fe-4214-9314-cc7ac91e1ab9" from="alb21005@alumchat.lol/gajim.0O3D5ZZ0"><x xmlns="jabber:x:conference" jid="ogivox@conference.alumchat.lol"></x></message>
+			fmt.Println("Conference invitation from: ", invite.JID)
+			ConferenceInvitationChannel <- invite.JID
+			return
+		}
 	}
 
 	switch msg.Type {
@@ -37,11 +47,22 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 			runtime.EventsEmit(AppContext, "message", *message, msg.From)
 		}
 
+	case stanza.MessageTypeGroupchat:
+		_, _ = fmt.Fprintf(os.Stdout, "(G) Message from: %s\n", msg.From)
+
+		message := models.NewMessage(msg.Body)
+
+		if msg.Body != "" {
+			User.Messages[msg.From] = append(User.Messages[msg.From], *message)
+			runtime.EventsEmit(AppContext, "message", *message, msg.From)
+		}
+
 	default:
 		if msg.Body != "" {
 			runtime.EventsEmit(AppContext, "message", msg.Body, msg.From)
 		}
 		_, _ = fmt.Fprintf(os.Stdout, "(%s) Message from: %s\n", msg.Type, msg.From)
+
 	}
 
 }
@@ -76,6 +97,22 @@ func handlePresence(s xmpp.Sender, p stanza.Packet) {
 
 		default:
 			_, _ = fmt.Fprintf(os.Stdout, "(%s) Presence from: %s\n", presence.Type, presence.From)
+
+			/*
+				() Presence from: alb21005@alumchat.lol/gajim.0O3D5ZZ0
+				RECV:
+				<presence xmlns="jabber:client" id="e6edad8c-ec83-4be6-8102-674f780c7b53" from="alb21005@alumchat.lol/gajim.0O3D5ZZ0" to="alb21004@alumchat.lol"><show>dnd</show><status>kkkk</status><c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="https://gajim.org" ver="XSQ75zZMlPNIYlOYsfXsvB/0F0g="></c></presence>
+
+				Aquí, hay que extraer el estado de presencia y el mensaje de estado.
+			*/
+
+			if presence.Show != "" {
+				fmt.Println("Show: ", presence.Show)
+			}
+
+			if presence.Status != "" {
+				fmt.Println("Status: ", presence.Status)
+			}
 
 		}
 
