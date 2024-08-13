@@ -87,6 +87,14 @@ func startClient(username string, password string) {
 	}
 
 	User = models.NewUser(newClient, username)
+	fmt.Println(User)
+	err = User.LoadConfig()
+	fmt.Println(User)
+
+	if err != nil {
+		log.Println(err)
+	}
+
 	startMessaging()
 }
 
@@ -94,6 +102,8 @@ func startClient(username string, password string) {
 func startMessaging() {
 	var text string
 	var correspondent string
+
+	sendPresence()
 
 	for {
 		select {
@@ -223,13 +233,28 @@ func startMessaging() {
 	}
 }
 
-/*
+// sendPresence envía una presencia para unirse a las salas de chat a las que pertenece el usuario
+func sendPresence() {
+	for _, conference := range User.Conferences {
+		alias := User.UserName[:strings.Index(User.UserName, "@")]
 
-Esta stanza recibida fue la invitación a unirse a una sala de chat:
+		presence := stanza.Presence{
+			Attrs: stanza.Attrs{
+				From: User.UserName,                           // El JID del usuario actual
+				To:   fmt.Sprintf("%s/%s", conference, alias), // El JID del usuario actual con el recurso
+				Id:   "join_1",
+			},
+			Extensions: []stanza.PresExtension{
+				&stanza.MucPresence{},
+			},
+		}
 
-() Message from: ogivox@conference.alumchat.lol
-RECV:
-<message xmlns="jabber:client" to="alb21004@alumchat.lol" id="174e5fc7-8bc3-421d-8277-ef8dd605a3d6" from="alb21005@alumchat.lol/gajim.0O3D5ZZ0"><x xmlns="jabber:x:conference" jid="ogivox@conference.alumchat.lol"></x></message>
-
-() Message from: alb21005@alumchat.lol/gajim.0O3D5ZZ0
-*/
+		// Aquí enviamos el `presence` usando el cliente XMPP para unirse a la sala de chat.
+		err := User.Client.Send(presence)
+		if err != nil {
+			fmt.Println("Error al enviar presencia para unirse a la sala de chat:", err)
+		} else {
+			fmt.Println("Presencia enviada para unirse a la sala de chat:", conference)
+		}
+	}
+}
