@@ -10,12 +10,21 @@ import (
 	"slices"
 )
 
+const (
+	StatusOnline       = "online"
+	StatusAway         = "away"
+	StatusBusy         = "busy"
+	StatusNotAvailable = "not-available"
+	StatusOffline      = "offline"
+)
+
 type User struct {
 	Client      *xmpp.Client         `json:"-,omitempty"` // Client cliente XMPP
 	UserName    string               `json:"username"`    // UserName nombre de usuario
 	Contacts    []string             `json:"contacts"`    // Contacts lista de contactos
 	Conferences map[string]string    `json:"conferences"` // Conferences lista de salas de chat
 	Messages    map[string][]Message `json:"messages"`    // Messages mensajes
+	Status      string               `json:"status"`      // Status estado del usuario
 }
 
 // NewUser crea un nuevo usuario dado un Cliente XMPP previamente conectado y un nombre de usuario
@@ -26,6 +35,7 @@ func NewUser(client *xmpp.Client, username string) *User {
 		Contacts:    make([]string, 0),
 		Conferences: make(map[string]string),
 		Messages:    make(map[string][]Message),
+		Status:      StatusOnline,
 	}
 }
 
@@ -108,6 +118,11 @@ func (u *User) LoadConfig() error {
 		}
 	}
 
+	// Actualizar el estado del usuario
+	if userFile.Status != "" {
+		u.Status = userFile.Status
+	}
+
 	return nil
 }
 
@@ -138,6 +153,7 @@ func (u *User) SaveConfig() error {
 		Contacts:    u.Contacts,
 		Conferences: u.Conferences,
 		Messages:    u.Messages,
+		Status:      u.Status,
 	}
 
 	// Convertir la estructura User a JSON

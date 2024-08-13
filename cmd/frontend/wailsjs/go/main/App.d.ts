@@ -16,4 +16,6 @@ export function SendMessage(arg1:string):Promise<void>;
 
 export function SetCorrespondent(arg1:string):Promise<void>;
 
+export function SetStatus(arg1:number):Promise<void>;
+
 export function UpdateContacts():Promise<void>;

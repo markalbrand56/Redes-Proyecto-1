@@ -6,7 +6,8 @@ import {
   UpdateContacts,
   RequestContact,
   AcceptSubscription,
-  CancelSubscription
+  CancelSubscription,
+  SetStatus,
 } from '../../wailsjs/go/main/App'
 
 import {EventsOn} from "../../wailsjs/runtime/runtime.js";
@@ -43,6 +44,12 @@ function cancelSubscription() {
   console.log("Cancelling subscription")
   data.resultText = "Cancelling subscription"
   CancelSubscription(data.contact)
+}
+
+function updateStatus(status) {
+  console.log("Updating status")
+  data.resultText = "Updating status"
+  SetStatus(status)
 }
 
 // Event listeners
@@ -97,6 +104,13 @@ subRequest()
       <input id="contact" v-model="data.contact" autocomplete="off" class="input" type="text"/>
       <button class="btn" @click="addContact">Add</button>
       <button class="btn" @click="cancelSubscription">Remove</button>
+    </div>
+    <div id="status" class="input-box">
+      <button class="btn" @click="updateStatus(0)">Online</button>
+      <button class="btn" @click="updateStatus(1)">Away</button>
+      <button class="btn" @click="updateStatus(2)">Busy</button>
+      <button class="btn" @click="updateStatus(3)">NA</button>
+
     </div>
 
   </main>

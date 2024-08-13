@@ -58,3 +58,16 @@ func (a *App) AcceptSubscription(username string) {
 func (a *App) CancelSubscription(username string) {
 	chat.UnsubscribeFromChannel <- username
 }
+
+func (a *App) SetStatus(status int) {
+	switch status {
+	case 0: // Online
+		chat.StatusChannel <- models.StatusOnline
+	case 1: // Away
+		chat.StatusChannel <- models.StatusAway
+	case 2: // Busy
+		chat.StatusChannel <- models.StatusBusy
+	case 3: // Not Available
+		chat.StatusChannel <- models.StatusNotAvailable
+	}
+}

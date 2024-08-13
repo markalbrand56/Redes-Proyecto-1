@@ -14,13 +14,18 @@ import (
 )
 
 var (
-	TextChannel                 = make(chan string) // Canal para enviar mensajes
-	CorrespondentChannel        = make(chan string) // Canal para guardar el receptor del mensaje
-	FetchContactsChannel        = make(chan bool)   // Canal para enviar una solicitud de lista de contactos
-	SubscribeToChannel          = make(chan string) // Canal para enviar una solicitud de suscripción
-	SubscriptionRequestChannel  = make(chan string) // Canal para recibir solicitudes de suscripción
-	UnsubscribeFromChannel      = make(chan string) // Canal para enviar una solicitud de cancelación de suscripción
+	TextChannel          = make(chan string) // Canal para enviar mensajes
+	CorrespondentChannel = make(chan string) // Canal para guardar el receptor del mensaje
+
+	FetchContactsChannel = make(chan bool) // Canal para enviar una solicitud de lista de contactos
+
+	SubscribeToChannel         = make(chan string) // Canal para enviar una solicitud de suscripción
+	SubscriptionRequestChannel = make(chan string) // Canal para recibir solicitudes de suscripción
+	UnsubscribeFromChannel     = make(chan string) // Canal para enviar una solicitud de cancelación de suscripción
+
 	ConferenceInvitationChannel = make(chan string) // Canal para recibir invitaciones a salas de chat
+
+	StatusChannel = make(chan string) // Canal para cambiar el estado del usuario
 )
 
 const (
@@ -46,7 +51,10 @@ func Close() {
 	close(UnsubscribeFromChannel)
 	close(ConferenceInvitationChannel)
 
-	User.SaveConfig()
+	err := User.SaveConfig()
+	if err != nil {
+		log.Println("Error saving user configuration: ", err)
+	}
 }
 
 func startClient(username string, password string) {
@@ -281,6 +289,47 @@ func startMessaging() {
 				fmt.Println("Error al enviar presencia para unirse a la sala de chat:", err)
 			} else {
 				fmt.Println("Presencia enviada para unirse a la sala de chat:", jid)
+			}
+
+		// Cambiar el estado del usuario
+		case status := <-StatusChannel:
+			// Para cambiar el estado del usuario, se debe enviar un mensaje de presencia con el estado deseado
+			presence := stanza.Presence{
+				Attrs: stanza.Attrs{
+					From: User.UserName,
+				},
+			}
+
+			switch status {
+			case models.StatusOnline:
+				log.Println("Setting status to online")
+				presence.Show = stanza.PresenceShowChat // <show>chat</show>
+
+			case models.StatusAway:
+				log.Println("Setting status to away")
+				presence.Show = stanza.PresenceShowAway // <show>away</show>
+
+			case models.StatusNotAvailable:
+				log.Println("Setting status to not available")
+				presence.Show = stanza.PresenceShowXA // <show>xa</show>
+
+			case models.StatusOffline:
+				log.Println("Setting status to offline")
+				presence.Type = stanza.PresenceTypeUnavailable
+
+			case models.StatusBusy:
+				log.Println("Setting status to busy")
+				presence.Show = stanza.PresenceShowDND // <show>dnd</show>
+
+			default:
+				log.Println("Setting status to online")
+				presence.Show = stanza.PresenceShowChat
+			}
+
+			err := User.Client.Send(presence)
+
+			if err != nil {
+				log.Println("Error al enviar presencia para cambiar el estado del usuario:", err)
 			}
 		default:
 			continue

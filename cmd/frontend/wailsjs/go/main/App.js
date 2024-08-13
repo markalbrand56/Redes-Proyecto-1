@@ -30,6 +30,10 @@ export function SetCorrespondent(arg1) {
   return window['go']['main']['App']['SetCorrespondent'](arg1);
 }
 
+export function SetStatus(arg1) {
+  return window['go']['main']['App']['SetStatus'](arg1);
+}
+
 export function UpdateContacts() {
   return window['go']['main']['App']['UpdateContacts']();
 }
