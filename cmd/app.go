@@ -54,3 +54,7 @@ func (a *App) RequestContact(username string) {
 func (a *App) AcceptSubscription(username string) {
 	chat.SubscriptionRequestChannel <- username
 }
+
+func (a *App) CancelSubscription(username string) {
+	chat.UnsubscribeFromChannel <- username
+}

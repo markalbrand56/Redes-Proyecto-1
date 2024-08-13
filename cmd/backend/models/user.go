@@ -14,7 +14,7 @@ type User struct {
 	Client      *xmpp.Client         `json:"-,omitempty"` // Client cliente XMPP
 	UserName    string               `json:"username"`    // UserName nombre de usuario
 	Contacts    []string             `json:"contacts"`    // Contacts lista de contactos
-	Conferences []string             `json:"conferences"` // Conferences lista de salas de chat
+	Conferences map[string]string    `json:"conferences"` // Conferences lista de salas de chat
 	Messages    map[string][]Message `json:"messages"`    // Messages mensajes
 }
 
@@ -24,7 +24,7 @@ func NewUser(client *xmpp.Client, username string) *User {
 		Client:      client,
 		UserName:    username,
 		Contacts:    make([]string, 0),
-		Conferences: make([]string, 0),
+		Conferences: make(map[string]string),
 		Messages:    make(map[string][]Message),
 	}
 }
@@ -87,10 +87,10 @@ func (u *User) LoadConfig() error {
 		}
 	}
 
-	for _, conference := range userFile.Conferences {
-		if slices.Contains(u.Conferences, conference) == false {
-			fmt.Println("Adding conference: ", conference)
-			u.Conferences = append(u.Conferences, conference)
+	for jid, conference := range userFile.Conferences {
+		// Si no existe la sala de chat en la lista, se agrega
+		if _, ok := u.Conferences[jid]; !ok {
+			u.Conferences[jid] = conference
 		}
 	}
 

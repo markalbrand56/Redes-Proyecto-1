@@ -6,6 +6,10 @@ export function AcceptSubscription(arg1) {
   return window['go']['main']['App']['AcceptSubscription'](arg1);
 }
 
+export function CancelSubscription(arg1) {
+  return window['go']['main']['App']['CancelSubscription'](arg1);
+}
+
 export function GetContacts() {
   return window['go']['main']['App']['GetContacts']();
 }

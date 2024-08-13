@@ -3,6 +3,7 @@ package chat
 import (
 	"RedesProyecto/backend/models"
 	"context"
+	"encoding/xml"
 	"fmt"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"gosrc.io/xmpp"
@@ -124,7 +125,7 @@ func startMessaging() {
 		// Obtener la lista de contactos
 		case <-FetchContactsChannel:
 			// Para obtener la lista de contactos, se debe enviar una solicitud IQ de tipo "get"
-			req, err := stanza.NewIQ(
+			contactReq, err := stanza.NewIQ(
 				stanza.Attrs{
 					From: User.UserName,
 					Type: stanza.IQTypeGet,
@@ -136,9 +137,9 @@ func startMessaging() {
 				log.Fatalf("%+v", err)
 			}
 
-			req.RosterItems()
+			contactReq.RosterItems() // Obtiene los contactos
 
-			c, err := User.Client.SendIQ(AppContext, req)
+			contactsResp, err := User.Client.SendIQ(AppContext, contactReq)
 
 			if err != nil {
 				log.Fatalf("%+v", err)
@@ -147,7 +148,7 @@ func startMessaging() {
 			// Para obtener la respuesta del servidor, Client.SendIQ() devuelve un canal de respuesta que se debe escuchar.
 			// Se usa una goroutine para no bloquear el flujo principal, y poder esperar la respuesta del servidor con los contactos
 			go func() {
-				serverResp := <-c
+				serverResp := <-contactsResp
 
 				if rosterItems, ok := serverResp.Payload.(*stanza.RosterItems); ok {
 					contacts := make([]string, 0)
@@ -160,6 +161,60 @@ func startMessaging() {
 
 					fmt.Println("Contacts: ", contacts)
 					runtime.EventsEmit(AppContext, "contacts", contacts)
+					err = User.SaveConfig()
+
+					if err != nil {
+						log.Println(err)
+					}
+				}
+			}()
+
+			// salas de chat
+			discoReq, err := stanza.NewIQ(
+				stanza.Attrs{
+					From: User.UserName,
+					Type: stanza.IQTypeGet,
+					Id:   "disco_1",
+					To:   "conference.alumchat.lol",
+				},
+			)
+
+			if err != nil {
+				log.Fatalf("%+v", err)
+			}
+
+			discoReq.Payload = &stanza.DiscoItems{
+				XMLName: xml.Name{Space: "http://jabber.org/protocol/disco#items", Local: "query"},
+			}
+
+			discoResp, err := User.Client.SendIQ(AppContext, discoReq)
+
+			if err != nil {
+				log.Fatalf("%+v", err)
+			}
+
+			go func() {
+				serverResp := <-discoResp
+
+				if discoItems, ok := serverResp.Payload.(*stanza.DiscoItems); ok {
+					fmt.Println("Found disco items")
+					conferences := make(map[string]string)
+
+					for _, item := range discoItems.Items {
+						fmt.Println(item)
+						conferences[item.JID] = item.Name
+					}
+
+					User.Conferences = conferences // Se asume que el servidor siempre es el más actualizado
+
+					fmt.Println("Conferences: ", conferences)
+					runtime.EventsEmit(AppContext, "conferences", conferences)
+
+					err = User.SaveConfig()
+
+					if err != nil {
+						log.Println(err)
+					}
 				}
 			}()
 
@@ -235,13 +290,14 @@ func startMessaging() {
 
 // sendPresence envía una presencia para unirse a las salas de chat a las que pertenece el usuario
 func sendPresence() {
-	for _, conference := range User.Conferences {
+	for jid, name := range User.Conferences {
+		log.Println("Joining conference: ", name)
 		alias := User.UserName[:strings.Index(User.UserName, "@")]
 
 		presence := stanza.Presence{
 			Attrs: stanza.Attrs{
-				From: User.UserName,                           // El JID del usuario actual
-				To:   fmt.Sprintf("%s/%s", conference, alias), // El JID del usuario actual con el recurso
+				From: User.UserName,                    // El JID del usuario actual
+				To:   fmt.Sprintf("%s/%s", jid, alias), // El JID del usuario actual con el recurso
 				Id:   "join_1",
 			},
 			Extensions: []stanza.PresExtension{
@@ -254,7 +310,7 @@ func sendPresence() {
 		if err != nil {
 			fmt.Println("Error al enviar presencia para unirse a la sala de chat:", err)
 		} else {
-			fmt.Println("Presencia enviada para unirse a la sala de chat:", conference)
+			fmt.Println("Presencia enviada para unirse a la sala de chat:", name)
 		}
 	}
 }
