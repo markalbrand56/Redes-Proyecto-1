@@ -110,6 +110,7 @@ subRequest()
       <button class="btn" @click="updateStatus(1)">Away</button>
       <button class="btn" @click="updateStatus(2)">Busy</button>
       <button class="btn" @click="updateStatus(3)">NA</button>
+      <button class="btn" @click="updateStatus(4)">Offline</button>
 
     </div>
 

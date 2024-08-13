@@ -69,5 +69,7 @@ func (a *App) SetStatus(status int) {
 		chat.StatusChannel <- models.StatusBusy
 	case 3: // Not Available
 		chat.StatusChannel <- models.StatusNotAvailable
+	case 4: // Offline
+		chat.StatusChannel <- models.StatusOffline
 	}
 }
