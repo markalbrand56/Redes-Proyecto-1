@@ -8,7 +8,8 @@ import {
   AcceptSubscription,
   CancelSubscription,
   SetStatus,
-  GetMessages
+  GetMessages,
+  GetArchive
 } from '../../wailsjs/go/main/App.js'
 
 import {EventsOn} from "../../wailsjs/runtime/runtime.js";
@@ -65,6 +66,10 @@ const getMessages = async () => {
     messages.messages = msg
 }
 
+function getArchive() {
+  GetArchive(data.name)
+}
+
 // Event listeners
 
 const receiveMessages = async () => {
@@ -116,6 +121,7 @@ getMessages()
       <button class="btn" @click="sendMessage">Send</button>
       <button class="btn" @click="setCorrespondent">Set</button>
       <button class="btn" @click="getContacts">Get</button>
+      <button class="btn" @click="getArchive">GetA</button>
     </div>
     <div id="contacts" class="input-box">
       <input id="contact" v-model="data.contact" autocomplete="off" class="input" type="text"/>

@@ -3,6 +3,7 @@ package chat
 import (
 	"RedesProyecto/backend/chat/events"
 	"RedesProyecto/backend/models"
+	cstanza "RedesProyecto/backend/models/stanza"
 	"context"
 	"encoding/xml"
 	"fmt"
@@ -26,6 +27,8 @@ var (
 	ConferenceInvitationChannel = make(chan string) // Canal para recibir invitaciones a salas de chat
 
 	StatusChannel = make(chan string) // Canal para cambiar el estado del usuario
+
+	FetchArchiveChannel = make(chan string) // Canal para solicitar mensajes archivados
 )
 
 const (
@@ -335,6 +338,10 @@ func startMessaging() {
 			if err != nil {
 				log.Println("Error al enviar presencia para cambiar el estado del usuario:", err)
 			}
+
+		// Obtener mensajes archivados
+		case username := <-FetchArchiveChannel:
+			getArchivedMessages(username)
 		default:
 			continue
 		}
@@ -366,4 +373,26 @@ func sendPresence() {
 			fmt.Println("Presencia enviada para unirse a la sala de chat:", name)
 		}
 	}
+}
+
+func getArchivedMessages(jid string) {
+	log.Println("Getting archived messages...")
+	// Para obtener los mensajes archivados, se debe enviar una solicitud IQ de tipo "get"
+	archiveQuery := cstanza.NewArchiveQuery(jid, 5)
+
+	iq := stanza.IQ{
+		Attrs: stanza.Attrs{
+			Type: stanza.IQTypeSet,
+			Id:   "mam_query_1",
+			To:   User.UserName,
+		},
+		Payload: archiveQuery,
+	}
+
+	_, err := User.Client.SendIQ(AppContext, &iq)
+
+	if err != nil {
+		log.Fatalf("Error sending IQ: %+v", err)
+	}
+
 }

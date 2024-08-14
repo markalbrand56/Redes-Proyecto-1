@@ -4,6 +4,8 @@ import "time"
 
 type Message struct {
 	Body      string    `json:"body"`
+	From      string    `json:"from"`
+	To        string    `json:"to"`
 	Timestamp time.Time `json:"timestamp"`
 }
 

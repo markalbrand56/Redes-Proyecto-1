@@ -83,3 +83,7 @@ func (a *App) SetStatus(status int) {
 		chat.StatusChannel <- models.StatusOnline
 	}
 }
+
+func (a *App) GetArchive(username string) {
+	chat.FetchArchiveChannel <- username
+}

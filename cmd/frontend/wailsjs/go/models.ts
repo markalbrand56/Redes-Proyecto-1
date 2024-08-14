@@ -2,6 +2,8 @@ export namespace models {
 	
 	export class Message {
 	    body: string;
+	    from: string;
+	    to: string;
 	    // Go type: time
 	    timestamp: any;
 	
@@ -12,6 +14,8 @@ export namespace models {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.body = source["body"];
+	        this.from = source["from"];
+	        this.to = source["to"];
 	        this.timestamp = this.convertValues(source["timestamp"], null);
 	    }
 	

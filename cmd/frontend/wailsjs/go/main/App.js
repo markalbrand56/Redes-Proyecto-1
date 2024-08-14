@@ -10,6 +10,10 @@ export function CancelSubscription(arg1) {
   return window['go']['main']['App']['CancelSubscription'](arg1);
 }
 
+export function GetArchive(arg1) {
+  return window['go']['main']['App']['GetArchive'](arg1);
+}
+
 export function GetContacts() {
   return window['go']['main']['App']['GetContacts']();
 }

@@ -23,6 +23,8 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 			fmt.Println("Conference invitation from: ", invite.JID)
 			ConferenceInvitationChannel <- invite.JID
 			return
+		} else if mam, ok := ext.(*cstanza.MAM); ok {
+			fmt.Println("MAM message: ", *mam)
 		}
 	}
 
