@@ -1,7 +1,7 @@
 <script setup>
 import { reactive } from 'vue';
 import { useRouter } from 'vue-router';
-import { Login } from '../../wailsjs/go/main/App';
+import { Login } from '../../wailsjs/go/main/App.js';
 import {EventsOn} from "../../wailsjs/runtime/runtime.js";
 
 

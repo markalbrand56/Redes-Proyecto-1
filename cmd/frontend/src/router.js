@@ -1,7 +1,7 @@
 // src/router.js
 import { createRouter, createWebHistory } from 'vue-router'
-import Chat from './components/Chat.vue'
-import Login from './components/Login.vue'
+import Chat from './pages/Chat.vue'
+import Login from './pages/Login.vue'
 
 const routes = [
     { path: '/', component: Login },

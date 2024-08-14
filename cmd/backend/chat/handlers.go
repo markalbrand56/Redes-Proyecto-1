@@ -35,6 +35,7 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 		if msg.Body != "" {
 			User.Messages[msg.From] = append(User.Messages[msg.From], *message)
 			events.EmitMessage(AppContext, msg.Body, msg.From)
+			User.SaveConfig()
 		}
 
 	case stanza.MessageTypeChat:
@@ -45,6 +46,7 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 		if msg.Body != "" {
 			User.Messages[msg.From] = append(User.Messages[msg.From], *message)
 			events.EmitMessage(AppContext, msg.Body, msg.From)
+			User.SaveConfig()
 		}
 
 	case stanza.MessageTypeGroupchat:

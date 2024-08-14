@@ -8,14 +8,20 @@ import {
   AcceptSubscription,
   CancelSubscription,
   SetStatus,
-} from '../../wailsjs/go/main/App'
+  GetMessages
+} from '../../wailsjs/go/main/App.js'
 
 import {EventsOn} from "../../wailsjs/runtime/runtime.js";
+import Conversation from "../components/Conversation.vue";
 
 const data = reactive({
   name: "",
   resultText: "Please enter your name below 👇",
   contact: ""
+})
+
+const messages = reactive({
+  messages: []
 })
 
 function setCorrespondent() {
@@ -50,6 +56,13 @@ function updateStatus(status) {
   console.log("Updating status")
   data.resultText = "Updating status"
   SetStatus(status)
+}
+
+const getMessages = async () => {
+    const msg = await GetMessages("alb21005@alumchat.lol/gajim.0O3D5ZZ0")
+    console.log(msg)
+
+    messages.messages = msg
 }
 
 // Event listeners
@@ -88,11 +101,15 @@ updateContacts()
 successEvent()
 subRequest()
 
+getMessages()
+
 // ************************************************************ //
 </script>
 
 <template>
   <main>
+    <h1>Chat</h1>
+    <Conversation :messages="messages.messages" />
     <div id="result" class="result">{{ data.resultText }}</div>
     <div id="input" class="input-box">
       <input id="name" v-model="data.name" autocomplete="off" class="input" type="text"/>

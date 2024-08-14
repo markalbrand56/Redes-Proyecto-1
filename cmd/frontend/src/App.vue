@@ -1,6 +1,6 @@
 <script setup>
-import HelloWorld from './components/Chat.vue'
-import Login from "./components/Login.vue";
+import HelloWorld from './pages/Chat.vue'
+import Login from "./pages/Login.vue";
 </script>
 
 <template>
