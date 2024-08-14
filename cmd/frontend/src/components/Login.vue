@@ -62,6 +62,12 @@ form {
   gap: 1rem;
 }
 
+form div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 input {
   padding: 0.5rem;
   border-radius: 0.25rem;
