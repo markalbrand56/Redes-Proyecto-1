@@ -3,7 +3,8 @@
 import {reactive} from 'vue'
 
 const message = reactive({
-  body: ""
+  body: "",
+  timestamp: ""
 })
 
 const props = defineProps({
@@ -15,12 +16,13 @@ const props = defineProps({
 
 // set the message body from the props
 message.body = props.message.body
+message.timestamp = props.message.timestamp
 
 </script>
 
 <template>
   <div class="message-container">
-    <p class="message-body"> {{ message.body }} </p>
+    <p class="message-body"> {{ message.body }} at {{message.timestamp}} </p>
   </div>
 </template>
 

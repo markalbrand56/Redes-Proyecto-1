@@ -378,7 +378,7 @@ func sendPresence() {
 func getArchivedMessages(jid string) {
 	log.Println("Getting archived messages...")
 	// Para obtener los mensajes archivados, se debe enviar una solicitud IQ de tipo "get"
-	archiveQuery := cstanza.NewArchiveQuery(jid, 5)
+	archiveQuery := cstanza.NewArchiveQuery(jid, 50)
 
 	iq := stanza.IQ{
 		Attrs: stanza.Attrs{

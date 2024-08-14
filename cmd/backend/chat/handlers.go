@@ -8,6 +8,8 @@ import (
 	"gosrc.io/xmpp"
 	"gosrc.io/xmpp/stanza"
 	"os"
+	"strings"
+	"time"
 )
 
 func handleMessage(s xmpp.Sender, p stanza.Packet) {
@@ -25,6 +27,31 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 			return
 		} else if mam, ok := ext.(*cstanza.MAM); ok {
 			fmt.Println("MAM message: ", *mam)
+
+			ts := mam.Forwarded.Delay.Stamp
+
+			// parsear ts a time.Time
+			tsTime, err := time.Parse(time.RFC3339, ts)
+
+			if err != nil {
+				fmt.Println(err)
+			}
+
+			if mam.Forwarded.Message.To == strings.Split(User.UserName, "/")[0] {
+				User.Messages[mam.Forwarded.Message.From] = append(User.Messages[mam.Forwarded.Message.From], models.Message{
+					Body:      mam.Forwarded.Message.Body,
+					From:      mam.Forwarded.Message.From,
+					To:        mam.Forwarded.Message.To,
+					Timestamp: tsTime,
+				})
+			} else if mam.Forwarded.Message.From == strings.Split(User.UserName, "/")[0] {
+				User.Messages[mam.Forwarded.Message.To] = append(User.Messages[mam.Forwarded.Message.To], models.Message{
+					Body:      mam.Forwarded.Message.Body,
+					From:      mam.Forwarded.Message.From,
+					To:        mam.Forwarded.Message.To,
+					Timestamp: tsTime,
+				})
+			}
 		}
 	}
 
