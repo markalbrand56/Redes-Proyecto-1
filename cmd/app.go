@@ -20,11 +20,17 @@ func NewApp() *App {
 // so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
-	chat.Start(ctx, "alb21004@alumchat.lol", "mark123")
+
+	// DEBUG
+	a.Login("alb21004@alumchat.lol", "mark123")
 }
 
 func (a *App) OnShutdown(ctx context.Context) {
 	chat.Close()
+}
+
+func (a *App) Login(username string, password string) {
+	chat.Start(a.ctx, username, password)
 }
 
 func (a *App) SetCorrespondent(correspondent string) {

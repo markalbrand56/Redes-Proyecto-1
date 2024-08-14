@@ -18,6 +18,10 @@ export function GetMessages(arg1) {
   return window['go']['main']['App']['GetMessages'](arg1);
 }
 
+export function Login(arg1, arg2) {
+  return window['go']['main']['App']['Login'](arg1, arg2);
+}
+
 export function RequestContact(arg1) {
   return window['go']['main']['App']['RequestContact'](arg1);
 }

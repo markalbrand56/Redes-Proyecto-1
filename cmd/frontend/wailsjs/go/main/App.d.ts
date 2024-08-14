@@ -10,6 +10,8 @@ export function GetContacts():Promise<Array<string>>;
 
 export function GetMessages(arg1:string):Promise<Array<models.Message>>;
 
+export function Login(arg1:string,arg2:string):Promise<void>;
+
 export function RequestContact(arg1:string):Promise<void>;
 
 export function SendMessage(arg1:string):Promise<void>;
