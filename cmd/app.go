@@ -22,7 +22,7 @@ func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 
 	// DEBUG
-	a.Login("alb21004@alumchat.lol", "mark123")
+	//a.Login("alb21004@alumchat.lol", "mark123")
 }
 
 func (a *App) OnShutdown(ctx context.Context) {
@@ -77,5 +77,7 @@ func (a *App) SetStatus(status int) {
 		chat.StatusChannel <- models.StatusNotAvailable
 	case 4: // Offline
 		chat.StatusChannel <- models.StatusOffline
+	default:
+		chat.StatusChannel <- models.StatusOnline
 	}
 }

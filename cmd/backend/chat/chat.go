@@ -37,9 +37,11 @@ var (
 	AppContext context.Context // Contexto de la aplicación
 )
 
-func Start(ctx context.Context, username string, password string) {
+func Start(ctx context.Context, username string, password string) bool {
 	AppContext = ctx
 	go startClient(username, password)
+
+	return true
 }
 
 func Close() {
@@ -103,6 +105,8 @@ func startClient(username string, password string) {
 	if err != nil {
 		log.Println(err)
 	}
+
+	events.EmitSuccess(AppContext, "Connected to server")
 
 	startMessaging()
 }
