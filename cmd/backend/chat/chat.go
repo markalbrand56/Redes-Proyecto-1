@@ -1,11 +1,11 @@
 package chat
 
 import (
+	"RedesProyecto/backend/chat/events"
 	"RedesProyecto/backend/models"
 	"context"
 	"encoding/xml"
 	"fmt"
-	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"gosrc.io/xmpp"
 	"gosrc.io/xmpp/stanza"
 	"log"
@@ -168,7 +168,7 @@ func startMessaging() {
 					User.Contacts = contacts
 
 					fmt.Println("Contacts: ", contacts)
-					runtime.EventsEmit(AppContext, "contacts", contacts)
+					events.EmitContacts(AppContext, contacts)
 					err = User.SaveConfig()
 
 					if err != nil {
@@ -216,7 +216,7 @@ func startMessaging() {
 					User.Conferences = conferences // Se asume que el servidor siempre es el más actualizado
 
 					fmt.Println("Conferences: ", conferences)
-					runtime.EventsEmit(AppContext, "conferences", conferences)
+					events.EmitConferences(AppContext, conferences)
 
 					err = User.SaveConfig()
 
@@ -238,7 +238,7 @@ func startMessaging() {
 				log.Fatalf("%+v", err)
 			}
 
-			runtime.EventsEmit(AppContext, "success", "Subscription request sent")
+			events.EmitSuccess(AppContext, "Subscription request sent")
 
 		// Aceptar solicitud de suscripción
 		case u := <-SubscriptionRequestChannel:
@@ -253,7 +253,7 @@ func startMessaging() {
 				log.Fatalf("%+v", err)
 			}
 
-			runtime.EventsEmit(AppContext, "success", "Subscription accepted")
+			events.EmitSuccess(AppContext, "Subscription accepted")
 
 		// Cancelar suscripción
 		case u := <-UnsubscribeFromChannel:

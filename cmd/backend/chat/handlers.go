@@ -1,10 +1,10 @@
 package chat
 
 import (
+	"RedesProyecto/backend/chat/events"
 	"RedesProyecto/backend/models"
 	cstanza "RedesProyecto/backend/models/stanza"
 	"fmt"
-	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"gosrc.io/xmpp"
 	"gosrc.io/xmpp/stanza"
 	"os"
@@ -34,7 +34,7 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 
 		if msg.Body != "" {
 			User.Messages[msg.From] = append(User.Messages[msg.From], *message)
-			runtime.EventsEmit(AppContext, "message", *message, msg.From)
+			events.EmitMessage(AppContext, msg.Body, msg.From)
 		}
 
 	case stanza.MessageTypeChat:
@@ -44,7 +44,7 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 
 		if msg.Body != "" {
 			User.Messages[msg.From] = append(User.Messages[msg.From], *message)
-			runtime.EventsEmit(AppContext, "message", *message, msg.From)
+			events.EmitMessage(AppContext, msg.Body, msg.From)
 		}
 
 	case stanza.MessageTypeGroupchat:
@@ -54,12 +54,12 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 
 		if msg.Body != "" {
 			User.Messages[msg.From] = append(User.Messages[msg.From], *message)
-			runtime.EventsEmit(AppContext, "message", *message, msg.From)
+			events.EmitMessage(AppContext, msg.Body, msg.From)
 		}
 
 	default:
 		if msg.Body != "" {
-			runtime.EventsEmit(AppContext, "message", msg.Body, msg.From)
+			events.EmitMessage(AppContext, msg.Body, msg.From)
 		}
 		_, _ = fmt.Fprintf(os.Stdout, "(%s) Message from: %s\n", msg.Type, msg.From)
 
@@ -81,7 +81,7 @@ func handlePresence(s xmpp.Sender, p stanza.Packet) {
 				SubscriptionRequestChannel <- presence.From
 			}
 
-			runtime.EventsEmit(AppContext, "subscription-request", presence.From)
+			events.EmitSubscription(AppContext, presence.From)
 
 		case stanza.PresenceTypeSubscribed:
 			// El usuario al que se solicitó la suscripción ha aceptado.
@@ -138,7 +138,7 @@ func handleIQ(s xmpp.Sender, p stanza.Packet) {
 			}
 
 			User.Contacts = contacts
-			runtime.EventsEmit(AppContext, "contacts", contacts)
+			events.EmitContacts(AppContext, contacts)
 
 		case *stanza.Version:
 			// Aquí puedes manejar la versión del servidor u otros IQs de versión.
