@@ -22,7 +22,7 @@ async function handleLogin() {
 const loginSuccess = async () => {
   EventsOn("success", () => {
     console.log("Login successful");
-    router.push("/hello");
+    router.push("/chat");
   });
 }
 

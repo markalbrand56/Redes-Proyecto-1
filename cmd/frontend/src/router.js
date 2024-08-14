@@ -1,11 +1,11 @@
 // src/router.js
 import { createRouter, createWebHistory } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import Chat from './components/Chat.vue'
 import Login from './components/Login.vue'
 
 const routes = [
     { path: '/', component: Login },
-    { path: '/hello', component: HelloWorld }
+    { path: '/chat', component: Chat }
 ]
 
 const router = createRouter({
