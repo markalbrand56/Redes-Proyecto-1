@@ -89,8 +89,6 @@ function handleContactClicked(jid) {
   Correspondent.jid = jid  // Set the current correspondent on the frontend
 
   getArchive(jid)  // Get the messages for the current correspondent
-
-  getMessages()
 }
 
 // Event listeners
@@ -101,7 +99,7 @@ const receiveMessages = async () => {
       data.resultText = "Message from " + from
       if (from === Correspondent.jid) {
         console.log("Updating current conversation")
-        getMessages()
+        getArchive(from)
       }
   })
 }
@@ -128,12 +126,19 @@ const subRequest = async () => {
   })
 }
 
+const updateMessages = async () => {
+    EventsOn("update-messages", (jid) => {
+      console.log("Updating messages for", jid)
+      getMessages()
+  })
+}
+
 receiveMessages()
 updateContacts()
 successEvent()
 subRequest()
+updateMessages()
 
-getMessages()
 
 // ************************************************************ //
 </script>
@@ -161,29 +166,34 @@ getMessages()
 
     </div>
 
-    <div id="result" class="result">{{ data.resultText }}</div>
+    <div id="debug" class="debug">
 
-    <div id="input" class="input-box">
-      <input id="name" v-model="data.name" autocomplete="off" class="input" type="text"/>
-      <button class="btn" @click="sendMessage">Send</button>
-      <button class="btn" @click="setCorrespondent">Set</button>
-      <button class="btn" @click="getContacts">Get</button>
+      <div id="result" class="result">{{ data.resultText }}</div>
+
+      <div id="input" class="input-box">
+        <input id="name" v-model="data.name" autocomplete="off" class="input" type="text"/>
+        <button class="btn" @click="sendMessage">Send</button>
+        <button class="btn" @click="setCorrespondent">Set</button>
+        <button class="btn" @click="getContacts">Get</button>
+      </div>
+
+      <div id="contacts-debug" class="input-box">
+        <input id="contact" v-model="data.contact" autocomplete="off" class="input" type="text"/>
+        <button class="btn" @click="addContact">Add</button>
+        <button class="btn" @click="cancelSubscription">Remove</button>
+      </div>
+
+      <div id="status" class="input-box">
+        <button class="btn" @click="updateStatus(0)">Online</button>
+        <button class="btn" @click="updateStatus(1)">Away</button>
+        <button class="btn" @click="updateStatus(2)">Busy</button>
+        <button class="btn" @click="updateStatus(3)">NA</button>
+        <button class="btn" @click="updateStatus(4)">Offline</button>
+
+      </div>
+
     </div>
 
-    <div id="contacts-debug" class="input-box">
-      <input id="contact" v-model="data.contact" autocomplete="off" class="input" type="text"/>
-      <button class="btn" @click="addContact">Add</button>
-      <button class="btn" @click="cancelSubscription">Remove</button>
-    </div>
-
-    <div id="status" class="input-box">
-      <button class="btn" @click="updateStatus(0)">Online</button>
-      <button class="btn" @click="updateStatus(1)">Away</button>
-      <button class="btn" @click="updateStatus(2)">Busy</button>
-      <button class="btn" @click="updateStatus(3)">NA</button>
-      <button class="btn" @click="updateStatus(4)">Offline</button>
-
-    </div>
 
   </main>
 </template>
@@ -193,6 +203,7 @@ getMessages()
 main {
   display: flex;
   flex-direction: column;
+
   justify-content: center;
   align-items: center;
   height: 100%;
