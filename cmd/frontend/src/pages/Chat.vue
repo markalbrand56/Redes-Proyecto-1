@@ -19,7 +19,7 @@ import Conversation from "../components/Conversation.vue";
 import Contact from "../components/Contact.vue";
 
 const Message = reactive({
-  name: "",
+  name: "alb21004@alumchat.lol",
   resultText: "Please enter your name below 👇",
   contact: "",
   body: ""
@@ -187,6 +187,10 @@ onMounted(() => {
         <div id="contacts" class="contact-section">
           <Contact v-for="contact in Contacts.contacts" :contact="{jid: contact}" :key="contact" @setCorrespondent="handleContactClicked" />
         </div>
+
+        <div id="current-account" class="current-account">
+          <p>{{ Message.name }}</p>
+        </div>
       </div>
 
       <div id="current-chat" class="current-chat">
@@ -271,6 +275,30 @@ main h1 {
   width: 100%;
   height: 100%;
   border: 1px dashed red;
+}
+
+.current-account {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  min-height: 10%;
+  width: 100%;
+  height: fit-content;
+  margin: 1rem;
+
+  border: 1px dashed blue;
+
+  background-color: #f0f0f0;
+  border-radius: 0.75rem;
+  cursor: pointer;
+
+}
+
+.current-account p {
+  margin: 0.5rem;
+  font-size: 18px;
+  color: #1b2636;
 }
 
 .current-chat {
