@@ -212,13 +212,6 @@ onMounted(() => {
 
       <div id="result" class="result">{{ Message.resultText }}</div>
 
-      <div id="input" class="input-box">
-        <input id="name" v-model="Message.name" autocomplete="off" class="input" type="text"/>
-        <button class="btn" @click="sendMessage">Send</button>
-        <button class="btn" @click="setCorrespondent">Set</button>
-        <button class="btn" @click="getContacts">Get</button>
-      </div>
-
       <div id="contacts-debug" class="input-box">
         <input id="contact" v-model="Message.contact" autocomplete="off" class="input" type="text"/>
         <button class="btn" @click="addContact">Add</button>
