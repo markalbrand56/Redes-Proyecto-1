@@ -75,7 +75,13 @@ function getMessages() {
   console.log("Getting messages")
   GetMessages(Correspondent.jid).then((messages) => {
     console.log("Messages", messages)
-    Messages.messages = messages
+    if (messages) {
+      Messages.messages = messages.map((message) => {
+        return new models.Message(message)
+      })
+    } else {
+      Messages.messages = []
+    }
   })
 }
 function getArchive(jid) {
