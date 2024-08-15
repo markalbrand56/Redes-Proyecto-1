@@ -18,10 +18,11 @@ import {models} from "../../wailsjs/go/models.ts";
 import Conversation from "../components/Conversation.vue";
 import Contact from "../components/Contact.vue";
 
-const data = reactive({
+const Message = reactive({
   name: "",
   resultText: "Please enter your name below 👇",
-  contact: ""
+  contact: "",
+  body: ""
 })
 
 const Correspondent = reactive({
@@ -49,35 +50,47 @@ function scrollToBottom() {
 
 function setCorrespondent(jid) {
   console.log("Setting correspondent")
-  data.resultText = "Setting correspondent to " + jid
+  Message.resultText = "Setting correspondent to " + jid
   SetCorrespondent(jid)
 }
 
 function sendMessage() {
-  SendMessage(data.name)
+  if (Message.body === "") {
+    Message.resultText = "Please enter a message to send"
+    return
+  }
+
+  if (Correspondent.jid === "") {
+    Message.resultText = "Please select a contact to send a message to"
+    return
+  }
+
+  SendMessage(Message.body)
+  Message.body = ""
+  getMessages()
 }
 
 function getContacts() {
   console.log("Getting contacts")
-  data.resultText = "Getting contacts"
+  Message.resultText = "Getting contacts"
   UpdateContacts()
 }
 
 function addContact() {
   console.log("Adding contact")
-  data.resultText = "Adding contact"
-  RequestContact(data.contact)
+  Message.resultText = "Adding contact"
+  RequestContact(Message.contact)
 }
 
 function cancelSubscription() {
   console.log("Cancelling subscription")
-  data.resultText = "Cancelling subscription"
-  CancelSubscription(data.contact)
+  Message.resultText = "Cancelling subscription"
+  CancelSubscription(Message.contact)
 }
 
 function updateStatus(status) {
   console.log("Updating status")
-  data.resultText = "Updating status"
+  Message.resultText = "Updating status"
   SetStatus(status)
 }
 
@@ -114,7 +127,7 @@ function handleContactClicked(jid) {
 const receiveMessages = async () => {
   EventsOn("message", (from) => {
     console.log("Message", from)
-    data.resultText = "Message from " + from
+    Message.resultText = "Message from " + from
     if (from === Correspondent.jid) {
       console.log("Updating current conversation")
       getArchive(from)
@@ -125,7 +138,7 @@ const receiveMessages = async () => {
 const updateContacts = async () => {
   EventsOn("contacts", (contacts) => {
     // contacts is an array of strings
-    data.resultText = "Contacts: " + contacts.join(", ")
+    Message.resultText = "Contacts: " + contacts.join(", ")
     console.log("Contacts", contacts)
     Contacts.contacts = contacts
   })
@@ -133,13 +146,13 @@ const updateContacts = async () => {
 
 const successEvent = async () => {
   EventsOn("success", (message) => {
-    data.resultText = message
+    Message.resultText = message
   })
 }
 
 const subRequest = async () => {
   EventsOn("subscription-request", (user) => {
-    data.resultText = "Subscription request from " + user
+    Message.resultText = "Subscription request from " + user
     AcceptSubscription(user)
   })
 }
@@ -184,23 +197,28 @@ onMounted(() => {
           <Conversation :messages="Messages.messages" />
         </div>
 
+        <div id="message-input" class="message-input">
+          <input id="message" v-model="Message.body" autocomplete="off" class="input" type="text"/>
+          <button class="btn" @click="sendMessage">Send</button>
+        </div>
+
       </div>
 
     </div>
 
     <div id="debug" class="debug">
 
-      <div id="result" class="result">{{ data.resultText }}</div>
+      <div id="result" class="result">{{ Message.resultText }}</div>
 
       <div id="input" class="input-box">
-        <input id="name" v-model="data.name" autocomplete="off" class="input" type="text"/>
+        <input id="name" v-model="Message.name" autocomplete="off" class="input" type="text"/>
         <button class="btn" @click="sendMessage">Send</button>
         <button class="btn" @click="setCorrespondent">Set</button>
         <button class="btn" @click="getContacts">Get</button>
       </div>
 
       <div id="contacts-debug" class="input-box">
-        <input id="contact" v-model="data.contact" autocomplete="off" class="input" type="text"/>
+        <input id="contact" v-model="Message.contact" autocomplete="off" class="input" type="text"/>
         <button class="btn" @click="addContact">Add</button>
         <button class="btn" @click="cancelSubscription">Remove</button>
       </div>
@@ -231,6 +249,10 @@ main {
   height: 100%;
 }
 
+main h1 {
+  margin: 1rem;
+}
+
 .display {
   display: flex;
   justify-content: space-between;
@@ -247,7 +269,6 @@ main {
 
 .current-chat {
   width: 75%;
-  height: min(80%, 1000px);
   margin: 1rem;
   border: 1px dashed blue;
 }
@@ -277,6 +298,46 @@ main {
   scrollbar-width: thin;
   scrollbar-color: #000000 #464646;
 
+}
+
+.message-input {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  margin: 2rem;
+}
+
+.message-input .input {
+  width: 80%;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 3px;
+  border: none;
+  padding: 0 10px;
+  background-color: rgba(240, 240, 240, 1);
+  -webkit-font-smoothing: antialiased;
+}
+
+.message-input .input:hover {
+  border: none;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.message-input .input:focus {
+  border: none;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.message-input .btn {
+  width: 60px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 3px;
+  border: none;
+  margin: 0 0 0 20px;
+  padding: 0 8px;
+  cursor: pointer;
 }
 
 .result {

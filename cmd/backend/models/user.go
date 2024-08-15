@@ -173,3 +173,12 @@ func (u *User) SaveConfig() error {
 
 	return nil
 }
+
+func (u *User) ShowConversations() {
+	for contact, messages := range u.Messages {
+		fmt.Printf("%s:\n", contact)
+		for _, message := range messages {
+			fmt.Printf("  %s: %s\n", message.From, message.Body)
+		}
+	}
+}

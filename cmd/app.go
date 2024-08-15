@@ -47,6 +47,11 @@ func (a *App) GetContacts() []string {
 }
 
 func (a *App) GetMessages(username string) []models.Message {
+	chat.User.ShowConversations()
+
+	if _, ok := chat.User.Messages[username]; !ok {
+		return []models.Message{}
+	}
 	r := chat.User.Messages[username]
 
 	log.Printf("Messages from '%s' (%d): %v\n", username, len(r), r)
