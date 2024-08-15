@@ -1,5 +1,5 @@
 <script setup>
-import {reactive} from 'vue'
+import {reactive, onMounted, nextTick, ref} from 'vue'
 import {
   SendMessage,
   SetCorrespondent,
@@ -36,6 +36,16 @@ const Contacts = reactive({
 const Messages = reactive({
   messages: []
 })
+
+const messageSectionRef = ref(null)
+
+function scrollToBottom() {
+  nextTick(() => {
+    if (messageSectionRef.value) {
+      messageSectionRef.value.scrollTop = messageSectionRef.value.scrollHeight
+    }
+  })
+}
 
 function setCorrespondent(jid) {
   console.log("Setting correspondent")
@@ -79,11 +89,13 @@ function getMessages() {
       Messages.messages = messages.map((message) => {
         return new models.Message(message)
       })
+      scrollToBottom()
     } else {
       Messages.messages = []
     }
   })
 }
+
 function getArchive(jid) {
   console.log("Getting archive")
   GetArchive(jid)
@@ -100,42 +112,42 @@ function handleContactClicked(jid) {
 // Event listeners
 
 const receiveMessages = async () => {
-    EventsOn("message", (from) => {
-      console.log("Message", from)
-      data.resultText = "Message from " + from
-      if (from === Correspondent.jid) {
-        console.log("Updating current conversation")
-        getArchive(from)
-      }
+  EventsOn("message", (from) => {
+    console.log("Message", from)
+    data.resultText = "Message from " + from
+    if (from === Correspondent.jid) {
+      console.log("Updating current conversation")
+      getArchive(from)
+    }
   })
 }
 
 const updateContacts = async () => {
-    EventsOn("contacts", (contacts) => {
-      // contacts is an array of strings
-      data.resultText = "Contacts: " + contacts.join(", ")
-      console.log("Contacts", contacts)
-      Contacts.contacts = contacts
+  EventsOn("contacts", (contacts) => {
+    // contacts is an array of strings
+    data.resultText = "Contacts: " + contacts.join(", ")
+    console.log("Contacts", contacts)
+    Contacts.contacts = contacts
   })
 }
 
 const successEvent = async () => {
-    EventsOn("success", (message) => {
-      data.resultText = message
+  EventsOn("success", (message) => {
+    data.resultText = message
   })
 }
 
 const subRequest = async () => {
-    EventsOn("subscription-request", (user) => {
-      data.resultText = "Subscription request from " + user
-      AcceptSubscription(user)
+  EventsOn("subscription-request", (user) => {
+    data.resultText = "Subscription request from " + user
+    AcceptSubscription(user)
   })
 }
 
 const updateMessages = async () => {
-    EventsOn("update-messages", (jid) => {
-      console.log("Updating messages for", jid)
-      getMessages()
+  EventsOn("update-messages", (jid) => {
+    console.log("Updating messages for", jid)
+    getMessages()
   })
 }
 
@@ -145,8 +157,12 @@ successEvent()
 subRequest()
 updateMessages()
 
+getContacts()
 
-// ************************************************************ //
+onMounted(() => {
+  scrollToBottom()
+})
+
 </script>
 
 <template>
@@ -164,7 +180,7 @@ updateMessages()
           <p>{{ Correspondent.jid }}</p>
         </div>
 
-        <div id="messages" class="message-section">
+        <div id="messages" class="message-section" ref="messageSectionRef">
           <Conversation :messages="Messages.messages" />
         </div>
 
@@ -253,8 +269,14 @@ main {
 
 .message-section {
   height: 70%;
+
   margin: 2rem;
+  border: 2px solid #000000;
+
   overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: #000000 #464646;
+
 }
 
 .result {

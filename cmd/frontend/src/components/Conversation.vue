@@ -29,9 +29,8 @@ const props = defineProps({
   height: 100%;
 
   gap: 1rem;
-  padding: 5rem 1rem;
   background-color: #383838;
-
+  padding-top: 5rem;
   overflow-y: hidden;
 
 }
