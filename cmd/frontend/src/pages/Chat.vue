@@ -231,7 +231,7 @@ main {
 
 .current-chat {
   width: 75%;
-  height: min(80%, 750px);
+  height: min(80%, 1000px);
   margin: 1rem;
   border: 1px dashed blue;
 }
