@@ -395,4 +395,6 @@ func getArchivedMessages(jid string) {
 		log.Fatalf("Error sending IQ: %+v", err)
 	}
 
+	User.Messages = make(map[string][]models.Message)
+
 }

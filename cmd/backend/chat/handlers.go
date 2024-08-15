@@ -38,20 +38,28 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 			}
 
 			if mam.Forwarded.Message.To == strings.Split(User.UserName, "/")[0] {
-				User.Messages[mam.Forwarded.Message.From] = append(User.Messages[mam.Forwarded.Message.From], models.Message{
+				fromFormatted := strings.Split(mam.Forwarded.Message.From, "/")[0]
+				toFormatted := strings.Split(mam.Forwarded.Message.To, "/")[0]
+
+				User.Messages[fromFormatted] = append(User.Messages[fromFormatted], models.Message{
 					Body:      mam.Forwarded.Message.Body,
-					From:      mam.Forwarded.Message.From,
-					To:        mam.Forwarded.Message.To,
+					From:      fromFormatted,
+					To:        toFormatted,
 					Timestamp: tsTime,
 				})
 			} else if mam.Forwarded.Message.From == strings.Split(User.UserName, "/")[0] {
-				User.Messages[mam.Forwarded.Message.To] = append(User.Messages[mam.Forwarded.Message.To], models.Message{
+				fromFormatted := strings.Split(mam.Forwarded.Message.From, "/")[0]
+				toFormatted := strings.Split(mam.Forwarded.Message.To, "/")[0]
+
+				User.Messages[mam.Forwarded.Message.To] = append(User.Messages[toFormatted], models.Message{
 					Body:      mam.Forwarded.Message.Body,
-					From:      mam.Forwarded.Message.From,
-					To:        mam.Forwarded.Message.To,
+					From:      fromFormatted,
+					To:        toFormatted,
 					Timestamp: tsTime,
 				})
 			}
+
+			events.EmitMessages(AppContext)
 		}
 	}
 
@@ -59,38 +67,38 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 	case stanza.MessageTypeNormal:
 		_, _ = fmt.Fprintf(os.Stdout, "(N) Message from: %s\n", msg.From)
 
-		message := models.NewMessage(msg.Body)
+		//message := models.NewMessage(msg.Body)
 
 		if msg.Body != "" {
-			User.Messages[msg.From] = append(User.Messages[msg.From], *message)
-			events.EmitMessage(AppContext, msg.Body, msg.From)
+			//User.Messages[msg.From] = append(User.Messages[msg.From], *message)
+			events.EmitMessage(AppContext, msg.From)
 			User.SaveConfig()
 		}
 
 	case stanza.MessageTypeChat:
 		_, _ = fmt.Fprintf(os.Stdout, "(C) Message from: %s\n", msg.From)
 
-		message := models.NewMessage(msg.Body)
+		//message := models.NewMessage(msg.Body)
 
 		if msg.Body != "" {
-			User.Messages[msg.From] = append(User.Messages[msg.From], *message)
-			events.EmitMessage(AppContext, msg.Body, msg.From)
+			//User.Messages[msg.From] = append(User.Messages[msg.From], *message)
+			events.EmitMessage(AppContext, msg.From)
 			User.SaveConfig()
 		}
 
 	case stanza.MessageTypeGroupchat:
 		_, _ = fmt.Fprintf(os.Stdout, "(G) Message from: %s\n", msg.From)
 
-		message := models.NewMessage(msg.Body)
+		//message := models.NewMessage(msg.Body)
 
 		if msg.Body != "" {
-			User.Messages[msg.From] = append(User.Messages[msg.From], *message)
-			events.EmitMessage(AppContext, msg.Body, msg.From)
+			//User.Messages[msg.From] = append(User.Messages[msg.From], *message)
+			events.EmitMessage(AppContext, msg.From)
 		}
 
 	default:
 		if msg.Body != "" {
-			events.EmitMessage(AppContext, msg.Body, msg.From)
+			events.EmitMessage(AppContext, msg.From)
 		}
 		_, _ = fmt.Fprintf(os.Stdout, "(%s) Message from: %s\n", msg.Type, msg.From)
 

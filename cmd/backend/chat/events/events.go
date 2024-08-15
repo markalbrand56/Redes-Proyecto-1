@@ -3,18 +3,20 @@ package events
 import (
 	"context"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
+	"strings"
 )
 
 func EmitContacts(ctx context.Context, contacts []string) {
 	runtime.EventsEmit(ctx, "contacts", contacts)
 }
 
-func EmitMessages(ctx context.Context, messages []string) {
-	runtime.EventsEmit(ctx, "messages", messages)
+func EmitMessages(ctx context.Context) {
+	runtime.EventsEmit(ctx, "update-messages")
 }
 
-func EmitMessage(ctx context.Context, message string, from string) {
-	runtime.EventsEmit(ctx, "message", message, from)
+func EmitMessage(ctx context.Context, from string) {
+	fromFormatted := strings.Split(from, "/")[0]
+	runtime.EventsEmit(ctx, "message", fromFormatted)
 }
 
 func EmitConferences(ctx context.Context, conferences map[string]string) {

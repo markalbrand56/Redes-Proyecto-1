@@ -3,14 +3,11 @@
 import {reactive} from 'vue'
 
 import Message from "./Message.vue";
-
-const conversation = reactive({
-  messages: []
-})
+import {models} from "../../wailsjs/go/models.ts";
 
 const props = defineProps({
   messages: {
-    type: Array,
+    type: Array[models.Message],
     required: true
   }
 })
@@ -28,11 +25,15 @@ const props = defineProps({
 .conversation-container {
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+
   gap: 1rem;
   padding: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 0.5rem;
   background-color: #383838;
+
+  overflow-y: hidden;
+
 }
 
 </style>

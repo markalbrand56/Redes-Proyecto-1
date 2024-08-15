@@ -4,7 +4,7 @@ import (
 	"RedesProyecto/backend/chat"
 	"RedesProyecto/backend/models"
 	"context"
-	"fmt"
+	"log"
 )
 
 // App struct
@@ -47,8 +47,10 @@ func (a *App) GetContacts() []string {
 }
 
 func (a *App) GetMessages(username string) []models.Message {
-	fmt.Println(username, chat.User.Messages[username])
-	return chat.User.Messages[username]
+	r := chat.User.Messages[username]
+
+	log.Printf("Messages from '%s' (%d): %v\n", username, len(r), r)
+	return r
 }
 
 func (a *App) UpdateContacts() {

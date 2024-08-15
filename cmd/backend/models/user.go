@@ -19,12 +19,12 @@ const (
 )
 
 type User struct {
-	Client      *xmpp.Client         `json:"-,omitempty"` // Client cliente XMPP
-	UserName    string               `json:"username"`    // UserName nombre de usuario
-	Contacts    []string             `json:"contacts"`    // Contacts lista de contactos
-	Conferences map[string]string    `json:"conferences"` // Conferences lista de salas de chat
-	Messages    map[string][]Message `json:"messages"`    // Messages mensajes
-	Status      string               `json:"status"`      // Status estado del usuario
+	Client      *xmpp.Client         `json:"-,omitempty"`        // Client cliente XMPP
+	UserName    string               `json:"username"`           // UserName nombre de usuario
+	Contacts    []string             `json:"contacts"`           // Contacts lista de contactos
+	Conferences map[string]string    `json:"conferences"`        // Conferences lista de salas de chat
+	Messages    map[string][]Message `json:"messages,omitempty"` // Messages mensajes
+	Status      string               `json:"status"`             // Status estado del usuario
 }
 
 // NewUser crea un nuevo usuario dado un Cliente XMPP previamente conectado y un nombre de usuario
@@ -104,19 +104,19 @@ func (u *User) LoadConfig() error {
 		}
 	}
 
-	for key, messages := range userFile.Messages {
-		if _, ok := u.Messages[key]; !ok {
-			// Si no existe la clave en el mapa de mensajes, se agrega
-			u.Messages[key] = messages
-		} else {
-			for _, message := range messages {
-				// Si ya existe el mensaje en la lista, no se agrega
-				if slices.Contains(u.Messages[key], message) == false {
-					u.Messages[key] = append(u.Messages[key], message)
-				}
-			}
-		}
-	}
+	//for key, messages := range userFile.Messages {
+	//	if _, ok := u.Messages[key]; !ok {
+	//		// Si no existe la clave en el mapa de mensajes, se agrega
+	//		u.Messages[key] = messages
+	//	} else {
+	//		for _, message := range messages {
+	//			// Si ya existe el mensaje en la lista, no se agrega
+	//			if slices.Contains(u.Messages[key], message) == false {
+	//				u.Messages[key] = append(u.Messages[key], message)
+	//			}
+	//		}
+	//	}
+	//}
 
 	// Actualizar el estado del usuario
 	if userFile.Status != "" {
@@ -152,7 +152,6 @@ func (u *User) SaveConfig() error {
 		UserName:    u.UserName,
 		Contacts:    u.Contacts,
 		Conferences: u.Conferences,
-		Messages:    u.Messages,
 		Status:      u.Status,
 	}
 
