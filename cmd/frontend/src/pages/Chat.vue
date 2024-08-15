@@ -183,8 +183,10 @@ onMounted(() => {
     <h1>Chat</h1>
     <div id="display" class="display">
 
-      <div id="contacts" class="contact-section">
-        <Contact v-for="contact in Contacts.contacts" :contact="{jid: contact}" :key="contact" @setCorrespondent="handleContactClicked" />
+      <div id="left-panel" class="left-panel">
+        <div id="contacts" class="contact-section">
+          <Contact v-for="contact in Contacts.contacts" :contact="{jid: contact}" :key="contact" @setCorrespondent="handleContactClicked" />
+        </div>
       </div>
 
       <div id="current-chat" class="current-chat">
@@ -260,10 +262,21 @@ main h1 {
   height: 60%;
 }
 
-.contact-section {
+.left-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+
   width: 20%;
   height: 100%;
   margin: 1rem;
+  border: 1px dashed green;
+}
+
+.contact-section {
+  width: 100%;
+  height: 100%;
   border: 1px dashed red;
 }
 
