@@ -376,7 +376,7 @@ func sendPresence() {
 }
 
 func getArchivedMessages(jid string) {
-	log.Println("Getting archived messages...")
+	log.Println("Getting archived messages...", jid, User.UserName)
 	// Para obtener los mensajes archivados, se debe enviar una solicitud IQ de tipo "get"
 	archiveQuery := cstanza.NewArchiveQuery(jid, 500)
 
@@ -392,7 +392,8 @@ func getArchivedMessages(jid string) {
 	_, err := User.Client.SendIQ(AppContext, &iq)
 
 	if err != nil {
-		log.Fatalf("Error sending IQ: %+v", err)
+		log.Printf("Error sending IQ: %+v\n", err)
+		events.EmitError(AppContext, "Error fetching archived messages")
 	}
 
 	User.Messages = make(map[string][]models.Message)

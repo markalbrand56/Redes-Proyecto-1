@@ -12,21 +12,28 @@ const props = defineProps({
   message: {
     type: models.Message,
     required: true
+  },
+  user: {
+    type: String,
+    required: true
   }
 })
 
 message.body = props.message.body
-// 2024-08-14T01:26:58.7680233-06:00 format as 08-14 01:26
 message.timestamp = props.message.timestamp.slice(5, 16).replace("T", " ")
+
+const isUserMessage = props.message.from === props.user
 
 </script>
 
 <template>
-  <div class="message-container">
+  <div
+      :class="['message-container', isUserMessage ? 'user-message' : 'other-message']">
     <p class="message-body"> {{ message.body }}  </p>
     <p class="message-timestamp"> {{ message.timestamp }} </p>
   </div>
 </template>
+
 
 <style scoped>
 
@@ -50,6 +57,14 @@ message.timestamp = props.message.timestamp.slice(5, 16).replace("T", " ")
   color: #666;
   font-size: 12px;
   margin: 0 1rem;
+}
+
+.message-container.user-message {
+  justify-content: flex-end;
+}
+
+.message-container.other-message {
+  justify-content: flex-start;
 }
 
 </style>

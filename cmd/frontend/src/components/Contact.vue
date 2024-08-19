@@ -1,5 +1,4 @@
 <script setup>
-import {reactive} from 'vue'
 
 const props = defineProps({
   contact: {
@@ -16,12 +15,13 @@ function setCorrespondent() {
 }
 
 const firstLetter = props.contact.jid.charAt(0).toUpperCase()
+const usernameDisplay = props.contact.jid.split('@')[0]
 </script>
 
 <template>
   <div class="contact-container" @click="setCorrespondent">
     <div class="contact-icon">{{ firstLetter }}</div>
-    <p class="contact-jid">{{ contact.jid }}</p>
+    <p class="contact-jid">{{ usernameDisplay }}</p>
     <div class="arrow-right">{{ ">" }}</div>
   </div>
 </template>
@@ -32,15 +32,14 @@ const firstLetter = props.contact.jid.charAt(0).toUpperCase()
   align-items: center;
   margin: 0.5rem;
   cursor: pointer;
-
   background-color: #f0f0f0;
   border-radius: 0.5rem;
   padding: 0 0.5rem;
 }
 
 .contact-icon {
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
 
   background-color: #007bff;
   color: white;
@@ -51,12 +50,12 @@ const firstLetter = props.contact.jid.charAt(0).toUpperCase()
 
   border-radius: 50%;
   font-size: 1.25rem;
-  margin-right: 0.75rem;
+  margin: 0.5rem 1.25rem 0.5rem 0.5rem;
 }
 
 .contact-jid {
   color: #333;
-  margin: 1rem 0.5rem;
+  margin: 0.25rem;
 }
 
 .arrow-right {

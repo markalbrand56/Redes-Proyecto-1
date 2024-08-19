@@ -6,6 +6,10 @@ import Message from "./Message.vue";
 import {models} from "../../wailsjs/go/models.ts";
 
 const props = defineProps({
+  user: {
+    type: String,
+    required: true
+  },
   messages: {
     type: Array[models.Message],
     required: true
@@ -16,7 +20,7 @@ const props = defineProps({
 
 <template>
   <div class="conversation-container">
-    <Message v-for="message in messages" :key="message.timestamp" :message="message" />
+    <Message v-for="message in props.messages" :key="message.timestamp" :message="message"  :user="props.user"/>
   </div>
 </template>
 
@@ -26,7 +30,8 @@ const props = defineProps({
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  height: 100%;
+
+  height: max(100%, 50vh);
 
   gap: 1rem;
   background-color: #383838;

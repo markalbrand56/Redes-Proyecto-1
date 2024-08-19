@@ -37,9 +37,16 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 				fmt.Println(err)
 			}
 
-			if mam.Forwarded.Message.To == strings.Split(User.UserName, "/")[0] {
-				fromFormatted := strings.Split(mam.Forwarded.Message.From, "/")[0]
-				toFormatted := strings.Split(mam.Forwarded.Message.To, "/")[0]
+			toFormatted := strings.Split(mam.Forwarded.Message.To, "/")[0]
+			fromFormatted := strings.Split(mam.Forwarded.Message.From, "/")[0]
+			userFormatted := strings.Split(User.UserName, "/")[0]
+
+			fmt.Printf("From: %s\n", fromFormatted)
+			fmt.Printf("To: %s\n", toFormatted)
+			fmt.Printf("User: %s\n", userFormatted)
+
+			if toFormatted == userFormatted {
+				// Un mensaje enviado a este usuario
 
 				User.Messages[fromFormatted] = append(User.Messages[fromFormatted], models.Message{
 					Body:      mam.Forwarded.Message.Body,
@@ -47,11 +54,9 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 					To:        toFormatted,
 					Timestamp: tsTime,
 				})
-			} else if mam.Forwarded.Message.From == strings.Split(User.UserName, "/")[0] {
-				fromFormatted := strings.Split(mam.Forwarded.Message.From, "/")[0]
-				toFormatted := strings.Split(mam.Forwarded.Message.To, "/")[0]
-
-				User.Messages[mam.Forwarded.Message.To] = append(User.Messages[toFormatted], models.Message{
+			} else if fromFormatted == userFormatted {
+				// Un mensaje enviado por este usuario
+				User.Messages[toFormatted] = append(User.Messages[toFormatted], models.Message{
 					Body:      mam.Forwarded.Message.Body,
 					From:      fromFormatted,
 					To:        toFormatted,
