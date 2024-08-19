@@ -15,8 +15,7 @@ import (
 )
 
 var (
-	TextChannel          = make(chan string) // Canal para enviar mensajes
-	CorrespondentChannel = make(chan string) // Canal para guardar el receptor del mensaje
+	TextChannel = make(chan models.Message) // Canal para enviar mensajes
 
 	FetchContactsChannel = make(chan bool) // Canal para enviar una solicitud de lista de contactos
 
@@ -49,7 +48,6 @@ func Start(ctx context.Context, username string, password string) bool {
 
 func Close() {
 	close(TextChannel)
-	close(CorrespondentChannel)
 	close(FetchContactsChannel)
 	close(SubscribeToChannel)
 	close(SubscriptionRequestChannel)
@@ -81,7 +79,11 @@ func startClient(username string, password string) {
 	newClient, err := xmpp.NewClient(&config, router, errorHandler)
 
 	if err != nil {
-		log.Fatalf("%+v", err)
+		// Login failed
+		log.Printf("%+v\n", err)
+
+		events.EmitError(AppContext, "Login failed")
+		return
 	}
 
 	defer func(client *xmpp.Client) {
@@ -89,7 +91,7 @@ func startClient(username string, password string) {
 			log.Println("closing client...")
 			err := client.Disconnect()
 			if err != nil {
-				log.Fatalf("%+v", err)
+				log.Println("Error closing client: ", err)
 			}
 		}
 	}(newClient)
@@ -97,7 +99,9 @@ func startClient(username string, password string) {
 	err = newClient.Connect()
 
 	if err != nil {
-		log.Fatalf("%+v", err)
+		log.Printf("%+v\n", err)
+		events.EmitError(AppContext, "Connection failed")
+		return
 	}
 
 	User = models.NewUser(newClient, username)
@@ -116,26 +120,22 @@ func startClient(username string, password string) {
 
 // startMessaging es una goroutine que escucha los canales de mensajes y solicitudes de suscripción
 func startMessaging() {
-	var text string
-	var correspondent string
 
 	sendPresence()
 
 	for {
 		select {
-		// Envío de mensaje a un contacto
-		case text = <-TextChannel:
-			fmt.Printf("Correspondent: %s Message: %s\n", correspondent, text)
-			msg := stanza.Message{Attrs: stanza.Attrs{To: correspondent, Type: stanza.MessageTypeChat}, Body: text}
-			err := User.Client.Send(msg)
+		case msg := <-TextChannel:
+			// Envío de mensaje a un contacto V2
+			fmt.Printf("Correspondent: %s Message: %s\n", msg.To, msg.Body)
+			message := stanza.Message{Attrs: stanza.Attrs{To: msg.To, Type: stanza.MessageTypeChat}, Body: msg.Body}
+			err := User.Client.Send(message)
 			if err != nil {
-				log.Fatalf("%+v", err)
+				log.Println("Error sending message: ", err)
+				events.EmitMessages(AppContext)
 			}
 
-		// Guardar el receptor del mensaje
-		case csrp := <-CorrespondentChannel:
-			correspondent = csrp
-			fmt.Println("Correspondent: ", correspondent)
+			events.EmitSuccess(AppContext, "Message sent")
 
 		// Obtener la lista de contactos
 		case <-FetchContactsChannel:
@@ -398,3 +398,11 @@ func getArchivedMessages(jid string) {
 	User.Messages = make(map[string][]models.Message)
 
 }
+
+/*
+TODO Leído de mensajes
+
+<message xmlns="jabber:client" to="alb21004@alumchat.lol" type="chat" id="e8427b6d-cc79-4771-aaeb-a94cc5dcacc3" from="alb21005@alumchat.lol/gajim.0O3D5ZZ0"><origin-id xmlns="urn:xmpp:sid:0" id="e8427b6d-cc79-4771-aaeb-a94cc5dcacc3"></origin-id><displayed xmlns="urn:xmpp:chat-markers:0" id="837ca35e-53ae-4684-bc63-f2068d188745"></displayed></message>
+
+Esta stanza llega cuando un mensaje ha sido leído por el destinatario. Se debe marcar el mensaje como leído en la interfaz de usuario.
+*/

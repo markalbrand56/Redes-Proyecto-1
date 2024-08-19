@@ -9,9 +9,11 @@ type Message struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
-func NewMessage(body string) *Message {
-	return &Message{
+func NewMessage(body string, to string, from string) Message {
+	return Message{
 		Body:      body,
+		From:      from,
+		To:        to,
 		Timestamp: time.Now(),
 	}
 }

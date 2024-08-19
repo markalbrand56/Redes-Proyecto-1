@@ -30,3 +30,7 @@ func EmitSuccess(ctx context.Context, message string) {
 func EmitSubscription(ctx context.Context, username string) {
 	runtime.EventsEmit(ctx, "subscription", username)
 }
+
+func EmitError(ctx context.Context, message string) {
+	runtime.EventsEmit(ctx, "error", message)
+}

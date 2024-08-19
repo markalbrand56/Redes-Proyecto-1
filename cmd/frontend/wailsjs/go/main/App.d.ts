@@ -16,9 +16,7 @@ export function Login(arg1:string,arg2:string):Promise<void>;
 
 export function RequestContact(arg1:string):Promise<void>;
 
-export function SendMessage(arg1:string):Promise<void>;
-
-export function SetCorrespondent(arg1:string):Promise<void>;
+export function SendMessage(arg1:string,arg2:string,arg3:string):Promise<void>;
 
 export function SetStatus(arg1:number):Promise<void>;
 

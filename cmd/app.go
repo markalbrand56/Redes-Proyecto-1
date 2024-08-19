@@ -34,11 +34,8 @@ func (a *App) Login(username string, password string) {
 	chat.Start(a.ctx, username, password)
 }
 
-func (a *App) SetCorrespondent(correspondent string) {
-	chat.CorrespondentChannel <- correspondent
-}
-
-func (a *App) SendMessage(message string) {
+func (a *App) SendMessage(body string, to string, from string) {
+	message := models.NewMessage(body, to, from)
 	chat.TextChannel <- message
 }
 

@@ -2,7 +2,6 @@
 import {reactive, onMounted, nextTick, ref} from 'vue'
 import {
   SendMessage,
-  SetCorrespondent,
   UpdateContacts,
   RequestContact,
   AcceptSubscription,
@@ -19,7 +18,7 @@ import Conversation from "../components/Conversation.vue";
 import Contact from "../components/Contact.vue";
 
 const Message = reactive({
-  name: "alb21004@alumchat.lol",
+  name: "alb21004@alumchat.lol",  // Current user's name
   resultText: "Please enter your name below 👇",
   contact: "",
   body: ""
@@ -48,12 +47,6 @@ function scrollToBottom() {
   })
 }
 
-function setCorrespondent(jid) {
-  console.log("Setting correspondent")
-  Message.resultText = "Setting correspondent to " + jid
-  SetCorrespondent(jid)
-}
-
 function sendMessage() {
   if (Message.body === "") {
     Message.resultText = "Please enter a message to send"
@@ -65,7 +58,8 @@ function sendMessage() {
     return
   }
 
-  SendMessage(Message.body)
+  // Body, to, from
+  SendMessage(Message.body, Correspondent.jid, Message.name)
   Message.body = ""
   getMessages()
 }
@@ -116,8 +110,8 @@ function getArchive(jid) {
 
 function handleContactClicked(jid) {
   console.log("Contact clicked", jid)
-  setCorrespondent(jid)  // Set the current correspondent on the backend
   Correspondent.jid = jid  // Set the current correspondent on the frontend
+  Message.resultText = "Setting correspondent to " + jid
 
   getArchive(jid)  // Get the messages for the current correspondent
 }
