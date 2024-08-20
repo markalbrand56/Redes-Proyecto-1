@@ -76,11 +76,15 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 	case stanza.MessageTypeNormal:
 		_, _ = fmt.Fprintf(os.Stdout, "(N) Message from: %s\n", msg.From)
 
-		//message := models.NewMessage(msg.Body)
-
 		if msg.Body != "" {
-			//User.Messages[msg.From] = append(User.Messages[msg.From], *message)
-			User.Messages[msg.From] = append(User.Messages[msg.From], models.NewMessage(msg.Body, msg.From, msg.To))
+
+			fromFormatted := strings.Split(msg.From, "/")[0]
+			toFormatted := strings.Split(msg.To, "/")[0]
+
+			message := models.NewMessage(msg.Body, toFormatted, fromFormatted)
+
+			User.InsertMessage(message)
+
 			events.EmitMessage(AppContext, msg.From)
 			User.SaveConfig()
 		}
@@ -88,11 +92,14 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 	case stanza.MessageTypeChat:
 		_, _ = fmt.Fprintf(os.Stdout, "(C) Message from: %s\n", msg.From)
 
-		//message := models.NewMessage(msg.Body)
-
 		if msg.Body != "" {
-			//User.Messages[msg.From] = append(User.Messages[msg.From], *message)
-			User.Messages[msg.From] = append(User.Messages[msg.From], models.NewMessage(msg.Body, msg.From, msg.To))
+			fromFormatted := strings.Split(msg.From, "/")[0]
+			toFormatted := strings.Split(msg.To, "/")[0]
+
+			message := models.NewMessage(msg.Body, toFormatted, fromFormatted)
+
+			User.InsertMessage(message)
+
 			events.EmitMessage(AppContext, msg.From)
 			User.SaveConfig()
 		}
