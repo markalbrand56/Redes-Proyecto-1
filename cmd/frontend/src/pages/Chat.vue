@@ -181,7 +181,7 @@ function handleConferenceClicked(jid) {
 
 // Event listeners
 
-const receiveMessages = async () => {
+const listenMessages = async () => {
   EventsOn("message", (from) => {
     console.log("Message", from)
 
@@ -200,7 +200,7 @@ const receiveMessages = async () => {
   })
 }
 
-const updateContacts = async () => {
+const listenContacts = async () => {
   EventsOn("contacts", (contacts) => {
     // contacts is an array of strings
     Debug.resultText = "Contacts: " + contacts.join(", ")
@@ -209,7 +209,7 @@ const updateContacts = async () => {
   })
 }
 
-const updateConferences = async () => {
+const listenConferences = async () => {
   EventsOn("conferences", (conferences) => {
     // conferences is a map conferences[item.Name] = item.Jid
     console.log("Conferences", conferences)
@@ -220,32 +220,32 @@ const updateConferences = async () => {
   })
 }
 
-const successEvent = async () => {
+const listenSuccess = async () => {
   EventsOn("success", (message) => {
     Debug.resultText = message
   })
 }
 
-const subRequest = async () => {
+const listenSubRequest = async () => {
   EventsOn("subscription-request", (user) => {
     Debug.resultText = "Subscription request from " + user
     AcceptSubscription(user)
   })
 }
 
-const updateMessages = async () => {
+const listenUpdateMessages = async () => {
   EventsOn("update-messages", (jid) => {
     console.log("Updating messages for", jid)
     getMessages()
   })
 }
 
-receiveMessages()
-updateContacts()
-successEvent()
-subRequest()
-updateMessages()
-updateConferences()
+listenMessages()
+listenContacts()
+listenSuccess()
+listenSubRequest()
+listenUpdateMessages()
+listenConferences()
 
 getContacts()
 
