@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"gosrc.io/xmpp"
+	"gosrc.io/xmpp/stanza"
 	"log"
 	"os"
 	"path/filepath"
-	"slices"
 )
 
 const (
@@ -25,6 +25,7 @@ type User struct {
 	Conferences map[string]*Conference `json:"conferences"`        // Conferences lista de salas de chat
 	Messages    map[string][]Message   `json:"messages,omitempty"` // Messages mensajes
 	Status      string                 `json:"status"`             // Status estado del usuario
+	Show        stanza.PresenceShow    `json:"show,omitempty"`
 }
 
 // NewUser crea un nuevo usuario dado un Cliente XMPP previamente conectado y un nombre de usuario
@@ -36,6 +37,7 @@ func NewUser(client *xmpp.Client, username string) *User {
 		Conferences: make(map[string]*Conference, 0),
 		Messages:    make(map[string][]Message),
 		Status:      StatusOnline,
+		Show:        stanza.PresenceShowChat,
 	}
 }
 
@@ -92,39 +94,13 @@ func (u *User) LoadConfig() error {
 		return fmt.Errorf("el nombre de usuario no coincide con el archivo de configuración")
 	}
 
-	// Copiar los datos del archivo de configuración al usuario actual
-
-	for _, contact := range userFile.Contacts {
-		if slices.Contains(u.Contacts, contact) == false {
-			fmt.Println("Adding contact: ", contact)
-			u.Contacts = append(u.Contacts, contact)
-		}
-	}
-
-	for jid, conference := range userFile.Conferences {
-		// Si no existe la sala de chat en la lista, se agrega
-		if _, ok := u.Conferences[jid]; !ok {
-			u.Conferences[jid] = conference
-		}
-	}
-
-	//for key, messages := range userFile.Messages {
-	//	if _, ok := u.Messages[key]; !ok {
-	//		// Si no existe la clave en el mapa de mensajes, se agrega
-	//		u.Messages[key] = messages
-	//	} else {
-	//		for _, message := range messages {
-	//			// Si ya existe el mensaje en la lista, no se agrega
-	//			if slices.Contains(u.Messages[key], message) == false {
-	//				u.Messages[key] = append(u.Messages[key], message)
-	//			}
-	//		}
-	//	}
-	//}
-
 	// Actualizar el estado del usuario
 	if userFile.Status != "" {
 		u.Status = userFile.Status
+	}
+
+	if userFile.Show != "" {
+		u.Show = userFile.Show
 	}
 
 	return nil
@@ -153,10 +129,9 @@ func (u *User) SaveConfig() error {
 	configFile := filepath.Join(dir, "xmpp_user_config.json")
 
 	userSave := User{
-		UserName:    u.UserName,
-		Contacts:    u.Contacts,
-		Conferences: u.Conferences,
-		Status:      u.Status,
+		UserName: u.UserName,
+		Status:   u.Status,
+		Show:     u.Show,
 	}
 
 	// Convertir la estructura User a JSON

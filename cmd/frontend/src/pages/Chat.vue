@@ -18,6 +18,7 @@ import {models} from "../../wailsjs/go/models.ts";
 
 import Conversation from "../components/Conversation.vue";
 import Contact from "../components/Contact.vue";
+import StatusPopup from "../components/StatusPopUp.vue";
 
 const Message = reactive({
   jid: "",
@@ -41,6 +42,7 @@ const Debug = reactive({
 })
 
 const messageSectionRef = ref(null)
+const showPopup = ref(false);
 
 function scrollToBottom() {
   nextTick(() => {
@@ -49,6 +51,17 @@ function scrollToBottom() {
     }
   })
 }
+
+const togglePopup = () => {
+  console.log('Toggling popup');
+  showPopup.value = !showPopup.value;
+};
+
+const handleStatusChange = (status) => {
+  console.log('Nuevo estado:', status);
+  updateStatus(status);
+};
+
 
 function sendMessage() {
   // TODO Implementar nuevos mensajes para el usuario cuando falte algo en el formulario
@@ -259,9 +272,10 @@ onMounted(() => {
           </div>
         </div>
 
-        <div id="current-account" class="current-account">
+        <div id="current-account" class="current-account" @click="togglePopup">
           <p>{{ User.jid }}</p>
         </div>
+        <StatusPopup v-if="showPopup" @statusChanged="handleStatusChange" @closePopup="togglePopup" />
       </div>
 
       <div id="current-chat" class="current-chat">

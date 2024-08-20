@@ -87,15 +87,15 @@ func startClient(username string, password string) {
 		return
 	}
 
-	defer func(client *xmpp.Client) {
-		if client != nil {
-			log.Println("closing client...")
-			err := client.Disconnect()
-			if err != nil {
-				log.Println("Error closing client: ", err)
-			}
-		}
-	}(newClient)
+	//defer func(client *xmpp.Client) {
+	//	if client != nil {
+	//		log.Println("closing client...")
+	//		err := client.Disconnect()
+	//		if err != nil {
+	//			log.Println("Error closing client: ", err)
+	//		}
+	//	}
+	//}(newClient)
 
 	err = newClient.Connect()
 
@@ -108,10 +108,25 @@ func startClient(username string, password string) {
 	User = models.NewUser(newClient, username)
 	fmt.Println(User)
 	err = User.LoadConfig()
-	fmt.Println(User)
 
 	if err != nil {
 		log.Println(err)
+	}
+	fmt.Println(User)
+
+	// Se envía un mensaje de presencia para indicar que el usuario está en línea
+	presence := stanza.Presence{
+		Attrs: stanza.Attrs{
+			From: User.UserName,
+		},
+		Show: User.Show,
+	}
+
+	err = User.Client.Send(presence)
+
+	if err != nil {
+		log.Println("Error sending presence: ", err)
+		events.EmitError(AppContext, "Error sending presence")
 	}
 
 	events.EmitSuccess(AppContext, "Connected to server")
@@ -121,8 +136,7 @@ func startClient(username string, password string) {
 
 // startMessaging es una goroutine que escucha los canales de mensajes y solicitudes de suscripción
 func startMessaging() {
-
-	sendPresence()
+	sendPresence(User.Show)
 
 	for {
 		select {
@@ -234,13 +248,10 @@ func startMessaging() {
 					fmt.Println("Found disco items")
 
 					for _, item := range discoItems.Items {
-						//fmt.Println(item)
-						// Item.Name es el alias del usuario en la sala de chat
-
 						User.InsertConference(models.NewConference(item.Name, item.JID))
 					}
 
-					sendPresence()
+					sendPresence(User.Show)
 
 					events.EmitConferences(AppContext, User.Conferences)
 
@@ -353,6 +364,8 @@ func startMessaging() {
 			}
 
 			err := User.Client.Send(presence)
+			sendPresence(presence.Show)
+			User.Show = presence.Show
 
 			if err != nil {
 				log.Println("Error al enviar presencia para cambiar el estado del usuario:", err)
@@ -368,7 +381,7 @@ func startMessaging() {
 }
 
 // sendPresence envía una presencia para unirse a las salas de chat a las que pertenece el usuario
-func sendPresence() {
+func sendPresence(pres stanza.PresenceShow) {
 	for jid, name := range User.Conferences {
 		log.Println("Joining conference: ", name)
 		alias := User.UserName[:strings.Index(User.UserName, "@")]
@@ -382,6 +395,7 @@ func sendPresence() {
 			Extensions: []stanza.PresExtension{
 				&stanza.MucPresence{},
 			},
+			Show: pres,
 		}
 
 		// Aquí enviamos el `presence` usando el cliente XMPP para unirse a la sala de chat.
