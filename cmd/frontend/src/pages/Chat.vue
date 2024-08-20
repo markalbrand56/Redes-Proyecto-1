@@ -19,6 +19,7 @@ import {models} from "../../wailsjs/go/models.ts";
 import Conversation from "../components/Conversation.vue";
 import Contact from "../components/Contact.vue";
 import StatusPopup from "../components/StatusPopUp.vue";
+import Nav from "../components/Nav.vue";
 
 const Message = reactive({
   jid: "",
@@ -257,6 +258,7 @@ onMounted(() => {
 <template>
   <main>
     <h1>Chat</h1>
+    <Nav />
     <div id="display" class="display">
 
       <div id="left-panel" class="left-panel">

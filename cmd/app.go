@@ -85,6 +85,7 @@ func (a *App) RequestContact(username string) {
 }
 
 func (a *App) AcceptSubscription(username string) {
+	// Se ha decidido aceptar la solicitud de suscripción
 	chat.SubscriptionRequestChannel <- username
 }
 

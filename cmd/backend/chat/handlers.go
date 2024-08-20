@@ -55,7 +55,8 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 					To:        toFormatted,
 					Timestamp: tsTime,
 				})
-				events.EmitMessage(AppContext, mam.Forwarded.Message.From)
+				//events.EmitArchive(AppContext)
+				events.EmitMessage(AppContext, fromFormatted)
 			} else if fromFormatted == userFormatted {
 				// Un mensaje enviado por este usuario
 				User.Messages[toFormatted] = append(User.Messages[toFormatted], models.Message{
@@ -64,7 +65,8 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 					To:        toFormatted,
 					Timestamp: tsTime,
 				})
-				events.EmitMessage(AppContext, mam.Forwarded.Message.To)
+				//events.EmitArchive(AppContext)
+				events.EmitMessage(AppContext, toFormatted)
 			}
 
 		}
@@ -78,6 +80,7 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 
 		if msg.Body != "" {
 			//User.Messages[msg.From] = append(User.Messages[msg.From], *message)
+			User.Messages[msg.From] = append(User.Messages[msg.From], models.NewMessage(msg.Body, msg.From, msg.To))
 			events.EmitMessage(AppContext, msg.From)
 			User.SaveConfig()
 		}
@@ -89,6 +92,7 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 
 		if msg.Body != "" {
 			//User.Messages[msg.From] = append(User.Messages[msg.From], *message)
+			User.Messages[msg.From] = append(User.Messages[msg.From], models.NewMessage(msg.Body, msg.From, msg.To))
 			events.EmitMessage(AppContext, msg.From)
 			User.SaveConfig()
 		}
@@ -137,19 +141,21 @@ func handlePresence(s xmpp.Sender, p stanza.Packet) {
 			_, _ = fmt.Fprintf(os.Stdout, "Subscription request from: %s\n", presence.From)
 
 			if presence.From != "" {
-				// TODO Verificar si el usuario está en la lista de contactos
-				SubscriptionRequestChannel <- presence.From
+				// Emitir evento de suscripción, para decidir si aceptar o no.
+				events.EmitSubscription(AppContext, presence.From)
 			}
-
-			events.EmitSubscription(AppContext, presence.From)
 
 		case stanza.PresenceTypeSubscribed:
 			// El usuario al que se solicitó la suscripción ha aceptado.
 			_, _ = fmt.Fprintf(os.Stdout, "Subscription accepted from: %s\n", presence.From)
 
+			events.EmitSuccess(AppContext, "Subscription accepted from: "+presence.From)
+
 		case stanza.PresenceTypeUnsubscribed:
 			// El usuario al que se solicitó la suscripción ha rechazado.
 			_, _ = fmt.Fprintf(os.Stdout, "Unsubscribed from: %s\n", presence.From)
+
+			events.EmitError(AppContext, "User "+presence.From+" has unsubscribed")
 
 		case stanza.PresenceTypeUnavailable:
 			// El usuario está desconectado.
@@ -168,6 +174,39 @@ func handlePresence(s xmpp.Sender, p stanza.Packet) {
 
 			if presence.Show != "" {
 				fmt.Println("Show: ", presence.Show)
+
+				var userPresence string
+
+				switch presence.Show {
+
+				case "dnd":
+					userPresence = "Do Not Disturb"
+				case "xa":
+					userPresence = "Extended Away"
+				case "away":
+					userPresence = "Away"
+				case "chat":
+					userPresence = "Online"
+				case "invisible":
+					userPresence = "Disconnected"
+
+				}
+
+				var username string
+
+				if presence.From != "" {
+					if strings.Contains(presence.From, "@conference") {
+						// group@conference/jid
+						username = strings.Split(presence.From, "/")[1] + " at " + strings.Split(presence.From, "/")[0]
+					} else if strings.Contains(presence.From, "/") {
+						// username@server/resource
+						username = strings.Split(presence.From, "/")[0]
+					} else {
+						username = presence.From
+					}
+
+				}
+				events.EmitNotification(AppContext, fmt.Sprintf("User %s: %s", username, userPresence), "info")
 			}
 
 			if presence.Status != "" {

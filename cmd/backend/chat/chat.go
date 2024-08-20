@@ -182,7 +182,8 @@ func startMessaging() {
 			)
 
 			if err != nil {
-				log.Fatalf("%+v", err)
+				log.Println(err)
+				events.EmitError(AppContext, "Error fetching contacts")
 			}
 
 			contactReq.RosterItems() // Obtiene los contactos
@@ -190,7 +191,8 @@ func startMessaging() {
 			contactsResp, err := User.Client.SendIQ(AppContext, contactReq)
 
 			if err != nil {
-				log.Fatalf("%+v", err)
+				log.Println(err)
+				events.EmitError(AppContext, "Error fetching contacts")
 			}
 
 			// Para obtener la respuesta del servidor, Client.SendIQ() devuelve un canal de respuesta que se debe escuchar.
@@ -228,7 +230,8 @@ func startMessaging() {
 			)
 
 			if err != nil {
-				log.Fatalf("%+v", err)
+				log.Println(err)
+				events.EmitError(AppContext, "Error fetching conferences")
 			}
 
 			discoReq.Payload = &stanza.DiscoItems{
@@ -238,7 +241,8 @@ func startMessaging() {
 			discoResp, err := User.Client.SendIQ(AppContext, discoReq)
 
 			if err != nil {
-				log.Fatalf("%+v", err)
+				log.Println(err)
+				events.EmitError(AppContext, "Error fetching conferences")
 			}
 
 			go func() {
@@ -272,25 +276,30 @@ func startMessaging() {
 			err := User.Client.Send(presence)
 
 			if err != nil {
-				log.Fatalf("%+v", err)
+				log.Println("Error sending subscription request: ", err)
+				events.EmitError(AppContext, "Error sending subscription request")
 			}
 
 			events.EmitSuccess(AppContext, "Subscription request sent")
 
 		// Aceptar solicitud de suscripción
 		case u := <-SubscriptionRequestChannel:
-			fmt.Println("Subscription (channel) request from: ", u)
-
-			// aceptar la solicitud de suscripción
-			presence := stanza.Presence{Attrs: stanza.Attrs{To: u, Type: stanza.PresenceTypeSubscribed}}
+			// Se ha decidido aceptar la solicitud de suscripción
+			presence := stanza.Presence{
+				Attrs: stanza.Attrs{
+					To: u, Type: stanza.PresenceTypeSubscribed,
+				},
+			}
 
 			err := User.Client.Send(presence)
 
 			if err != nil {
-				log.Fatalf("%+v", err)
+				log.Println("Error accepting subscription: ", err)
+				events.EmitError(AppContext, "Error accepting subscription")
+				continue
 			}
 
-			events.EmitSuccess(AppContext, "Subscription accepted")
+			events.EmitSuccess(AppContext, fmt.Sprintf("Subscription to %s accepted", u))
 
 		// Cancelar suscripción
 		case u := <-UnsubscribeFromChannel:
@@ -301,7 +310,8 @@ func startMessaging() {
 			err := User.Client.Send(presence)
 
 			if err != nil {
-				log.Fatalf("%+v", err)
+				log.Println("Error sending unsubscription request: ", err)
+				events.EmitError(AppContext, "Error sending unsubscription request")
 			}
 		// Invitación a sala de chat
 		case jid := <-ConferenceInvitationChannel:

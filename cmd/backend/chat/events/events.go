@@ -11,8 +11,8 @@ func EmitContacts(ctx context.Context, contacts []string) {
 	runtime.EventsEmit(ctx, "contacts", contacts)
 }
 
-func EmitMessages(ctx context.Context) {
-	runtime.EventsEmit(ctx, "update-messages")
+func EmitArchive(ctx context.Context) {
+	runtime.EventsEmit(ctx, "archive")
 }
 
 func EmitMessage(ctx context.Context, from string) {
@@ -32,6 +32,10 @@ func EmitConferences(ctx context.Context, conferences map[string]*models.Confere
 
 func EmitSuccess(ctx context.Context, message string) {
 	runtime.EventsEmit(ctx, "success", message)
+}
+
+func EmitNotification(ctx context.Context, message string, notificationType string) {
+	runtime.EventsEmit(ctx, "notification", message, notificationType)
 }
 
 func EmitSubscription(ctx context.Context, username string) {
