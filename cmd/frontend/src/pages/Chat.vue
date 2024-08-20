@@ -301,21 +301,6 @@ onMounted(() => {
 
       <div id="result" class="result">{{ Debug.resultText }}</div>
 
-      <div id="contacts-debug" class="input-box">
-        <input id="contact" v-model="User.jid" autocomplete="off" class="input" type="text"/>
-        <button class="btn" @click="addContact">Add</button>
-        <button class="btn" @click="cancelSubscription">Remove</button>
-      </div>
-
-      <div id="status" class="input-box">
-        <button class="btn" @click="updateStatus(0)">Online</button>
-        <button class="btn" @click="updateStatus(1)">Away</button>
-        <button class="btn" @click="updateStatus(2)">Busy</button>
-        <button class="btn" @click="updateStatus(3)">NA</button>
-        <button class="btn" @click="updateStatus(4)">Offline</button>
-
-      </div>
-
     </div>
 
 
@@ -341,7 +326,7 @@ main h1 {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  height: 60%;
+  height: 80%;
 }
 
 .left-panel {
