@@ -8,6 +8,7 @@ import {
   CancelSubscription,
   SetStatus,
   GetMessages,
+  GetMessagesConference,
   GetArchive
 } from '../../wailsjs/go/main/App.js'
 
@@ -124,6 +125,32 @@ function handleContactClicked(jid) {
   getArchive(jid)  // Get the messages for the current correspondent
 }
 
+function handleConferenceClicked(jid) {
+  console.log("Conference clicked", jid)
+
+  Message.jid = jid  // Set the current correspondent on the frontend
+  Debug.resultText = "Setting correspondent to " + jid
+
+  GetMessagesConference(jid).then((messages) => {
+    if (messages.length > 0) {
+
+      Messages.messages = messages.map((message) => {
+        return new models.Message(message)
+      })
+
+      scrollToBottom()
+      // order messages by timestamp
+      Messages.messages.sort((a, b) => {
+        return new Date(a.timestamp) - new Date(b.timestamp)
+      })
+
+      console.log("Messages", Messages.messages)
+    } else {
+      Messages.messages = []
+    }
+  })
+}
+
 // Event listeners
 
 const receiveMessages = async () => {
@@ -148,7 +175,8 @@ const updateContacts = async () => {
 
 const updateConferences = async () => {
   EventsOn("conferences", (conferences) => {
-    // conferences is a map conferences[item.JID] = item.Name
+    // conferences is a map conferences[item.Name] = item.Jid
+    console.log("Conferences", conferences)
     Debug.resultText = "Conferences: " + Object.keys(conferences).join(", ")
 
     User.conferences = conferences
@@ -205,7 +233,7 @@ onMounted(() => {
 
           <h2>Group chats</h2>
           <div id="conferences" class="contact-section">
-            <Contact v-for="(name, jid) in User.conferences" :contact="{jid: jid}" :key="jid" @setCorrespondent="handleContactClicked" />
+            <Contact v-for="(jid, name) in User.conferences" :contact="{jid: jid}" :key="jid" @setCorrespondent="handleConferenceClicked" />
           </div>
         </div>
 

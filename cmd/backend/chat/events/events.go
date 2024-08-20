@@ -1,6 +1,7 @@
 package events
 
 import (
+	"RedesProyecto/backend/models"
 	"context"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"strings"
@@ -19,8 +20,14 @@ func EmitMessage(ctx context.Context, from string) {
 	runtime.EventsEmit(ctx, "message", fromFormatted)
 }
 
-func EmitConferences(ctx context.Context, conferences map[string]string) {
-	runtime.EventsEmit(ctx, "conferences", conferences)
+func EmitConferences(ctx context.Context, conferences map[string]*models.Conference) {
+	mp := make(map[string]string) // map[alias]jid
+
+	for _, conference := range conferences {
+		mp[conference.Alias] = conference.JID
+	}
+
+	runtime.EventsEmit(ctx, "conferences", mp)
 }
 
 func EmitSuccess(ctx context.Context, message string) {

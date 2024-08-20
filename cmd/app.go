@@ -55,6 +55,17 @@ func (a *App) GetMessages(username string) []models.Message {
 	return r
 }
 
+func (a *App) GetMessagesConference(jid string) []models.Message {
+	u := chat.User
+	if _, ok := u.Conferences[jid]; !ok {
+		return []models.Message{}
+	}
+
+	log.Println("Messages from conference: ", chat.User.Conferences[jid].Messages)
+
+	return chat.User.Conferences[jid].Messages
+}
+
 func (a *App) UpdateContacts() {
 	chat.FetchContactsChannel <- true
 }

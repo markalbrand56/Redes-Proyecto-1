@@ -19,12 +19,12 @@ const (
 )
 
 type User struct {
-	Client      *xmpp.Client         `json:"-,omitempty"`        // Client cliente XMPP
-	UserName    string               `json:"username"`           // UserName nombre de usuario
-	Contacts    []string             `json:"contacts"`           // Contacts lista de contactos
-	Conferences map[string]string    `json:"conferences"`        // Conferences lista de salas de chat
-	Messages    map[string][]Message `json:"messages,omitempty"` // Messages mensajes
-	Status      string               `json:"status"`             // Status estado del usuario
+	Client      *xmpp.Client           `json:"-,omitempty"`        // Client cliente XMPP
+	UserName    string                 `json:"username"`           // UserName nombre de usuario
+	Contacts    []string               `json:"contacts"`           // Contacts lista de contactos
+	Conferences map[string]*Conference `json:"conferences"`        // Conferences lista de salas de chat
+	Messages    map[string][]Message   `json:"messages,omitempty"` // Messages mensajes
+	Status      string                 `json:"status"`             // Status estado del usuario
 }
 
 // NewUser crea un nuevo usuario dado un Cliente XMPP previamente conectado y un nombre de usuario
@@ -33,10 +33,14 @@ func NewUser(client *xmpp.Client, username string) *User {
 		Client:      client,
 		UserName:    username,
 		Contacts:    make([]string, 0),
-		Conferences: make(map[string]string),
+		Conferences: make(map[string]*Conference, 0),
 		Messages:    make(map[string][]Message),
 		Status:      StatusOnline,
 	}
+}
+
+func (u *User) InsertConference(conference *Conference) {
+	u.Conferences[conference.JID] = conference
 }
 
 func (u *User) String() string {

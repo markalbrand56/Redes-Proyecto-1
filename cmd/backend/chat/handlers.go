@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"gosrc.io/xmpp"
 	"gosrc.io/xmpp/stanza"
+	"log"
 	"os"
 	"strings"
 	"time"
@@ -97,7 +98,21 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 		//message := models.NewMessage(msg.Body)
 
 		if msg.Body != "" {
-			//User.Messages[msg.From] = append(User.Messages[msg.From], *message)
+			// Insertar en las conferencias
+			u := User
+
+			fmt.Println(u)
+
+			conf := strings.Split(msg.From, "/")[0]
+
+			if conference, ok := User.Conferences[conf]; ok {
+				log.Println("Inserting message in conference: ", conference.JID)
+
+				if msg.Body != "" {
+					conference.InsertMessage(models.NewMessage(msg.Body, conference.JID, msg.From))
+				}
+			}
+
 			events.EmitMessage(AppContext, msg.From)
 		}
 

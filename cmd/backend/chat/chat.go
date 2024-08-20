@@ -213,18 +213,17 @@ func startMessaging() {
 
 				if discoItems, ok := serverResp.Payload.(*stanza.DiscoItems); ok {
 					fmt.Println("Found disco items")
-					conferences := make(map[string]string)
 
 					for _, item := range discoItems.Items {
-						fmt.Println(item)
-						conferences[item.JID] = item.Name
+						//fmt.Println(item)
+						// Item.Name es el alias del usuario en la sala de chat
+
+						User.InsertConference(models.NewConference(item.Name, item.JID))
 					}
 
-					User.Conferences = conferences // Se asume que el servidor siempre es el más actualizado
 					sendPresence()
 
-					fmt.Println("Conferences: ", conferences)
-					events.EmitConferences(AppContext, conferences)
+					events.EmitConferences(AppContext, User.Conferences)
 
 					err = User.SaveConfig()
 
