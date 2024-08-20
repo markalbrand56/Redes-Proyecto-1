@@ -4,6 +4,10 @@ const props = defineProps({
   contact: {
     type: Object,
     required: true
+  },
+  alias: {
+    type: String,
+    required: false
   }
 })
 
@@ -21,7 +25,9 @@ const usernameDisplay = props.contact.jid.split('@')[0]
 <template>
   <div class="contact-container" @click="setCorrespondent">
     <div class="contact-icon">{{ firstLetter }}</div>
-    <p class="contact-jid">{{ usernameDisplay }}</p>
+<!--    <p class="contact-jid">{{ usernameDisplay  }}</p>-->
+<!--    si hay alias, se puestra en vez del jid-->
+    <p class="contact-jid">{{ alias ? alias : usernameDisplay }}</p>
     <div class="arrow-right">{{ ">" }}</div>
   </div>
 </template>

@@ -26,7 +26,7 @@ const props = defineProps({
 message.body = props.message.body
 message.timestamp = props.message.timestamp.slice(5, 16).replace("T", " ")
 
-const isUserMessage = props.message.from === props.user
+const isUserMessage = (props.message.from.split("/")[1] === props.user.split("@")[0] )  || (props.message.from === props.user)
 const sender = props.message.from.split("/")[1]
 
 </script>

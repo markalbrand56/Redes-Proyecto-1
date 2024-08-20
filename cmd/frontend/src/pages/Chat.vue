@@ -2,6 +2,7 @@
 import {reactive, onMounted, nextTick, ref} from 'vue'
 import {
   SendMessage,
+  SendConferenceMessage,
   UpdateContacts,
   RequestContact,
   AcceptSubscription,
@@ -61,10 +62,15 @@ function sendMessage() {
     return
   }
 
+  if (Message.isConference) {
+    SendConferenceMessage(Message.body, Message.jid)
+  } else {
+    SendMessage(Message.body, Message.jid, User.jid)
+    getMessages()
+  }
+
   // Body, to, from
-  SendMessage(Message.body, Message.jid, User.jid)
   Message.body = ""
-  getMessages()
 }
 
 function getContacts() {
@@ -113,6 +119,28 @@ function getMessages() {
   })
 }
 
+function getConferenceMessages(jid) {
+  console.log("Getting conference messages")
+  GetMessagesConference(jid).then((messages) => {
+    if (messages.length > 0) {
+
+      Messages.messages = messages.map((message) => {
+        return new models.Message(message)
+      })
+
+      scrollToBottom()
+      // order messages by timestamp
+      Messages.messages.sort((a, b) => {
+        return new Date(a.timestamp) - new Date(b.timestamp)
+      })
+
+      console.log("Messages", Messages.messages)
+    } else {
+      Messages.messages = []
+    }
+  })
+}
+
 function getArchive(jid) {
   console.log("Getting archive")
   GetArchive(jid)
@@ -134,25 +162,7 @@ function handleConferenceClicked(jid) {
   Message.isConference = true
   Debug.resultText = "Setting correspondent to " + jid
 
-  GetMessagesConference(jid).then((messages) => {
-    if (messages.length > 0) {
-
-      console.log("Messages received from conference", messages)
-
-      Messages.messages = messages.map((message) => {
-        return new models.Message(message)
-      })
-
-      scrollToBottom()
-      // order messages by timestamp
-      Messages.messages.sort((a, b) => {
-        return new Date(a.timestamp) - new Date(b.timestamp)
-      })
-
-    } else {
-      Messages.messages = []
-    }
-  })
+  getConferenceMessages(jid)  // Get the messages for the current correspondent
 }
 
 // Event listeners
@@ -160,10 +170,18 @@ function handleConferenceClicked(jid) {
 const receiveMessages = async () => {
   EventsOn("message", (from) => {
     console.log("Message", from)
+
     Debug.resultText = "Message from " + from
+
     if (from === Message.jid) {
-      console.log("Updating current conversation")
-      getArchive(from)
+      // console.log("Updating current conversation")
+      // getArchive(from)
+
+      if (Message.isConference){
+        getConferenceMessages(from)
+      } else {
+        getMessages()
+      }
     }
   })
 }
@@ -237,7 +255,7 @@ onMounted(() => {
 
           <h2>Group chats</h2>
           <div id="conferences" class="contact-section">
-            <Contact v-for="(jid, name) in User.conferences" :contact="{jid: jid}" :key="jid" @setCorrespondent="handleConferenceClicked" />
+            <Contact v-for="(jid, name) in User.conferences" :contact="{jid: jid}" :alias="name" :key="jid" @setCorrespondent="handleConferenceClicked" />
           </div>
         </div>
 

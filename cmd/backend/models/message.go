@@ -17,3 +17,7 @@ func NewMessage(body string, to string, from string) Message {
 		Timestamp: time.Now(),
 	}
 }
+
+func (m *Message) String() string {
+	return m.From + " -> " + m.To + ": " + m.Body
+}

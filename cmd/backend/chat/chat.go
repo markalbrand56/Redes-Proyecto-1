@@ -15,7 +15,8 @@ import (
 )
 
 var (
-	TextChannel = make(chan models.Message) // Canal para enviar mensajes
+	TextChannel           = make(chan models.Message) // Canal para enviar mensajes
+	ConferenceTextChannel = make(chan models.Message) // Canal para enviar mensajes a salas de chat
 
 	FetchContactsChannel = make(chan bool) // Canal para enviar una solicitud de lista de contactos
 
@@ -128,14 +129,32 @@ func startMessaging() {
 		case msg := <-TextChannel:
 			// Envío de mensaje a un contacto V2
 			fmt.Printf("Correspondent: %s Message: %s\n", msg.To, msg.Body)
-			message := stanza.Message{Attrs: stanza.Attrs{To: msg.To, Type: stanza.MessageTypeChat}, Body: msg.Body}
+			message := stanza.Message{
+				Attrs: stanza.Attrs{
+					To:   msg.To,
+					Type: stanza.MessageTypeChat,
+					From: User.UserName,
+				}, Body: msg.Body,
+			}
 			err := User.Client.Send(message)
+
 			if err != nil {
 				log.Println("Error sending message: ", err)
-				events.EmitMessages(AppContext)
+				events.EmitError(AppContext, "Error sending message")
 			}
 
 			events.EmitSuccess(AppContext, "Message sent")
+
+		case msg := <-ConferenceTextChannel:
+			// Envío de mensaje a una sala de chat
+			fmt.Printf("Conference: %s Message: %s\n", msg.To, msg.Body)
+			message := stanza.Message{Attrs: stanza.Attrs{To: msg.To, Type: stanza.MessageTypeGroupchat}, Body: msg.Body}
+			err := User.Client.Send(message)
+
+			if err != nil {
+				log.Println("Error sending message: ", err)
+				events.EmitError(AppContext, "Error sending message")
+			}
 
 		// Obtener la lista de contactos
 		case <-FetchContactsChannel:

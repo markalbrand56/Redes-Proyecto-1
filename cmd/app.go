@@ -4,6 +4,7 @@ import (
 	"RedesProyecto/backend/chat"
 	"RedesProyecto/backend/models"
 	"context"
+	"fmt"
 	"log"
 )
 
@@ -36,7 +37,18 @@ func (a *App) Login(username string, password string) {
 
 func (a *App) SendMessage(body string, to string, from string) {
 	message := models.NewMessage(body, to, from)
+
+	fmt.Printf("Sending message: %s\n", message)
+
 	chat.TextChannel <- message
+}
+
+func (a *App) SendConferenceMessage(body string, to string, from string) {
+	message := models.NewMessage(body, to, from)
+
+	fmt.Printf("Sending conference message: %s\n", message)
+
+	chat.ConferenceTextChannel <- message
 }
 
 func (a *App) GetContacts() []string {
@@ -60,8 +72,6 @@ func (a *App) GetMessagesConference(jid string) []models.Message {
 	if _, ok := u.Conferences[jid]; !ok {
 		return []models.Message{}
 	}
-
-	log.Println("Messages from conference: ", chat.User.Conferences[jid].Messages)
 
 	return chat.User.Conferences[jid].Messages
 }
