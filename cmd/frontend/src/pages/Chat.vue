@@ -10,7 +10,7 @@ import {
   SetStatus,
   GetMessages,
   GetMessagesConference,
-  GetArchive
+  // GetArchive
 } from '../../wailsjs/go/main/App.js'
 
 import {EventsOn} from "../../wailsjs/runtime/runtime.js";
@@ -155,10 +155,10 @@ function getConferenceMessages(jid) {
   })
 }
 
-function getArchive(jid) {
-  console.log("Getting archive")
-  GetArchive(jid)
-}
+// function getArchive(jid) {
+//   console.log("Getting archive")
+//   GetArchive(jid)
+// }
 
 function handleContactClicked(jid) {
   console.log("Contact clicked", jid)
@@ -166,7 +166,7 @@ function handleContactClicked(jid) {
   Message.isConference = false
   Debug.resultText = "Setting correspondent to " + jid
 
-  getArchive(jid)  // Get the messages for the current correspondent
+  getMessages()  // Get the messages for the current correspondent
 }
 
 function handleConferenceClicked(jid) {
@@ -188,7 +188,7 @@ const listenMessages = async () => {
     Debug.resultText = "Message from " + from
 
     if (from === Message.jid) {
-      // console.log("Updating current conversation")
+      console.log("Updating current conversation")
       // getArchive(from)
 
       if (Message.isConference){

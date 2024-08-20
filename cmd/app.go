@@ -70,9 +70,11 @@ func (a *App) GetMessages(username string) []models.Message {
 func (a *App) GetMessagesConference(jid string) []models.Message {
 	u := chat.User
 	if _, ok := u.Conferences[jid]; !ok {
+		log.Println("Conference not found")
 		return []models.Message{}
 	}
 
+	log.Println("Conference found")
 	return chat.User.Conferences[jid].Messages
 }
 

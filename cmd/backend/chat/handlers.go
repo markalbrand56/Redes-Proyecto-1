@@ -55,8 +55,8 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 					To:        toFormatted,
 					Timestamp: tsTime,
 				})
-				//events.EmitArchive(AppContext)
-				events.EmitMessage(AppContext, fromFormatted)
+				events.EmitArchive(AppContext)
+				//events.EmitMessage(AppContext, fromFormatted)
 			} else if fromFormatted == userFormatted {
 				// Un mensaje enviado por este usuario
 				User.Messages[toFormatted] = append(User.Messages[toFormatted], models.Message{
@@ -65,8 +65,8 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 					To:        toFormatted,
 					Timestamp: tsTime,
 				})
-				//events.EmitArchive(AppContext)
-				events.EmitMessage(AppContext, toFormatted)
+				events.EmitArchive(AppContext)
+				//events.EmitMessage(AppContext, toFormatted)
 			}
 
 		}

@@ -137,6 +137,7 @@ func startClient(username string, password string) {
 // startMessaging es una goroutine que escucha los canales de mensajes y solicitudes de suscripción
 func startMessaging() {
 	sendPresence(User.Show)
+	getArchivedMessages(User.UserName)
 
 	for {
 		select {
