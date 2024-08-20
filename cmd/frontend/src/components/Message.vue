@@ -16,6 +16,10 @@ const props = defineProps({
   user: {
     type: String,
     required: true
+  },
+  isConference: {
+    type: Boolean,
+    required: true
   }
 })
 
@@ -23,14 +27,17 @@ message.body = props.message.body
 message.timestamp = props.message.timestamp.slice(5, 16).replace("T", " ")
 
 const isUserMessage = props.message.from === props.user
+const sender = props.message.from.split("/")[1]
 
 </script>
 
 <template>
-  <div
-      :class="['message-container', isUserMessage ? 'user-message' : 'other-message']">
-    <p class="message-body"> {{ message.body }}  </p>
-    <p class="message-timestamp"> {{ message.timestamp }} </p>
+  <div :class="['message-container', isUserMessage ? 'user-message' : 'other-message']">
+    <p v-if="isConference && !isUserMessage" class="message-sender"> {{ sender }} </p>
+    <div class="inner-message">
+      <p class="message-body"> {{ message.body }}  </p>
+      <p class="message-timestamp"> {{ message.timestamp }} </p>
+    </div>
   </div>
 </template>
 
@@ -39,11 +46,16 @@ const isUserMessage = props.message.from === props.user
 
 .message-container {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: flex-start;
-  align-items: center;
 
   margin: 0.5rem;
+}
+
+.inner-message {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .message-body {
@@ -59,11 +71,23 @@ const isUserMessage = props.message.from === props.user
   margin: 0 1rem;
 }
 
+.message-sender {
+  color: #d5d5d5;
+  font-size: 12px;
+  margin: 0 1rem;
+
+  border: 1px solid #d5d5d5;
+  border-radius: 0.5rem;
+  padding: 5px;
+}
+
 .message-container.user-message {
+  align-items: flex-end;
   justify-content: flex-end;
 }
 
 .message-container.other-message {
+  align-items: flex-start;
   justify-content: flex-start;
 }
 

@@ -20,7 +20,8 @@ import Contact from "../components/Contact.vue";
 
 const Message = reactive({
   jid: "",
-  body: ""
+  body: "",
+  isConference: false
 })
 
 const User = reactive({
@@ -120,6 +121,7 @@ function getArchive(jid) {
 function handleContactClicked(jid) {
   console.log("Contact clicked", jid)
   Message.jid = jid  // Set the current correspondent on the frontend
+  Message.isConference = false
   Debug.resultText = "Setting correspondent to " + jid
 
   getArchive(jid)  // Get the messages for the current correspondent
@@ -129,10 +131,13 @@ function handleConferenceClicked(jid) {
   console.log("Conference clicked", jid)
 
   Message.jid = jid  // Set the current correspondent on the frontend
+  Message.isConference = true
   Debug.resultText = "Setting correspondent to " + jid
 
   GetMessagesConference(jid).then((messages) => {
     if (messages.length > 0) {
+
+      console.log("Messages received from conference", messages)
 
       Messages.messages = messages.map((message) => {
         return new models.Message(message)
@@ -144,7 +149,6 @@ function handleConferenceClicked(jid) {
         return new Date(a.timestamp) - new Date(b.timestamp)
       })
 
-      console.log("Messages", Messages.messages)
     } else {
       Messages.messages = []
     }
@@ -249,7 +253,7 @@ onMounted(() => {
         </div>
 
         <div id="messages" class="message-section" ref="messageSectionRef">
-          <Conversation :messages="Messages.messages"  :user="User.jid"/>
+          <Conversation :messages="Messages.messages"  :user="User.jid" :is-conference="Message.isConference"/>
         </div>
 
         <div id="message-input" class="message-input">

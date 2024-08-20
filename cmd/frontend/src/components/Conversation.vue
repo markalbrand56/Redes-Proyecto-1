@@ -13,6 +13,10 @@ const props = defineProps({
   messages: {
     type: Array[models.Message],
     required: true
+  },
+  isConference: {
+    type: Boolean,
+    required: true
   }
 })
 
@@ -20,7 +24,7 @@ const props = defineProps({
 
 <template>
   <div class="conversation-container">
-    <Message v-for="message in props.messages" :key="message.timestamp" :message="message"  :user="props.user"/>
+    <Message v-for="message in props.messages" :key="message.timestamp" :message="message"  :user="props.user" :is-conference="props.isConference"/>
   </div>
 </template>
 
@@ -31,7 +35,8 @@ const props = defineProps({
   flex-direction: column;
   justify-content: flex-end;
 
-  height: max(100%, 50vh);
+  height: fit-content;
+  min-height: 100%;
 
   gap: 1rem;
   background-color: #383838;
