@@ -221,6 +221,7 @@ func startMessaging() {
 					}
 
 					User.Conferences = conferences // Se asume que el servidor siempre es el más actualizado
+					sendPresence()
 
 					fmt.Println("Conferences: ", conferences)
 					events.EmitConferences(AppContext, conferences)
