@@ -159,9 +159,6 @@ func (u *User) SaveConfig() error {
 
 func (u *User) ShowConversations() {
 	for contact, messages := range u.Messages {
-		fmt.Printf("%s:\n", contact)
-		for _, message := range messages {
-			fmt.Printf("  %s: %s\n", message.From, message.Body)
-		}
+		fmt.Printf("Messages from %s (%d): %s\n", contact, len(messages), messages[len(messages)-1].Body)
 	}
 }
