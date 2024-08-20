@@ -10,6 +10,7 @@ import {
   SetStatus,
   GetMessages,
   GetMessagesConference,
+  GetCurrentUser,
   // GetArchive
 } from '../../wailsjs/go/main/App.js'
 
@@ -28,7 +29,7 @@ const Message = reactive({
 })
 
 const User = reactive({
-  jid: "alb21004@alumchat.lol",
+  jid: "",
   contacts: [],
   conferences: {},
   status: 0
@@ -239,6 +240,12 @@ const listenUpdateMessages = async () => {
     getMessages()
   })
 }
+
+GetCurrentUser().then((user) => {
+  User.jid = user
+  console.log("User", user)
+  Debug.resultText = "User: " + user
+})
 
 listenMessages()
 listenContacts()

@@ -10,6 +10,8 @@ export function GetArchive(arg1:string):Promise<void>;
 
 export function GetContacts():Promise<Array<string>>;
 
+export function GetCurrentUser():Promise<string>;
+
 export function GetMessages(arg1:string):Promise<Array<models.Message>>;
 
 export function GetMessagesConference(arg1:string):Promise<Array<models.Message>>;

@@ -115,3 +115,7 @@ func (a *App) SetStatus(status int) {
 func (a *App) GetArchive(username string) {
 	chat.FetchArchiveChannel <- username
 }
+
+func (a *App) GetCurrentUser() string {
+	return chat.User.UserName
+}
