@@ -24,7 +24,10 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 		if invite, ok := ext.(*cstanza.Conference); ok {
 			// <message xmlns="jabber:client" to="alb21004@alumchat.lol" id="9946c7cb-b8fe-4214-9314-cc7ac91e1ab9" from="alb21005@alumchat.lol/gajim.0O3D5ZZ0"><x xmlns="jabber:x:conference" jid="ogivox@conference.alumchat.lol"></x></message>
 			fmt.Println("Conference invitation from: ", invite.JID)
-			ConferenceInvitationChannel <- invite.JID
+			//ConferenceInvitationChannel <- invite.JID
+
+			events.EmitConferenceInvitation(AppContext, invite.JID)
+
 			return
 		} else if mam, ok := ext.(*cstanza.MAM); ok {
 			fmt.Println("MAM message: ", *mam)

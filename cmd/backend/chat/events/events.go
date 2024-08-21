@@ -49,3 +49,7 @@ func EmitError(ctx context.Context, message string) {
 func EmitPresenceUpdate(ctx context.Context, user string, presence string, status string) {
 	runtime.EventsEmit(ctx, "presence", user, presence, status)
 }
+
+func EmitConferenceInvitation(ctx context.Context, jid string) {
+	runtime.EventsEmit(ctx, "conference-invitation", jid)
+}

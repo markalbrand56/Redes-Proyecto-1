@@ -57,6 +57,7 @@ const isImage = props.message.body.startsWith("https://") && (props.message.body
 
 .message-container img {
   max-width: 65%;
+  max-height: 300px;
 
   margin: 0.5rem;
 

@@ -327,6 +327,7 @@ func startMessaging() {
 			}
 		// Invitación a sala de chat
 		case jid := <-ConferenceInvitationChannel:
+			// Se ha aceptado una invitación a una sala de chat
 			fmt.Println("Conference invitation from: ", jid)
 
 			alias := User.UserName[:strings.Index(User.UserName, "@")]
@@ -348,6 +349,8 @@ func startMessaging() {
 				fmt.Println("Error al enviar presencia para unirse a la sala de chat:", err)
 			} else {
 				fmt.Println("Presencia enviada para unirse a la sala de chat:", jid)
+
+				User.InsertConference(models.NewConference(alias, jid))
 			}
 
 		// Cambiar el estado del usuario

@@ -91,6 +91,10 @@ func (a *App) AcceptSubscription(username string) {
 	chat.SubscriptionRequestChannel <- username
 }
 
+func (a *App) AcceptConferenceInvitation(jid string) {
+	chat.ConferenceInvitationChannel <- jid
+}
+
 func (a *App) CancelSubscription(username string) {
 	chat.UnsubscribeFromChannel <- username
 }

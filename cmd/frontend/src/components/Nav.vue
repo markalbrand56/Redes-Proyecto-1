@@ -5,7 +5,8 @@ import { EventsOn } from "../../wailsjs/runtime/runtime.js";
 import {
   AcceptSubscription,
   CancelSubscription,
-  RequestContact
+  RequestContact,
+  AcceptConferenceInvitation
 } from '../../wailsjs/go/main/App.js';
 
 import { PlusIcon } from "@heroicons/vue/24/solid";
@@ -55,6 +56,16 @@ const onSubscribe = async () => {
   });
 };
 
+const onConferenceInvite = async () => {
+  EventsOn("conference-invitation", (room) => {
+    state.Notifications.push({
+      type: "conference-invitation",
+      message: `You have been invited to join ${room}`,
+      username: room,  // JID de la sala
+    });
+  });
+};
+
 const onNotification = async () => {
   EventsOn("notification", (message, type) => {
     state.Notifications.push({
@@ -89,14 +100,22 @@ const dismissAllNotifications = () => {
 };
 
 // Funciones para aceptar o rechazar una suscripción
-const acceptSubscription = (index, username) => {
+const acceptSubscription = (index, username, type) => {
   // Aquí iría la lógica para aceptar la suscripción
-  AcceptSubscription(username);
-  console.log("Accepting subscription from", username);
-  dismissNotification(index, "subscription");
+
+  if (type === "subscription") {
+    console.log("Accepting subscription from", username);
+    AcceptSubscription(username);
+    dismissNotification(index, "subscription");
+  } else if (type === "conference-invitation") {
+    console.log("Accepting conference invitation from", username);
+    AcceptConferenceInvitation(username);
+    dismissNotification(index, "conference-invitation");
+  }
+
 };
 
-const rejectSubscription = (index, username) => {
+const rejectSubscription = (index, username, type) => {
   // Aquí iría la lógica para rechazar la suscripción
   CancelSubscription(username)
   dismissNotification(index, "subscription");
@@ -149,6 +168,7 @@ onError();
 onSubscribe();
 onNotification();
 onMessage();
+onConferenceInvite();
 
 </script>
 
@@ -162,9 +182,9 @@ onMessage();
           <div class="notification-body">
             <p>{{ notification.message }}</p>
 
-            <div v-if="notification.type === 'subscription'" class="subscription-buttons">
-              <button @click.stop="acceptSubscription(index, notification.username)">Accept</button>
-              <button @click.stop="rejectSubscription(index, notification.username)">Reject</button>
+            <div v-if="notification.type === 'subscription' || notification.type === 'conference-invitation'" class="subscription-buttons">
+              <button @click.stop="acceptSubscription(index, notification.username, notification.type)">Accept</button>
+              <button @click.stop="rejectSubscription(index, notification.username, notification.type)">Reject</button>
             </div>
 
           </div>
