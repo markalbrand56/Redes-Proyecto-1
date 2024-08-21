@@ -496,11 +496,16 @@ main h1 {
   min-height: 10%;
   height: fit-content;
   margin: 1rem;
+
+  background-color: white;
+  border-radius: 0.75rem;
 }
 
 .current-contact-jid {
   margin: 0.5rem;
   font-size: 18px;
+
+  color: #1b2636;
 }
 
 .current-contact-status-message {
