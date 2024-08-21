@@ -317,7 +317,12 @@ func startMessaging() {
 		case u := <-UnsubscribeFromChannel:
 			// Para cancelar la suscripción a un contacto, se debe enviar un mensaje de presencia con el tipo "unsubscribe"
 			fmt.Println("Unsubscribing from: ", u)
-			presence := stanza.Presence{Attrs: stanza.Attrs{To: u, Type: stanza.PresenceTypeUnsubscribe}}
+			presence := stanza.Presence{
+				Attrs: stanza.Attrs{
+					To:   u,
+					Type: stanza.PresenceTypeUnsubscribed,
+				},
+			}
 
 			err := User.Client.Send(presence)
 
@@ -325,6 +330,17 @@ func startMessaging() {
 				log.Println("Error sending unsubscription request: ", err)
 				events.EmitError(AppContext, "Error sending unsubscription request")
 			}
+
+			// Remove from roster
+			rosterRemove := cstanza.NewRosterRemove(u)
+
+			err = User.Client.Send(&rosterRemove)
+
+			if err != nil {
+				log.Println("Error removing contact from roster: ", err)
+				events.EmitError(AppContext, "Error removing contact from roster")
+			}
+
 		// Invitación a sala de chat
 		case jid := <-ConferenceInvitationChannel:
 			// Se ha aceptado una invitación a una sala de chat

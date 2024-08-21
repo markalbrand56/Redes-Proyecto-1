@@ -1,5 +1,15 @@
 <script setup>
 
+import {reactive, ref} from "vue";
+
+import {
+  CancelSubscription
+} from '../../wailsjs/go/main/App.js';
+
+const contactInvite = reactive({
+  jid: "",
+})
+
 const props = defineProps({
   jid: {
     type: String,
@@ -17,15 +27,44 @@ const closeOptions = () => {
   emit('close-options')
 }
 
+const inviting = ref(false)
+
+const toggleInviting = () => {
+  inviting.value = !inviting.value
+}
+
+const inviteContact = (jid) => {
+  console.log("Inviting contact", jid)
+  emit('invite-contact', jid)
+
+  inviting.value = false
+}
+
+const removeContact = () => {
+  console.log("Removing contact", props.jid)
+  // emit('remove-contact', jid)
+
+  CancelSubscription(props.jid)
+}
+
+const exitConference = (jid) => {
+  console.log("Exiting conference", jid)
+  emit('exit-conference', jid)
+}
+
 </script>
 
 <template>
 
   <div class="options-container" @click="closeOptions">
     <div class="options-content" @click.stop>
-      <button v-if="!props.isConference" class="btn" @click="emit('remove-contact', jid)">Remove contact</button>
+      <!--  Botones de contactos    -->
+      <button v-if="!props.isConference" class="btn" @click="removeContact">Remove contact</button>
 
-      <button v-if="props.isConference" class="btn" @click="emit('invite-contact', jid)">Invite to conference</button>
+      <!--  Botones de conferencias    -->
+      <button v-if="props.isConference" class="btn" @click="toggleInviting">Invite contact</button>
+      <input v-if="props.isConference && inviting" v-model="contactInvite.jid" type="text" placeholder="Enter JID" class="request-input" />
+      <button v-if="props.isConference && inviting" class="btn-secondary" @click="inviteContact(contactInvite.jid)">Send invitation</button>
 
       <button v-if="props.isConference" class="btn" @click="emit('exit-conference', jid)">Exit conference</button>
 
@@ -79,6 +118,35 @@ const closeOptions = () => {
   border-radius: 4px;
   background-color: #007bff;
   color: white;
+  cursor: pointer;
+}
+
+.request-input {
+  width: 80%;
+  min-width: fit-content;
+
+  margin: 1rem;
+  padding: 0.5rem;
+
+  border: none;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.btn-secondary {
+  display: block;
+  width: 80%;
+  min-width: fit-content;
+
+  margin: 1rem;
+  padding: 0.5rem;
+
+  border: none;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  color: #333;
+  cursor: pointer;
 }
 
 </style>
