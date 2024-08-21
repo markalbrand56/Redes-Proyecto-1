@@ -213,11 +213,7 @@ func handlePresence(s xmpp.Sender, p stanza.Packet) {
 
 			}
 			//events.EmitNotification(AppContext, fmt.Sprintf("User %s: %s", username, userPresence), "info")
-			events.EmitPresenceUpdate(AppContext, username, userPresence)
-
-			if presence.Status != "" {
-				fmt.Println("Status: ", presence.Status)
-			}
+			events.EmitPresenceUpdate(AppContext, username, userPresence, presence.Status)
 
 		}
 

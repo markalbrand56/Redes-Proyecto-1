@@ -25,7 +25,8 @@ import Nav from "../components/Nav.vue";
 const Message = reactive({
   jid: "",
   body: "",
-  isConference: false
+  isConference: false,
+  statusMessage: ""
 })
 
 const User = reactive({
@@ -166,7 +167,10 @@ function handleContactClicked(jid) {
   console.log("Contact clicked", jid)
   Message.jid = jid  // Set the current correspondent on the frontend
   Message.isConference = false
-  Debug.resultText = "Setting correspondent to " + jid
+  Message.body = ""
+  Message.statusMessage = User.contacts.find((contact) => contact.jid === jid).statusMessage
+
+  Debug.resultText = "Setting correspondent to " + jid + " " + Message.statusMessage
 
   getMessages()  // Get the messages for the current correspondent
 }
@@ -252,14 +256,19 @@ const listenUpdateMessages = async () => {
 }
 
 const listenPresenceUpdate = async () => {
-  EventsOn("presence", (jid, status) => {
-    console.log("Presence update", jid, status)
+  EventsOn("presence", (jid, status, statusMessage) => {
+    console.log("Presence update", jid, status, statusMessage)
 
     User.contacts.forEach((contact) => {
       if (contact.jid === jid) {
         contact.status = status
+        contact.statusMessage = statusMessage
       }
     })
+
+    if (Message.jid === jid) {
+      Message.statusMessage = statusMessage
+    }
   })
 }
 
@@ -336,7 +345,8 @@ onMounted(() => {
       <div id="current-chat" class="current-chat">
 
         <div id="current-contact" class="current-contact">
-          <p>{{ Message.jid }}</p>
+          <p class="current-contact-jid">{{ Message.jid }}</p>
+          <p v-if="Message.statusMessage" class="current-contact-status-message" >{{ Message.statusMessage }}</p>
         </div>
 
         <div id="messages" class="message-section" ref="messageSectionRef">
@@ -479,6 +489,7 @@ main h1 {
 
 .current-contact {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 
@@ -487,9 +498,16 @@ main h1 {
   margin: 1rem;
 }
 
-.current-contact p {
+.current-contact-jid {
   margin: 0.5rem;
   font-size: 18px;
+}
+
+.current-contact-status-message {
+  margin: 0.25rem;
+  font-size: 14px;
+
+  color: gray;
 }
 
 .message-section {
