@@ -1,5 +1,7 @@
 <script setup>
 
+import { ChevronRightIcon } from '@heroicons/vue/24/solid'
+
 const props = defineProps({
   contact: {
     type: Object,
@@ -28,7 +30,7 @@ const usernameDisplay = props.contact.jid.split('@')[0]
 <!--    <p class="contact-jid">{{ usernameDisplay  }}</p>-->
 <!--    si hay alias, se puestra en vez del jid-->
     <p class="contact-jid">{{ alias ? alias : usernameDisplay }}</p>
-    <div class="arrow-right">{{ ">" }}</div>
+    <ChevronRightIcon class="arrow-right" />
   </div>
 </template>
 
@@ -65,6 +67,8 @@ const usernameDisplay = props.contact.jid.split('@')[0]
 }
 
 .arrow-right {
+  height: 16px;
+  width: 16px;
   margin-left: auto;
   color: #666;
   font-size: 1.15rem;
