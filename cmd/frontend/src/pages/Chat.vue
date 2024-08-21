@@ -206,7 +206,10 @@ const listenContacts = async () => {
     // contacts is an array of strings
     Debug.resultText = "Contacts: " + contacts.join(", ")
     console.log("Contacts", contacts)
-    User.contacts = contacts
+    // map each contact to a Contact object
+    User.contacts = contacts.map((contact) => {
+      return {jid: contact, status: "Disconnected"}
+    })
   })
 }
 
@@ -241,6 +244,18 @@ const listenUpdateMessages = async () => {
   })
 }
 
+const listenPresenceUpdate = async () => {
+  EventsOn("presence", (jid, status) => {
+    console.log("Presence update", jid, status)
+
+    User.contacts.forEach((contact) => {
+      if (contact.jid === jid) {
+        contact.status = status
+      }
+    })
+  })
+}
+
 GetCurrentUser().then((user) => {
   User.jid = user
   console.log("User", user)
@@ -253,6 +268,7 @@ listenSuccess()
 listenSubRequest()
 listenUpdateMessages()
 listenConferences()
+listenPresenceUpdate()
 
 getContacts()
 
@@ -272,7 +288,7 @@ onMounted(() => {
         <div id="correspondents" class="correspondents">
           <h2>Contacts</h2>
           <div id="contacts" class="contact-section">
-            <Contact v-for="contact in User.contacts" :contact="{jid: contact}" :key="contact" @setCorrespondent="handleContactClicked" />
+            <Contact v-for="contact in User.contacts" :contact="{jid: contact.jid}" :key="contact" @setCorrespondent="handleContactClicked"  :status="contact.status"/>
           </div>
 
           <h2>Group chats</h2>

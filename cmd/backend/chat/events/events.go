@@ -45,3 +45,7 @@ func EmitSubscription(ctx context.Context, username string) {
 func EmitError(ctx context.Context, message string) {
 	runtime.EventsEmit(ctx, "error", message)
 }
+
+func EmitPresenceUpdate(ctx context.Context, user string, presence string) {
+	runtime.EventsEmit(ctx, "presence", user, presence)
+}

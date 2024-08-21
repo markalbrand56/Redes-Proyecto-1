@@ -1,11 +1,16 @@
 <script setup>
 
 import { ChevronRightIcon } from '@heroicons/vue/24/solid'
+import {computed} from "vue";
 
 const props = defineProps({
   contact: {
     type: Object,
     required: true
+  },
+  status: {
+    type: String,
+    required: false
   },
   alias: {
     type: String,
@@ -20,6 +25,28 @@ function setCorrespondent() {
   emit('setCorrespondent', props.contact.jid)
 }
 
+const statusColor = computed(() => {
+  switch (props.status) {
+    case 'Online':  //  Online
+      return 'green'
+
+    case 'Disconnected':  //  Disconnected / Invisible
+      return 'gray'
+
+    case 'Away':  //  Away
+      return 'yellow'
+
+    case 'Do Not Disturb':  //  Busy
+      return 'red'
+
+    case 'Extended Away':  //  Extended Away
+      return 'orange'
+
+    default:
+      return 'green'
+  }
+})
+
 const firstLetter = props.contact.jid.charAt(0).toUpperCase()
 const usernameDisplay = props.contact.jid.split('@')[0]
 </script>
@@ -27,8 +54,7 @@ const usernameDisplay = props.contact.jid.split('@')[0]
 <template>
   <div class="contact-container" @click="setCorrespondent">
     <div class="contact-icon">{{ firstLetter }}</div>
-<!--    <p class="contact-jid">{{ usernameDisplay  }}</p>-->
-<!--    si hay alias, se puestra en vez del jid-->
+    <div :class="['status-indicator', statusColor]"></div>
     <p class="contact-jid">{{ alias ? alias : usernameDisplay }}</p>
     <ChevronRightIcon class="arrow-right" />
   </div>
@@ -74,4 +100,35 @@ const usernameDisplay = props.contact.jid.split('@')[0]
   font-size: 1.15rem;
   font-weight: bold;
 }
+
+.status-indicator {
+  width: 12px;
+  height: 12px;
+
+  border-radius: 50%;
+  border: 1px solid #000000;
+
+  margin-right: 0.5rem;
+}
+
+.green {
+  background-color: green;
+}
+
+.red {
+  background-color: red;
+}
+
+.yellow {
+  background-color: #ceb300;
+}
+
+.orange {
+  background-color: #ff4c00;
+}
+
+.gray {
+  background-color: gray;
+}
+
 </style>

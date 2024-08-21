@@ -179,42 +179,41 @@ func handlePresence(s xmpp.Sender, p stanza.Packet) {
 				Aquí, hay que extraer el estado de presencia y el mensaje de estado.
 			*/
 
-			if presence.Show != "" {
-				fmt.Println("Show: ", presence.Show)
+			fmt.Println("Show: ", presence.Show)
 
-				var userPresence string
+			var userPresence string
 
-				switch presence.Show {
+			switch presence.Show {
 
-				case "dnd":
-					userPresence = "Do Not Disturb"
-				case "xa":
-					userPresence = "Extended Away"
-				case "away":
-					userPresence = "Away"
-				case "chat":
-					userPresence = "Online"
-				case "invisible":
-					userPresence = "Disconnected"
+			case "dnd":
+				userPresence = "Do Not Disturb"
+			case "xa":
+				userPresence = "Extended Away"
+			case "away":
+				userPresence = "Away"
+			case "chat":
+				userPresence = "Online"
+			case "invisible":
+				userPresence = "Disconnected"
 
-				}
-
-				var username string
-
-				if presence.From != "" {
-					if strings.Contains(presence.From, "@conference") {
-						// group@conference/jid
-						username = strings.Split(presence.From, "/")[1] + " at " + strings.Split(presence.From, "/")[0]
-					} else if strings.Contains(presence.From, "/") {
-						// username@server/resource
-						username = strings.Split(presence.From, "/")[0]
-					} else {
-						username = presence.From
-					}
-
-				}
-				events.EmitNotification(AppContext, fmt.Sprintf("User %s: %s", username, userPresence), "info")
 			}
+
+			var username string
+
+			if presence.From != "" {
+				if strings.Contains(presence.From, "@conference") {
+					// group@conference/jid
+					username = strings.Split(presence.From, "/")[1] + " at " + strings.Split(presence.From, "/")[0]
+				} else if strings.Contains(presence.From, "/") {
+					// username@server/resource
+					username = strings.Split(presence.From, "/")[0]
+				} else {
+					username = presence.From
+				}
+
+			}
+			events.EmitNotification(AppContext, fmt.Sprintf("User %s: %s", username, userPresence), "info")
+			events.EmitPresenceUpdate(AppContext, username, userPresence)
 
 			if presence.Status != "" {
 				fmt.Println("Status: ", presence.Status)
