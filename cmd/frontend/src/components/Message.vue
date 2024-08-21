@@ -29,13 +29,16 @@ message.timestamp = props.message.timestamp.slice(5, 16).replace("T", " ")
 const isUserMessage = (props.message.from.split("/")[1] === props.user.split("@")[0] )  || (props.message.from === props.user)
 const sender = props.message.from.split("/")[1]
 
+const isImage = props.message.body.startsWith("https://") && (props.message.body.endsWith(".png") || props.message.body.endsWith(".jpg") || props.message.body.endsWith(".jpeg"))
+
 </script>
 
 <template>
   <div :class="['message-container', isUserMessage ? 'user-message' : 'other-message']">
     <p v-if="isConference && !isUserMessage" class="message-sender"> {{ sender }} </p>
+    <img v-if="isImage" :src="message.body" alt="Image">
     <div class="inner-message">
-      <p class="message-body"> {{ message.body }}  </p>
+      <p class="message-body" v-if="!isImage"> {{ message.body }}  </p>
       <p class="message-timestamp"> {{ message.timestamp }} </p>
     </div>
   </div>
@@ -52,6 +55,15 @@ const sender = props.message.from.split("/")[1]
   margin: 0.5rem;
 }
 
+.message-container img {
+  max-width: 65%;
+
+  margin: 0.5rem;
+
+  border-radius: 0.5rem;
+  object-fit: contain;
+}
+
 .inner-message {
   display: flex;
   flex-direction: row;
@@ -66,6 +78,7 @@ const sender = props.message.from.split("/")[1]
   max-width: 65%;
 
 }
+
 
 .message-timestamp {
   color: #666;

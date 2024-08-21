@@ -283,6 +283,10 @@ func startMessaging() {
 				events.EmitError(AppContext, "Error sending subscription request")
 			}
 
+			userFormatted := strings.Split(u, "/")[0]
+
+			User.Contacts = append(User.Contacts, userFormatted)
+
 			events.EmitSuccess(AppContext, "Subscription request sent")
 
 		// Aceptar solicitud de suscripción
