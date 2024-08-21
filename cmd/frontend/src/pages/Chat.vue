@@ -22,6 +22,8 @@ import Contact from "../components/Contact.vue";
 import StatusPopup from "../components/StatusPopUp.vue";
 import Nav from "../components/Nav.vue";
 
+import {CogIcon} from "@heroicons/vue/24/solid";
+
 const Message = reactive({
   jid: "",
   body: "",
@@ -344,9 +346,12 @@ onMounted(() => {
 
       <div id="current-chat" class="current-chat">
 
-        <div id="current-contact" class="current-contact">
-          <p class="current-contact-jid">{{ Message.jid }}</p>
-          <p v-if="Message.statusMessage" class="current-contact-status-message" >{{ Message.statusMessage }}</p>
+        <div id="top-bar" class="top-bar">
+          <div id="current-contact" class="current-contact">
+            <p class="current-contact-jid">{{ Message.jid }}</p>
+            <p v-if="Message.statusMessage" class="current-contact-status-message" >{{ Message.statusMessage }}</p>
+          </div>
+          <CogIcon class="dots" />
         </div>
 
         <div id="messages" class="message-section" ref="messageSectionRef">
@@ -487,15 +492,36 @@ main h1 {
   border: 1px dashed blue;
 }
 
+.top-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  min-height: 10%;
+  height: fit-content;
+
+  margin: 1rem;
+
+  border: 1px dashed red;
+}
+
+.dots {
+  width: 45px;
+  height: 45px;
+  margin-right: 1rem;
+
+  cursor: pointer;
+}
+
 .current-contact {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 
-  min-height: 10%;
-  height: fit-content;
+  height: 100%;
   margin: 1rem;
+  width: 100%;
 
   background-color: white;
   border-radius: 0.75rem;
@@ -504,6 +530,8 @@ main h1 {
 .current-contact-jid {
   margin: 0.5rem;
   font-size: 18px;
+
+  min-height: 100%;
 
   color: #1b2636;
 }

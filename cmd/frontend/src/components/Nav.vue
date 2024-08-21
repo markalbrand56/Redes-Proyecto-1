@@ -4,6 +4,7 @@ import { EventsOn } from "../../wailsjs/runtime/runtime.js";
 
 import {
   AcceptSubscription,
+  CancelSubscription,
   RequestContact
 } from '../../wailsjs/go/main/App.js';
 
@@ -49,6 +50,7 @@ const onSubscribe = async () => {
     state.Notifications.push({
       type: "subscription",
       message: `${username} has requested to subscribe to you.`,
+      username: username,
     });
   });
 };
@@ -94,8 +96,9 @@ const acceptSubscription = (index, username) => {
   dismissNotification(index, "subscription");
 };
 
-const rejectSubscription = (index) => {
+const rejectSubscription = (index, username) => {
   // Aquí iría la lógica para rechazar la suscripción
+  CancelSubscription(username)
   dismissNotification(index, "subscription");
 };
 
@@ -161,7 +164,7 @@ onMessage();
 
             <div v-if="notification.type === 'subscription'" class="subscription-buttons">
               <button @click.stop="acceptSubscription(index, notification.username)">Accept</button>
-              <button @click.stop="rejectSubscription(index)">Reject</button>
+              <button @click.stop="rejectSubscription(index, notification.username)">Reject</button>
             </div>
 
           </div>

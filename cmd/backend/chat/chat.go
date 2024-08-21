@@ -292,6 +292,7 @@ func startMessaging() {
 		// Aceptar solicitud de suscripción
 		case u := <-SubscriptionRequestChannel:
 			// Se ha decidido aceptar la solicitud de suscripción
+			log.Println("Accepting subscription from: ", u)
 			presence := stanza.Presence{
 				Attrs: stanza.Attrs{
 					To: u, Type: stanza.PresenceTypeSubscribed,
