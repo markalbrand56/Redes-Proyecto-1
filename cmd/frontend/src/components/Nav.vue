@@ -2,7 +2,12 @@
 import { reactive, computed, ref } from "vue";
 import { EventsOn } from "../../wailsjs/runtime/runtime.js";
 
-import {AcceptSubscription} from '../../wailsjs/go/main/App.js';
+import {
+  AcceptSubscription,
+  RequestContact
+} from '../../wailsjs/go/main/App.js';
+
+import { PlusIcon } from "@heroicons/vue/24/solid";
 
 // Estado para las notificaciones
 const state = reactive({
@@ -120,6 +125,21 @@ const statusColor = computed(() => {
   }
 })
 
+// Request panel
+
+const showRequestPanel = ref(false);
+const newContact = ref("");  // Estado para almacenar el JID introducido
+
+const sendSubscriptionRequest = () => {
+  if (newContact.value) {
+    console.log("Sending subscription request to", newContact.value);
+    RequestContact(newContact.value);
+    newContact.value = "";  // Limpiar el input después de enviar la solicitud
+    showRequestPanel.value = false;  // Cerrar el panel después de enviar la solicitud
+  }
+};
+
+
 // Inicializar los listeners
 onSuccess();
 onError();
@@ -154,6 +174,12 @@ onMessage();
         </div>
 
       </div>
+    </div>
+
+    <PlusIcon class="icon" @click="showRequestPanel = !showRequestPanel" />
+    <div v-if="showRequestPanel" class="request-panel">
+      <input v-model="newContact" type="text" placeholder="Enter JID" class="request-input" />
+      <button @click="sendSubscriptionRequest">Send Request</button>
     </div>
   </div>
 </template>
@@ -267,4 +293,35 @@ onMessage();
   color: white;
   cursor: pointer;
 }
+
+.icon {
+  width: 24px;
+  height: 24px;
+  margin-left: auto;
+  cursor: pointer;
+}
+
+.request-panel {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-left: 1rem;
+}
+
+.request-input {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 0.5rem;
+}
+
+.request-panel button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+}
+
 </style>

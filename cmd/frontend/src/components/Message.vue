@@ -50,6 +50,7 @@ const sender = props.message.from.split("/")[1]
   justify-content: flex-start;
 
   margin: 0.5rem;
+  max-width: 65%;
 }
 
 .inner-message {
