@@ -23,6 +23,7 @@ import StatusPopup from "../components/StatusPopUp.vue";
 import Nav from "../components/Nav.vue";
 
 import {CogIcon} from "@heroicons/vue/24/solid";
+import Options from "../components/Options.vue";
 
 const Message = reactive({
   jid: "",
@@ -49,6 +50,7 @@ const Debug = reactive({
 
 const messageSectionRef = ref(null)
 const showPopup = ref(false);
+const showOptions = ref(false);
 
 function scrollToBottom() {
   nextTick(() => {
@@ -61,6 +63,11 @@ function scrollToBottom() {
 const togglePopup = () => {
   console.log('Toggling popup');
   showPopup.value = !showPopup.value;
+};
+
+const toggleOptions = () => {
+  console.log('Toggling options');
+  showOptions.value = !showOptions.value;
 };
 
 const handleStatusChange = (status) => {
@@ -351,7 +358,8 @@ onMounted(() => {
             <p class="current-contact-jid">{{ Message.jid }}</p>
             <p v-if="Message.statusMessage" class="current-contact-status-message" >{{ Message.statusMessage }}</p>
           </div>
-          <CogIcon class="dots" />
+          <CogIcon class="dots" @click="toggleOptions" />
+          <Options :is-conference="Message.isConference" :jid="Message.jid" v-if="showOptions" @close-options="toggleOptions" />
         </div>
 
         <div id="messages" class="message-section" ref="messageSectionRef">
