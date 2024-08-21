@@ -231,6 +231,8 @@ const listenSuccess = async () => {
 
     if (message === "Message sent") {
       getMessages()
+    } else if (message === "Subscription accepted"){
+      getContacts()
     }
   })
 }
@@ -313,7 +315,7 @@ onMounted(() => {
 
       <div id="left-panel" class="left-panel">
         <div id="correspondents" class="correspondents">
-          <h2>Contacts</h2>
+          <h2 @click="getContacts" style="cursor: pointer">Contacts</h2>
           <div id="contacts" class="contact-section">
             <Contact v-for="contact in User.contacts" :contact="{jid: contact.jid}" :key="contact" @setCorrespondent="handleContactClicked"  :status="contact.status"/>
           </div>

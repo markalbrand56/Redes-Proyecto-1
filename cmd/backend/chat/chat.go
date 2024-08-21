@@ -302,7 +302,11 @@ func startMessaging() {
 				continue
 			}
 
-			events.EmitSuccess(AppContext, fmt.Sprintf("Subscription to %s accepted", u))
+			userFormatted := strings.Split(u, "/")[0]
+
+			User.Contacts = append(User.Contacts, userFormatted)
+
+			events.EmitSuccess(AppContext, "Subscription accepted")
 
 		// Cancelar suscripción
 		case u := <-UnsubscribeFromChannel:
