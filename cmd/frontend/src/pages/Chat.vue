@@ -1,5 +1,5 @@
 <script setup>
-import {reactive, onMounted, nextTick, ref} from 'vue'
+import {reactive, onMounted, nextTick, ref, computed} from 'vue'
 import {
   SendMessage,
   SendConferenceMessage,
@@ -32,7 +32,8 @@ const User = reactive({
   jid: "",
   contacts: [],
   conferences: {},
-  status: 0
+  status: 0,
+  statusColor: 'green'
 })
 
 const Messages = reactive({
@@ -110,6 +111,7 @@ function updateStatus(status) {
   console.log("Updating status")
   Debug.resultText = "Updating status"
   SetStatus(status)
+  User.status = status
 }
 
 function getMessages() {
@@ -262,6 +264,28 @@ GetCurrentUser().then((user) => {
   Debug.resultText = "User: " + user
 })
 
+const statusColor = computed(() => {
+  switch (User.status) {
+    case 0:  //  Online
+      return 'green'
+
+    case 4:  //  Disconnected / Invisible
+      return 'gray'
+
+    case 1:  //  Away
+      return 'yellow'
+
+    case 2:  //  Busy
+      return 'red'
+
+    case 3:  //  Extended Away
+      return 'orange'
+
+    default:
+      return 'green'
+  }
+})
+
 listenMessages()
 listenContacts()
 listenSuccess()
@@ -298,6 +322,7 @@ onMounted(() => {
         </div>
 
         <div id="current-account" class="current-account" @click="togglePopup">
+          <div :class="['status-indicator', statusColor]"></div>
           <p>{{ User.jid }}</p>
         </div>
         <StatusPopup v-if="showPopup" @statusChanged="handleStatusChange" @closePopup="togglePopup" />
@@ -560,4 +585,37 @@ main h1 {
   border: none;
   background-color: rgba(255, 255, 255, 1);
 }
+
+.status-indicator {
+  width: 12px;
+  height: 12px;
+
+  border-radius: 50%;
+  border: 1px solid #000000;
+
+  margin-right: 0.5rem;
+}
+
+.green {
+  background-color: green;
+}
+
+.red {
+  background-color: red;
+}
+
+.yellow {
+  background-color: #cebd00;
+}
+
+.orange {
+  background-color: #e57c03;
+}
+
+.gray {
+  background-color: gray;
+}
+
+
+
 </style>

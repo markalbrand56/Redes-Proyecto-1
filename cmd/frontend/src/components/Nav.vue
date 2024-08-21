@@ -98,6 +98,28 @@ const toggleNotificationPanel = () => {
   showNotificationPanel.value = !showNotificationPanel.value;
 };
 
+const statusColor = computed(() => {
+  switch (props.status) {
+    case 'Online':  //  Online
+      return 'green'
+
+    case 'Disconnected':  //  Disconnected / Invisible
+      return 'gray'
+
+    case 'Away':  //  Away
+      return 'yellow'
+
+    case 'Do Not Disturb':  //  Busy
+      return 'red'
+
+    case 'Extended Away':  //  Extended Away
+      return 'orange'
+
+    default:
+      return 'green'
+  }
+})
+
 // Inicializar los listeners
 onSuccess();
 onError();
