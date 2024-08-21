@@ -50,7 +50,6 @@ const sender = props.message.from.split("/")[1]
   justify-content: flex-start;
 
   margin: 0.5rem;
-  max-width: 65%;
 }
 
 .inner-message {
@@ -64,6 +63,8 @@ const sender = props.message.from.split("/")[1]
   background-color: #f0f0f0;
   border-radius: 0.5rem;
   color: #333;
+  max-width: 65%;
+
 }
 
 .message-timestamp {
