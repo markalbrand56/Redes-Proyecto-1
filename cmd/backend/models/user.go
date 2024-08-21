@@ -46,7 +46,17 @@ func (u *User) InsertConference(conference *Conference) {
 }
 
 func (u *User) InsertMessage(message Message) {
-	u.Messages[message.From] = append(u.Messages[message.From], message)
+	//u.Messages[message.From] = append(u.Messages[message.From], message)
+
+	if _, ok := u.Messages[message.From]; !ok {
+		u.Messages[message.From] = make([]Message, 0)
+	}
+
+	if message.From == u.UserName {
+		u.Messages[message.To] = append(u.Messages[message.To], message)
+	} else {
+		u.Messages[message.From] = append(u.Messages[message.From], message)
+	}
 }
 
 func (u *User) String() string {

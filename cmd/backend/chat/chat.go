@@ -156,8 +156,10 @@ func startMessaging() {
 			if err != nil {
 				log.Println("Error sending message: ", err)
 				events.EmitError(AppContext, "Error sending message")
+				continue
 			}
 
+			User.InsertMessage(msg)
 			events.EmitSuccess(AppContext, "Message sent")
 
 		case msg := <-ConferenceTextChannel:

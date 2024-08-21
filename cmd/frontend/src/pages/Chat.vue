@@ -82,7 +82,6 @@ function sendMessage() {
     SendConferenceMessage(Message.body, Message.jid)
   } else {
     SendMessage(Message.body, Message.jid, User.jid)
-    getMessages()
   }
 
   // Body, to, from
@@ -229,6 +228,10 @@ const listenConferences = async () => {
 const listenSuccess = async () => {
   EventsOn("success", (message) => {
     Debug.resultText = message
+
+    if (message === "Message sent") {
+      getMessages()
+    }
   })
 }
 

@@ -56,7 +56,7 @@ func (a *App) GetContacts() []string {
 }
 
 func (a *App) GetMessages(username string) []models.Message {
-	chat.User.ShowConversations()
+	//chat.User.ShowConversations()
 
 	if _, ok := chat.User.Messages[username]; !ok {
 		return []models.Message{}
