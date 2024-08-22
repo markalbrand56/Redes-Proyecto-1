@@ -411,15 +411,23 @@ main h1 {
 }
 
 .left-panel {
+  position: fixed;
+  top: 2rem;
+  left: 2rem;
+
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
 
-  width: min(20%, 300px);
-  height: calc(100% - 2rem);
+  width: max(20%, 300px);
+  height: calc(80% - 2rem);
   margin: 1rem;
-  border: 1px dashed green;
+
+  box-sizing: border-box;
+  background-color: #f0f0f0;
+
+  border-radius: 0.75rem;
 
 }
 
@@ -432,7 +440,6 @@ main h1 {
   width: calc(100% - 2rem);
   height: 80%;
   margin: 1rem;
-  border: 1px dashed green;
 
   box-sizing: border-box;
 
@@ -470,7 +477,6 @@ main h1 {
 
 .contact-section {
   width: 100%;
-  border: 1px dashed red;
 }
 
 .current-account {
@@ -479,14 +485,13 @@ main h1 {
   align-items: center;
 
   min-height: 10%;
-  width: 100%;
+  width: calc(100% - 2rem);
   height: fit-content;
   margin: 1rem;
 
-  border: 1px dashed blue;
-
-  background-color: #f0f0f0;
-  border-radius: 0.75rem;
+  border: 2px solid #c4c4c4;
+  background-color: #ffffff;
+  border-radius: 1rem;
   cursor: pointer;
 
 }
@@ -501,7 +506,6 @@ main h1 {
   min-width: 75%;
   width: 100%;
   margin: 1rem;
-  border: 1px dashed blue;
 }
 
 .top-bar {
@@ -513,8 +517,6 @@ main h1 {
   height: fit-content;
 
   margin: 1rem;
-
-  border: 1px dashed red;
 }
 
 .dots {
