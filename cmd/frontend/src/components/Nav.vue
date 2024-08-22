@@ -147,29 +147,6 @@ const toggleNotificationPanel = () => {
   showNotificationPanel.value = !showNotificationPanel.value;
 };
 
-// Cálculo del color del estado
-const statusColor = computed(() => {
-  switch (props.status) {
-    case 'Online':  //  Online
-      return 'green'
-
-    case 'Disconnected':  //  Disconnected / Invisible
-      return 'gray'
-
-    case 'Away':  //  Away
-      return 'yellow'
-
-    case 'Do Not Disturb':  //  Busy
-      return 'red'
-
-    case 'Extended Away':  //  Extended Away
-      return 'orange'
-
-    default:
-      return 'green'
-  }
-})
-
 // Request panel
 const showRequestPanel = ref(false);
 const newContact = ref("");  // Estado para almacenar el JID introducido

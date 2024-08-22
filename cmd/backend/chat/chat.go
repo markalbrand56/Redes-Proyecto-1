@@ -131,7 +131,8 @@ func startMessaging() {
 	sendPresence(User.Show)
 	getArchivedMessages(User.UserName)
 
-	for {
+	listening := true
+	for listening {
 		select {
 		case <-LogoutChannel:
 			// Cerrar la sesión
@@ -142,6 +143,7 @@ func startMessaging() {
 			User = nil
 
 			events.EmitLogout(AppContext)
+			listening = false
 
 		case msg := <-TextChannel:
 			// Envío de mensaje a un contacto V2
@@ -445,6 +447,8 @@ func startMessaging() {
 			continue
 		}
 	}
+
+	log.Println("Closing XMPP client")
 }
 
 // sendPresence envía una presencia para unirse a las salas de chat a las que pertenece el usuario
