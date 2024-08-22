@@ -19,6 +19,16 @@ func (c *Conference) String() string {
 	return c.Alias + " (" + c.JID + ")"
 }
 
-func (c *Conference) InsertMessage(message Message) {
+func (c *Conference) InsertMessage(message Message) bool {
+	//c.Messages = append(c.Messages, message)
+
+	// antes de insertar el mensaje, verificar si ya existe
+	for _, m := range c.Messages {
+		if Equals(m, message) {
+			return false
+		}
+	}
+
 	c.Messages = append(c.Messages, message)
+	return true
 }

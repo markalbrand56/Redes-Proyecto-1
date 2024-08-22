@@ -19,6 +19,7 @@ var (
 	ConferenceTextChannel = make(chan models.Message) // Canal para enviar mensajes a salas de chat
 
 	FetchContactsChannel = make(chan bool) // Canal para enviar una solicitud de lista de contactos
+	ProbeContactsChannel = make(chan bool) // Canal para enviar una solicitud de estado de contactos
 
 	SubscribeToChannel         = make(chan string) // Canal para enviar una solicitud de suscripción
 	SubscriptionRequestChannel = make(chan string) // Canal para recibir solicitudes de suscripción
@@ -87,16 +88,6 @@ func startClient(username string, password string) {
 		return
 	}
 
-	//defer func(client *xmpp.Client) {
-	//	if client != nil {
-	//		log.Println("closing client...")
-	//		err := client.Disconnect()
-	//		if err != nil {
-	//			log.Println("Error closing client: ", err)
-	//		}
-	//	}
-	//}(newClient)
-
 	err = newClient.Connect()
 
 	if err != nil {
@@ -129,7 +120,7 @@ func startClient(username string, password string) {
 		events.EmitError(AppContext, "Error sending presence")
 	}
 
-	events.EmitSuccess(AppContext, "Connected to server")
+	events.EmitLogin(AppContext, User.UserName)
 
 	startMessaging()
 }
@@ -255,7 +246,11 @@ func startMessaging() {
 					fmt.Println("Found disco items")
 
 					for _, item := range discoItems.Items {
-						User.InsertConference(models.NewConference(item.Name, item.JID))
+						//User.InsertConference(models.NewConference(item.Name, item.JID))
+						// Si la sala de chat no está en la lista de salas de chat del usuario, se agrega
+						if _, ok := User.Conferences[item.JID]; !ok {
+							User.InsertConference(models.NewConference(item.Name, item.JID))
+						}
 					}
 
 					sendPresence(User.Show)
@@ -269,6 +264,26 @@ func startMessaging() {
 					}
 				}
 			}()
+
+		// Solicitar el estado de los contactos
+		case <-ProbeContactsChannel:
+			// Se envía una solicitud de presencia a los contactos para obtener su estado actual
+			log.Println("Probing contacts...")
+			for _, contact := range User.Contacts {
+				presence := stanza.Presence{
+					Attrs: stanza.Attrs{
+						To:   contact,
+						From: User.UserName,
+						Type: stanza.PresenceTypeProbe,
+					},
+				}
+
+				err := User.Client.Send(presence)
+
+				if err != nil {
+					log.Println("Error sending presence probe: ", err)
+				}
+			}
 
 		// Suscripción a un contacto
 		case u := <-SubscribeToChannel:

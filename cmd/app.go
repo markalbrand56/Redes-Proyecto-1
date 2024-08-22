@@ -123,3 +123,7 @@ func (a *App) GetArchive(username string) {
 func (a *App) GetCurrentUser() string {
 	return chat.User.UserName
 }
+
+func (a *App) ProbeContacts() {
+	chat.ProbeContactsChannel <- true
+}

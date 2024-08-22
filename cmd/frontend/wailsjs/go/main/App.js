@@ -38,6 +38,10 @@ export function Login(arg1, arg2) {
   return window['go']['main']['App']['Login'](arg1, arg2);
 }
 
+export function ProbeContacts() {
+  return window['go']['main']['App']['ProbeContacts']();
+}
+
 export function RequestContact(arg1) {
   return window['go']['main']['App']['RequestContact'](arg1);
 }

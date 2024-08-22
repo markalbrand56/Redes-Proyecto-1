@@ -121,14 +121,16 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 			conf := strings.Split(msg.From, "/")[0]
 
 			if conference, ok := User.Conferences[conf]; ok {
-				log.Println("Inserting message in conference: ", conference.JID)
 
 				if msg.Body != "" {
-					conference.InsertMessage(models.NewMessage(msg.Body, conference.JID, msg.From))
+					// Compara el Body y el From de los mensajes
+					if conference.InsertMessage(models.NewMessage(msg.Body, conference.JID, msg.From)) {
+						log.Println("Inserting message in conference: ", conference.JID)
+						events.EmitMessage(AppContext, msg.From)
+					}
 				}
 			}
 
-			events.EmitMessage(AppContext, msg.From)
 		}
 
 	default:

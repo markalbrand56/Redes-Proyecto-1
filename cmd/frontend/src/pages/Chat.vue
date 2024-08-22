@@ -4,6 +4,7 @@ import {
   SendMessage,
   SendConferenceMessage,
   UpdateContacts,
+  ProbeContacts,
   RequestContact,
   AcceptSubscription,
   CancelSubscription,
@@ -102,6 +103,7 @@ function getContacts() {
   console.log("Getting contacts")
   Debug.resultText = "Getting contacts"
   UpdateContacts()
+  ProbeContacts()
 }
 
 function addContact() {
@@ -318,6 +320,7 @@ listenConferences()
 listenPresenceUpdate()
 
 getContacts()
+
 
 onMounted(() => {
   scrollToBottom()

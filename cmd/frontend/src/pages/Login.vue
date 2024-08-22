@@ -19,9 +19,13 @@ async function handleLogin() {
 
 // Event listeners
 
-EventsOn("success", () => {
-  console.log("Login successful");
+EventsOn("login", (jid) => {
+  console.log("Login successful for jid: ", jid);
   router.push("/chat");
+});
+
+EventsOn("error", (error) => {
+  console.error("Login error: ", error);
 });
 
 
