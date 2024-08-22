@@ -330,7 +330,7 @@ onMounted(() => {
 
 <template>
   <main>
-    <h1>Chat</h1>
+    <h1 style="cursor: default">Chat</h1>
     <Nav />
     <div id="display" class="display">
       <Bars3Icon class="dots" @click="handleToggleLeftPanel" />
@@ -341,7 +341,7 @@ onMounted(() => {
             <Contact v-for="contact in User.contacts" :contact="{jid: contact.jid}" :key="contact" @setCorrespondent="handleContactClicked"  :status="contact.status"/>
           </div>
 
-          <h2>Group chats</h2>
+          <h2 style="cursor: default">Group chats</h2>
           <div id="conferences" class="contact-section">
             <Contact v-for="(jid, name) in User.conferences" :contact="{jid: jid}" :alias="name" :key="jid" @setCorrespondent="handleConferenceClicked" />
           </div>
