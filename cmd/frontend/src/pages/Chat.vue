@@ -103,7 +103,6 @@ function getContacts() {
   console.log("Getting contacts")
   Debug.resultText = "Getting contacts"
   UpdateContacts()
-  ProbeContacts()
 }
 
 function updateStatus(status) {
@@ -214,6 +213,8 @@ const listenContacts = async () => {
     User.contacts = contacts.map((contact) => {
       return {jid: contact, status: "Disconnected"}
     })
+
+    ProbeContacts()
   })
 }
 
