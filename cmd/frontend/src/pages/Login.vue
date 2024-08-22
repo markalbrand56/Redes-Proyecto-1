@@ -5,6 +5,7 @@ import { Login } from '../../wailsjs/go/main/App.js';
 import {EventsOn} from "../../wailsjs/runtime/runtime.js";
 
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue';
+import Swal from "sweetalert2";
 
 
 const user = reactive({
@@ -31,6 +32,11 @@ EventsOn("login", (jid) => {
 
 EventsOn("error", (error) => {
   user.loggingIn = false;
+  Swal.fire({
+    icon: 'error',
+    title: 'Login failed',
+    text: error,
+  });
   console.error("Login error: ", error);
 });
 
