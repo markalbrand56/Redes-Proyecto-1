@@ -30,7 +30,7 @@ EventsOn("login", (jid) => {
   router.push("/chat");
 });
 
-EventsOn("error", (error) => {
+EventsOn("login-error", (error) => {
   user.loggingIn = false;
   Swal.fire({
     icon: 'error',

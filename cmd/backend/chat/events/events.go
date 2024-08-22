@@ -4,6 +4,7 @@ import (
 	"RedesProyecto/backend/models"
 	"context"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
+	"log"
 	"strings"
 )
 
@@ -20,6 +21,12 @@ func EmitError(ctx context.Context, message string) {
 // EmitLogin emite un evento de login exitoso
 func EmitLogin(ctx context.Context, username string) {
 	runtime.EventsEmit(ctx, "login", username)
+}
+
+// EmitLoginError emite un evento de error en el login
+func EmitLoginError(ctx context.Context, message string) {
+	log.Println("EmitLoginError: ", message)
+	runtime.EventsEmit(ctx, "login-error", message)
 }
 
 // EmitLogout emite un evento de logout exitoso

@@ -93,7 +93,7 @@ func startClient(username string, password string) {
 
 	if err != nil {
 		log.Printf("%+v\n", err)
-		events.EmitError(AppContext, "Connection failed")
+		events.EmitLoginError(AppContext, "Connection failed")
 		return
 	}
 
