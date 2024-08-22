@@ -172,196 +172,46 @@ onConferenceInvite();
 </script>
 
 <template>
-  <div class="nav-container">
-    <div class="nav-section">
-      <div class="notifications" @click="toggleNotificationPanel">
-        <div class="notification-count">{{ totalNotifications }}</div>
-        <div v-if="showNotificationPanel" class="notification-panel">
-          <button class="notification-dismiss-all" @click="dismissAllNotifications">Dismiss all</button>
-          <div v-for="(notification, index) in state.Notifications" :key="index" class="notification-item">
-            <div class="notification-body">
-              <p>{{ notification.message }}</p>
-
-              <div v-if="notification.type === 'subscription' || notification.type === 'conference-invitation'" class="subscription-buttons">
-                <button @click.stop="acceptSubscription(index, notification.username, notification.type)">Accept</button>
-                <button @click.stop="rejectSubscription(index, notification.username, notification.type)">Reject</button>
+  <div class="flex justify-between items-center w-full p-3 mt-2 mb-2 bg-blue-500 text-white">
+    <div class="flex justify-evenly items-center">
+      <div class="relative" @click="toggleNotificationPanel">
+        <div class="flex justify-center items-center w-8 h-8 rounded-full bg-red-500 text-white text-[clamp(0.5rem,14px,2rem)] cursor-pointer">
+          {{ totalNotifications }}
+        </div>
+        <div v-if="showNotificationPanel" class="absolute top-8 left-0 w-fit max-h-[calc(80vh-100px)] min-w-[300px] min-h-[100px] p-2 bg-white border border-gray-300 rounded-lg shadow-md z-10 overflow-x-hidden overflow-y-auto scrollbar-thin">
+          <button class="px-2 py-1 mb-2 bg-red-500 text-white rounded cursor-pointer" @click="dismissAllNotifications">Dismiss all</button>
+          <div v-for="(notification, index) in state.Notifications" :key="index" class="flex justify-between items-center mb-2 p-2 border-b border-gray-300 cursor-default">
+            <div class="flex flex-col my-1">
+              <p class="mx-4 text-gray-800">{{ notification.message }}</p>
+              <div v-if="notification.type === 'subscription' || notification.type === 'conference-invitation'" class="flex justify-center mt-1">
+                <button class="mx-1 px-2 py-1 bg-blue-500 text-white rounded cursor-pointer" @click.stop="acceptSubscription(index, notification.username, notification.type)">Accept</button>
+                <button class="mx-1 px-2 py-1 bg-blue-500 text-white rounded cursor-pointer" @click.stop="rejectSubscription(index, notification.username, notification.type)">Reject</button>
               </div>
-
             </div>
-            <button @click.stop="dismissNotification(index, notification.type)">Dismiss</button>
+            <button class="px-2 py-1 bg-red-500 text-white rounded cursor-pointer" @click.stop="dismissNotification(index, notification.type)">Dismiss</button>
           </div>
-
-          <div v-for="(error, index) in state.Errors" :key="index" class="notification-item">
+          <div v-for="(error, index) in state.Errors" :key="index" class="flex justify-between items-center mb-2 p-2 border-b border-gray-300 cursor-default">
             <p>{{ error.message }}</p>
-            <button @click.stop="dismissNotification(index, 'error')">Dismiss</button>
+            <button class="px-2 py-1 bg-red-500 text-white rounded cursor-pointer" @click.stop="dismissNotification(index, 'error')">Dismiss</button>
           </div>
-
         </div>
       </div>
     </div>
-    <div class="nav-section">
-      <PlusIcon class="icon" @click="showRequestPanel = !showRequestPanel" />
-      <div v-if="showRequestPanel" class="request-panel">
-        <input v-model="newContact" type="text" placeholder="Enter JID" class="request-input" />
-        <button @click="sendSubscriptionRequest">Send Request</button>
+    <div class="flex justify-evenly items-center">
+      <PlusIcon class="w-7 h-7 mx-4 cursor-pointer" @click="showRequestPanel = !showRequestPanel" />
+      <div v-if="showRequestPanel" class="flex items-center ml-4">
+        <input v-model="newContact" type="text" placeholder="Enter JID" class="px-2 py-1 border border-gray-300 rounded mr-2" />
+        <button class="px-2 py-1 bg-blue-500 text-white rounded cursor-pointer" @click="sendSubscriptionRequest">Send Request</button>
       </div>
-      <PowerIcon class="icon" @click="logout" />
+      <PowerIcon class="w-7 h-7 mx-4 cursor-pointer" @click="logout" />
     </div>
-
   </div>
 </template>
 
 <style scoped>
-.nav-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 
-  width: calc(100% - 1.5rem);
-
-  padding: 0.75rem;
-
-  background-color: #007bff;
-  color: white;
-}
-
-.nav-section {
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-}
-
-.notifications {
-  position: relative;
-}
-
-.notification-count {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  width: 32px;
-  height: 32px;
-
-  border-radius: 50%;
-  background-color: red;
-  color: white;
-  font-size: clamp(0.5rem, 14px, 2rem);
-  cursor: pointer;
-
-}
-
-.notification-panel {
-  width: fit-content;
-  max-height: calc(80vh - 100px);
-  min-width: 300px;
-  min-height: 100px;
-
-  position: absolute;
-  top: 30px;
-  left: 0;
-
-  padding: 10px;
-
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  z-index: 10;
-
-  overflow-x: hidden;
-  overflow-y: auto;
+.scrollbar-thin {
   scrollbar-width: thin;
-}
-
-.notification-dismiss-all {
-  padding: 5px 10px;
-  border: none;
-  border-radius: 4px;
-  background-color: #ff0000;
-  color: white;
-  cursor: pointer;
-}
-
-.notification-item {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-
-  margin-bottom: 10px;
-  padding: 10px;
-  border-bottom: 1px solid #ccc;
-
-  cursor: default;
-}
-
-.notification-body {
-  display: flex;
-  flex-direction: column;
-  margin: 0.25rem 0;
-}
-
-.notification-body p {
-  margin: 0 1rem;
-  color: #1b2636;
-}
-
-.notification-item button {
-  padding: 5px 10px;
-  border: none;
-  border-radius: 4px;
-  background-color: #ff0000;
-  color: white;
-  cursor: pointer;
-}
-
-.subscription-buttons {
-  display: flex;
-  justify-content: center;
-  margin-top: 5px;
-}
-
-.subscription-buttons button {
-  margin: 0 5px;
-  padding: 5px 10px;
-  border: none;
-  border-radius: 4px;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
-}
-
-.icon {
-  width: 28px;
-  height: 28px;
-
-  margin: 0 1rem;
-
-  cursor: pointer;
-}
-
-.request-panel {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-left: 1rem;
-}
-
-.request-input {
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  margin-right: 0.5rem;
-}
-
-.request-panel button {
-  padding: 5px 10px;
-  border: none;
-  border-radius: 4px;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
 }
 
 </style>
