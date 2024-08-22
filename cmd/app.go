@@ -35,6 +35,10 @@ func (a *App) Login(username string, password string) {
 	chat.Start(a.ctx, username, password)
 }
 
+func (a *App) Logout() {
+	chat.LogoutChannel <- true
+}
+
 func (a *App) SendMessage(body string, to string, from string) {
 	message := models.NewMessage(body, to, from)
 

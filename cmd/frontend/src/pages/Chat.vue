@@ -5,14 +5,11 @@ import {
   SendConferenceMessage,
   UpdateContacts,
   ProbeContacts,
-  RequestContact,
   AcceptSubscription,
-  CancelSubscription,
   SetStatus,
   GetMessages,
   GetMessagesConference,
   GetCurrentUser,
-  // GetArchive
 } from '../../wailsjs/go/main/App.js'
 
 import {EventsOn} from "../../wailsjs/runtime/runtime.js";
@@ -22,9 +19,12 @@ import Conversation from "../components/Conversation.vue";
 import Contact from "../components/Contact.vue";
 import StatusPopup from "../components/StatusPopUp.vue";
 import Nav from "../components/Nav.vue";
+import Options from "../components/Options.vue";
 
 import {CogIcon} from "@heroicons/vue/24/solid";
-import Options from "../components/Options.vue";
+import {useRouter} from "vue-router";
+
+const router = useRouter();
 
 const Message = reactive({
   jid: "",
@@ -104,18 +104,6 @@ function getContacts() {
   Debug.resultText = "Getting contacts"
   UpdateContacts()
   ProbeContacts()
-}
-
-function addContact() {
-  console.log("Adding contact")
-  Debug.resultText = "Adding contact"
-  RequestContact(Message.jid)
-}
-
-function cancelSubscription() {
-  console.log("Cancelling subscription")
-  Debug.resultText = "Cancelling subscription"
-  CancelSubscription(Message.jid)
 }
 
 function updateStatus(status) {
@@ -283,6 +271,14 @@ const listenPresenceUpdate = async () => {
   })
 }
 
+const listenLogout = async () => {
+  EventsOn("logout", () => {
+    console.log("Logout")
+    Debug.resultText = "Logout"
+    router.push("/")
+  })
+}
+
 GetCurrentUser().then((user) => {
   User.jid = user
   console.log("User", user)
@@ -318,6 +314,7 @@ listenSubRequest()
 listenUpdateMessages()
 listenConferences()
 listenPresenceUpdate()
+listenLogout()
 
 getContacts()
 

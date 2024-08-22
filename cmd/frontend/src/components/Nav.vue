@@ -6,10 +6,14 @@ import {
   AcceptSubscription,
   CancelSubscription,
   RequestContact,
-  AcceptConferenceInvitation
+  AcceptConferenceInvitation,
+  Logout
 } from '../../wailsjs/go/main/App.js';
 
 import { PlusIcon } from "@heroicons/vue/24/solid";
+import {PowerIcon} from "@heroicons/vue/24/solid";
+
+import Swal from "sweetalert2";
 
 // Estado para las notificaciones
 const state = reactive({
@@ -115,16 +119,35 @@ const acceptSubscription = (index, username, type) => {
 
 };
 
+// Función para rechazar una suscripción
 const rejectSubscription = (index, username, type) => {
   // Aquí iría la lógica para rechazar la suscripción
   CancelSubscription(username)
   dismissNotification(index, "subscription");
 };
 
+// Funciones para cerrar sesión
+const logout = () => {
+  Swal.fire({
+    title: 'Are you sure you want to log out?',
+    showCancelButton: true,
+    confirmButtonText: `Yes`,
+    cancelButtonText: `No`,
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Aquí iría la lógica para cerrar sesión
+      console.log("Logging out...");
+      Logout();
+    }
+  });
+};
+
+// Función para mostrar/ocultar el panel de notificaciones
 const toggleNotificationPanel = () => {
   showNotificationPanel.value = !showNotificationPanel.value;
 };
 
+// Cálculo del color del estado
 const statusColor = computed(() => {
   switch (props.status) {
     case 'Online':  //  Online
@@ -148,7 +171,6 @@ const statusColor = computed(() => {
 })
 
 // Request panel
-
 const showRequestPanel = ref(false);
 const newContact = ref("");  // Estado para almacenar el JID introducido
 
@@ -174,48 +196,59 @@ onConferenceInvite();
 
 <template>
   <div class="nav-container">
-    <div class="notifications" @click="toggleNotificationPanel">
-      <div class="notification-count">{{ totalNotifications }}</div>
-      <div v-if="showNotificationPanel" class="notification-panel">
-        <button class="notification-dismiss-all" @click="dismissAllNotifications">Dismiss all</button>
-        <div v-for="(notification, index) in state.Notifications" :key="index" class="notification-item">
-          <div class="notification-body">
-            <p>{{ notification.message }}</p>
+    <div class="nav-section">
+      <div class="notifications" @click="toggleNotificationPanel">
+        <div class="notification-count">{{ totalNotifications }}</div>
+        <div v-if="showNotificationPanel" class="notification-panel">
+          <button class="notification-dismiss-all" @click="dismissAllNotifications">Dismiss all</button>
+          <div v-for="(notification, index) in state.Notifications" :key="index" class="notification-item">
+            <div class="notification-body">
+              <p>{{ notification.message }}</p>
 
-            <div v-if="notification.type === 'subscription' || notification.type === 'conference-invitation'" class="subscription-buttons">
-              <button @click.stop="acceptSubscription(index, notification.username, notification.type)">Accept</button>
-              <button @click.stop="rejectSubscription(index, notification.username, notification.type)">Reject</button>
+              <div v-if="notification.type === 'subscription' || notification.type === 'conference-invitation'" class="subscription-buttons">
+                <button @click.stop="acceptSubscription(index, notification.username, notification.type)">Accept</button>
+                <button @click.stop="rejectSubscription(index, notification.username, notification.type)">Reject</button>
+              </div>
+
             </div>
-
+            <button @click.stop="dismissNotification(index, notification.type)">Dismiss</button>
           </div>
-          <button @click.stop="dismissNotification(index, notification.type)">Dismiss</button>
-        </div>
 
-        <div v-for="(error, index) in state.Errors" :key="index" class="notification-item">
-          <p>{{ error.message }}</p>
-          <button @click.stop="dismissNotification(index, 'error')">Dismiss</button>
-        </div>
+          <div v-for="(error, index) in state.Errors" :key="index" class="notification-item">
+            <p>{{ error.message }}</p>
+            <button @click.stop="dismissNotification(index, 'error')">Dismiss</button>
+          </div>
 
+        </div>
       </div>
     </div>
-
-    <PlusIcon class="icon" @click="showRequestPanel = !showRequestPanel" />
-    <div v-if="showRequestPanel" class="request-panel">
-      <input v-model="newContact" type="text" placeholder="Enter JID" class="request-input" />
-      <button @click="sendSubscriptionRequest">Send Request</button>
+    <div class="nav-section">
+      <PlusIcon class="icon" @click="showRequestPanel = !showRequestPanel" />
+      <div v-if="showRequestPanel" class="request-panel">
+        <input v-model="newContact" type="text" placeholder="Enter JID" class="request-input" />
+        <button @click="sendSubscriptionRequest">Send Request</button>
+      </div>
+      <PowerIcon class="icon" @click="logout" />
     </div>
+
   </div>
 </template>
 
 <style scoped>
 .nav-container {
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
   width: calc(100% - 2rem);
   padding: 1rem;
   background-color: #007bff;
   color: white;
+}
+
+.nav-section {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
 }
 
 .notifications {
@@ -320,7 +353,9 @@ onConferenceInvite();
 .icon {
   width: 24px;
   height: 24px;
-  margin-left: auto;
+
+  margin: 0 1rem;
+
   cursor: pointer;
 }
 

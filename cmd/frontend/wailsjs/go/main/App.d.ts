@@ -20,6 +20,8 @@ export function GetMessagesConference(arg1:string):Promise<Array<models.Message>
 
 export function Login(arg1:string,arg2:string):Promise<void>;
 
+export function Logout():Promise<void>;
+
 export function ProbeContacts():Promise<void>;
 
 export function RequestContact(arg1:string):Promise<void>;

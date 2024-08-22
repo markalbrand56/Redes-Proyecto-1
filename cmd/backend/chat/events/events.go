@@ -22,6 +22,11 @@ func EmitLogin(ctx context.Context, username string) {
 	runtime.EventsEmit(ctx, "login", username)
 }
 
+// EmitLogout emite un evento de logout exitoso
+func EmitLogout(ctx context.Context) {
+	runtime.EventsEmit(ctx, "logout")
+}
+
 // EmitContacts emite un evento de contactos, con la lista de contactos del usuario actual
 func EmitContacts(ctx context.Context, contacts []string) {
 	runtime.EventsEmit(ctx, "contacts", contacts)

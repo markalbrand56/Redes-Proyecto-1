@@ -15,6 +15,7 @@ import (
 )
 
 var (
+	LogoutChannel         = make(chan bool)           // Canal para cerrar la sesión
 	TextChannel           = make(chan models.Message) // Canal para enviar mensajes
 	ConferenceTextChannel = make(chan models.Message) // Canal para enviar mensajes a salas de chat
 
@@ -132,6 +133,16 @@ func startMessaging() {
 
 	for {
 		select {
+		case <-LogoutChannel:
+			// Cerrar la sesión
+			err := User.Client.Disconnect()
+			if err != nil {
+				return // No se pudo cerrar la sesión
+			}
+			User = nil
+
+			events.EmitLogout(AppContext)
+
 		case msg := <-TextChannel:
 			// Envío de mensaje a un contacto V2
 			fmt.Printf("Correspondent: %s Message: %s\n", msg.To, msg.Body)
