@@ -22,6 +22,7 @@ import Nav from "../components/Nav.vue";
 import Options from "../components/Options.vue";
 
 import {CogIcon} from "@heroicons/vue/24/solid";
+import {Bars3Icon} from "@heroicons/vue/24/solid";
 import {useRouter} from "vue-router";
 
 const router = useRouter();
@@ -44,6 +45,8 @@ const User = reactive({
 const Messages = reactive({
   messages: []
 })
+
+const showLeftPanel = ref(false)
 
 const Debug = reactive({
   resultText: "Please enter your name below 👇",
@@ -156,10 +159,9 @@ function getConferenceMessages(jid) {
   })
 }
 
-// function getArchive(jid) {
-//   console.log("Getting archive")
-//   GetArchive(jid)
-// }
+const handleToggleLeftPanel = () => {
+  showLeftPanel.value = !showLeftPanel.value
+}
 
 function handleContactClicked(jid) {
   console.log("Contact clicked", jid)
@@ -331,8 +333,8 @@ onMounted(() => {
     <h1>Chat</h1>
     <Nav />
     <div id="display" class="display">
-
-      <div id="left-panel" class="left-panel">
+      <Bars3Icon class="dots" @click="handleToggleLeftPanel" />
+      <div id="left-panel" class="left-panel" v-if="showLeftPanel">
         <div id="correspondents" class="correspondents">
           <h2 @click="getContacts" style="cursor: pointer">Contacts</h2>
           <div id="contacts" class="contact-section">
@@ -414,8 +416,8 @@ main h1 {
   justify-content: flex-start;
   align-items: center;
 
-  width: 20%;
-  height: 100%;
+  width: min(20%, 300px);
+  height: calc(100% - 2rem);
   margin: 1rem;
   border: 1px dashed green;
 
@@ -496,7 +498,8 @@ main h1 {
 }
 
 .current-chat {
-  width: 75%;
+  min-width: 75%;
+  width: 100%;
   margin: 1rem;
   border: 1px dashed blue;
 }
