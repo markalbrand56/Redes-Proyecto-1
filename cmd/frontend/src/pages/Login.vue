@@ -44,64 +44,19 @@ EventsOn("login-error", (error) => {
 </script>
 
 <template>
-  <div class="login-container">
-    <h2>Login</h2>
-    <form @submit.prevent="handleLogin">
-      <div>
-        <label for="username">Username:</label>
-        <input type="text" v-model="user.username" id="username" required />
+  <div class="flex flex-col items-center justify-center h-full">
+    <h2 class="text-4xl text-blue-500 mb-4">Login</h2>
+    <form @submit.prevent="handleLogin" class="flex flex-col gap-4">
+      <div class="flex flex-col gap-2">
+        <label for="username" class="text-2xl">Username:</label>
+        <input type="text" v-model="user.username" id="username" class="p-2 border border-gray-300 rounded" required />
       </div>
-      <div>
-        <label for="password">Password:</label>
-        <input type="password" v-model="user.password" id="password" required />
+      <div class="flex flex-col gap-2">
+        <label for="password" class="text-2xl">Password:</label>
+        <input type="password" v-model="user.password" id="password" class="p-2 border border-gray-300 rounded text-black" required />
       </div>
-      <button type="submit">Login</button>
+      <button type="submit" class="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 m-2">Login</button>
     </form>
-    <pulse-loader v-if="user.loggingIn" color="#007bff" size="10px" class="loader"/>
+    <pulse-loader v-if="user.loggingIn" color="#007bff" size="10px" class="mt-4"/>
   </div>
 </template>
-
-<style scoped>
-.login-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-form div {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-input {
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  border: 1px solid #ccc;
-}
-
-button {
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
-  border: none;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
-
-.loader {
-  margin-top: 1rem;
-}
-</style>
