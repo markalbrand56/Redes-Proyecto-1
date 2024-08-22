@@ -4,27 +4,33 @@ import { useRouter } from 'vue-router';
 import { Login } from '../../wailsjs/go/main/App.js';
 import {EventsOn} from "../../wailsjs/runtime/runtime.js";
 
+import PulseLoader from 'vue-spinner/src/PulseLoader.vue';
+
 
 const user = reactive({
   username: "",
-  password: ""
+  password: "",
+  loggingIn: false
 });
 
 const router = useRouter();
 
 async function handleLogin() {
   console.log(user.username, user.password);
+  user.loggingIn = true;
   await Login(user.username, user.password);
 }
 
 // Event listeners
 
 EventsOn("login", (jid) => {
+  user.loggingIn = false;
   console.log("Login successful for jid: ", jid);
   router.push("/chat");
 });
 
 EventsOn("error", (error) => {
+  user.loggingIn = false;
   console.error("Login error: ", error);
 });
 
@@ -45,6 +51,7 @@ EventsOn("error", (error) => {
       </div>
       <button type="submit">Login</button>
     </form>
+    <pulse-loader v-if="user.loggingIn" color="#007bff" size="10px" class="loader"/>
   </div>
 </template>
 
@@ -86,5 +93,9 @@ button {
 
 button:hover {
   background-color: #0056b3;
+}
+
+.loader {
+  margin-top: 1rem;
 }
 </style>
