@@ -216,8 +216,11 @@ onConferenceInvite();
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: calc(100% - 2rem);
-  padding: 1rem;
+
+  width: calc(100% - 1.5rem);
+
+  padding: 0.75rem;
+
   background-color: #007bff;
   color: white;
 }
@@ -236,12 +239,14 @@ onConferenceInvite();
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 24px;
-  height: 24px;
+
+  width: 32px;
+  height: 32px;
+
   border-radius: 50%;
   background-color: red;
   color: white;
-  font-size: 14px;
+  font-size: clamp(0.5rem, 14px, 2rem);
   cursor: pointer;
 
 }
@@ -328,8 +333,8 @@ onConferenceInvite();
 }
 
 .icon {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
 
   margin: 0 1rem;
 
