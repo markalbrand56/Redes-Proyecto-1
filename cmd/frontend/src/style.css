@@ -28,3 +28,7 @@ body {
     height: 100vh;
     text-align: center;
 }
+
+::selection {
+    background-color: rgba(255, 255, 255, 0.3);
+}
