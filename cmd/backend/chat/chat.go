@@ -505,26 +505,34 @@ func startMessaging() {
 			} else {
 				fmt.Println("Presencia enviada para unirse a la sala de chat:", jid)
 
-				User.InsertConference(models.NewConference(alias, jid))
-				events.EmitConferences(AppContext, User.Conferences)
+				FetchContactsChannel <- true // Volver a obtener la lista de contactos y salas de chat
 			}
 
 		case invite := <-InviteToConferenceChannel:
 			log.Println("Inviting to conference: ", invite)
 
-			/*
-				Example 1. A direct invitation¶
-				<message
-				    from='crone1@shakespeare.lit/desktop'
-				    to='hecate@shakespeare.lit'>
-				  <x xmlns='jabber:x:conference'
-				     jid='darkcave@macbeth.shakespeare.lit'
-				     password='cauldronburn'
-				     reason='Hey Hecate, this is the place for all good witches!'/>
-				</message>
-			*/
+			// Primero se debe enviar una solicitud de afiliación a la sala de chat
+			// Sin esto, el usuario no podrá unirse a la sala de chat a menos que ya sea pública
+			affiliationRequest := cstanza.NewMUCAffiliationRequest(invite.To, "member")
 
-			// Se envía una invitación a una sala de chat
+			affiliationRequestMessage := stanza.IQ{
+				Attrs: stanza.Attrs{
+					To:   invite.ConferenceJID,
+					From: User.UserName,
+					Type: stanza.IQTypeSet,
+					Id:   "affiliation_request_1",
+				},
+				Payload: affiliationRequest,
+			}
+
+			_, err := User.Client.SendIQ(AppContext, &affiliationRequestMessage)
+
+			if err != nil {
+				log.Println("Error sending affiliation request: ", err)
+				events.EmitError(AppContext, "Error sending affiliation request")
+			}
+
+			// Luego se debe enviar una invitación a la sala de chat
 			inviteMessage := stanza.Message{
 				Attrs: stanza.Attrs{
 					To:   invite.To,
@@ -533,10 +541,12 @@ func startMessaging() {
 			}
 
 			inviteExtension := cstanza.NewConferenceInvite(invite.ConferenceJID, fmt.Sprintf("%s has invited you to the conference '%s'", User.UserName, invite.ConferenceJID))
+			mucInviteExtension := cstanza.NewMucInvite(User.UserName)
 
 			inviteMessage.Extensions = append(inviteMessage.Extensions, inviteExtension)
+			inviteMessage.Extensions = append(inviteMessage.Extensions, mucInviteExtension)
 
-			err := User.Client.Send(inviteMessage)
+			err = User.Client.Send(inviteMessage)
 
 			if err != nil {
 				log.Println("Error sending conference invitation: ", err)

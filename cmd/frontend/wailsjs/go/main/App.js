@@ -66,6 +66,10 @@ export function SendFileMessage(arg1, arg2, arg3) {
   return window['go']['main']['App']['SendFileMessage'](arg1, arg2, arg3);
 }
 
+export function SendInvitation(arg1, arg2) {
+  return window['go']['main']['App']['SendInvitation'](arg1, arg2);
+}
+
 export function SendMessage(arg1, arg2, arg3) {
   return window['go']['main']['App']['SendMessage'](arg1, arg2, arg3);
 }

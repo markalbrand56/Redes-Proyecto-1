@@ -114,9 +114,6 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 
 		if msg.Body != "" {
 			// Insertar en las conferencias
-			u := User
-
-			fmt.Println(u)
 
 			conf := strings.Split(msg.From, "/")[0]
 
@@ -130,7 +127,6 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 					}
 				}
 			}
-
 		}
 
 	default:

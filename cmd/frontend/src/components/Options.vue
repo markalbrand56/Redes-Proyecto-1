@@ -3,7 +3,8 @@
 import {reactive, ref} from "vue";
 
 import {
-  CancelSubscription
+  CancelSubscription,
+  SendInvitation,
 } from '../../wailsjs/go/main/App.js';
 
 const contactInvite = reactive({
@@ -35,9 +36,11 @@ const toggleInviting = () => {
 
 // Invite contact to conference
 const inviteContact = (jid) => {
-  console.log("Inviting contact", jid)
+  console.log("Inviting contact", jid, "to conference", props.jid)
 
   inviting.value = false
+
+  SendInvitation(props.jid, jid);
 }
 
 // Remove contact from roster

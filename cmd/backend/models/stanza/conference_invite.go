@@ -6,13 +6,12 @@ import (
 )
 
 /*
-<message
-			    from='crone1@shakespeare.lit/desktop'
-			    to='hecate@shakespeare.lit'>
-			  <x xmlns='jabber:x:conference'
-			     jid='darkcave@macbeth.shakespeare.lit'
-			     reason='Hey Hecate, this is the place for all good witches!'/>
-			</message>
+<message xmlns="jabber:client" from="ogivox@conference.alumchat.lol" to="alb210041@alumchat.lol">
+	<x xmlns="http://jabber.org/protocol/muc#user">
+		<invite from="alb21004@alumchat.lol"/>
+	</x>
+	<x xmlns="jabber:x:conference" jid="ogivox@conference.alumchat.lol"/>
+</message>
 */
 
 type ConferenceInvite struct {
@@ -44,5 +43,81 @@ func NewConferenceInvite(jid string, reason string) ConferenceInvite {
 		XMLNS:   "jabber:x:conference",
 		JID:     jid,    // Asigna el JID al campo JID
 		Reason:  reason, // Asigna la razón al campo Reason
+	}
+}
+
+type MucInvite struct {
+	XMLName xml.Name `xml:"x"`
+	XMLNS   string   `xml:"xmlns,attr"`
+	Invite  Invite   `xml:"invite"`
+}
+
+type Invite struct {
+	From string `xml:"from,attr"`
+}
+
+// Name devuelve el nombre del tipo de archivo
+func (f MucInvite) Name() string {
+	return "MucInvite"
+}
+
+// Namespace devuelve el espacio de nombres para el archivo
+func (f MucInvite) Namespace() string {
+	return f.XMLName.Space
+}
+
+// GetSet no es necesario en este contexto
+func (f MucInvite) GetSet() *stanza.ResultSet {
+	return nil
+}
+
+// NewMucInvite crea una nueva instancia de la estructura MucInvite con un JID, contraseña y razón
+func NewMucInvite(from string) MucInvite {
+	return MucInvite{
+		XMLName: xml.Name{Space: "http://jabber.org/protocol/muc#user", Local: "x"},
+		XMLNS:   "http://jabber.org/protocol/muc#user",
+		Invite: Invite{
+			From: from,
+		},
+	}
+}
+
+// MUCAdminAffiliation representa una afiliación en una sala de conferencia MUC
+type MUCAdminAffiliation struct {
+	XMLName     xml.Name `xml:"item"`
+	JID         string   `xml:"jid,attr"`
+	Affiliation string   `xml:"affiliation,attr"`
+}
+
+// MUCAffiliationRequest es la estructura para enviar una solicitud de afiliación
+type MUCAffiliationRequest struct {
+	XMLName xml.Name              `xml:"query"`
+	XMLNS   string                `xml:"xmlns,attr"`
+	Items   []MUCAdminAffiliation `xml:"item"`
+}
+
+// Name devuelve el nombre del tipo de archivo
+func (f MUCAffiliationRequest) Name() string {
+	return "MUCAffiliationRequest"
+}
+
+// Namespace devuelve el espacio de nombres para el archivo
+func (f MUCAffiliationRequest) Namespace() string {
+	return f.XMLName.Space
+}
+
+// GetSet no es necesario en este contexto
+func (f MUCAffiliationRequest) GetSet() *stanza.ResultSet {
+	return nil
+}
+
+// NewMUCAffiliationRequest crea una nueva solicitud para cambiar la afiliación en una sala MUC
+func NewMUCAffiliationRequest(jid, affiliation string) MUCAffiliationRequest {
+	return MUCAffiliationRequest{
+		XMLName: xml.Name{Local: "query"},
+		XMLNS:   "http://jabber.org/protocol/muc#admin",
+		Items: []MUCAdminAffiliation{
+			{JID: jid, Affiliation: affiliation},
+		},
 	}
 }

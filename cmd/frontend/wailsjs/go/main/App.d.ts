@@ -34,6 +34,8 @@ export function SendConferenceMessage(arg1:string,arg2:string,arg3:string):Promi
 
 export function SendFileMessage(arg1:string,arg2:string,arg3:string):Promise<void>;
 
+export function SendInvitation(arg1:string,arg2:string):Promise<void>;
+
 export function SendMessage(arg1:string,arg2:string,arg3:string):Promise<void>;
 
 export function SetStatus(arg1:number):Promise<void>;
