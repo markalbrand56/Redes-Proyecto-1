@@ -50,7 +50,7 @@ const isImage = props.message.body.startsWith("https://") && (props.message.body
 }
 
 .message-container img {
-  @apply max-w-[65%] max-h-[300px] my-2 rounded-lg object-contain;
+  @apply max-w-[65%] max-h-[300px] my-2 mr-4 rounded-lg object-contain;
 }
 
 .inner-message {
