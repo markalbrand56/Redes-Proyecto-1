@@ -338,7 +338,7 @@ onMounted(() => {
       <Bars3Icon class="w-12 h-12 m-3 ml-4 cursor-pointer" @click="handleToggleLeftPanel" />
 
       <div id="left-panel" v-if="showLeftPanel" class="left-panel fixed top-12 left-16 flex flex-col items-center justify-start min-w-96 w-fit h-[calc(75%-2rem)] m-4 p-4 bg-gray-100 rounded-xl">
-        <div id="correspondents" class="correspondents flex flex-col items-center justify-start w-[calc(100%-2rem)] h-4/5 mt-4 overflow-y-auto scrollbar-thin scrollbar-thumb-black scrollbar-track-gray-600">
+        <div id="correspondents" class="correspondents flex flex-col items-center justify-start w-[calc(100%-2rem)] h-4/5 mt-4 overflow-y-auto object-contain scrollbar-thin scrollbar-thumb-black scrollbar-track-gray-600">
           <h2 @click="getContacts" class="cursor-pointer text-lg text-center text-gray-900 border-b border-gray-900 py-2 px-4 bg-gray-100 rounded-xl">Contacts</h2>
           <div id="contacts" class="contact-section w-full">
             <Contact v-for="contact in User.contacts" :contact="{jid: contact.jid}" :key="contact" @setCorrespondent="handleContactClicked" :status="contact.status" @click="handleToggleLeftPanel"/>
@@ -348,7 +348,7 @@ onMounted(() => {
             <Contact v-for="(jid, name) in User.conferences" :contact="{jid: jid}" :alias="name" :key="jid" @setCorrespondent="handleConferenceClicked" @click="handleToggleLeftPanel"/>
           </div>
         </div>
-        <div id="current-account" class="current-account flex items-center justify-center w-[calc(100%-2rem)] h-fit my-4 p-4 border-2 border-gray-300 bg-white rounded-xl cursor-pointer" @click="togglePopup">
+        <div id="current-account" class="current-account flex items-center justify-center w-[calc(100%-2rem)] h-fit mt-4 p-4 border-2 border-gray-300 bg-white rounded-xl cursor-pointer" @click="togglePopup">
           <div :class="['status-indicator', statusColor, 'w-3 h-3 mr-2 border border-black rounded-full']"></div>
           <p class="text-lg text-gray-900">{{ User.jid }}</p>
         </div>
