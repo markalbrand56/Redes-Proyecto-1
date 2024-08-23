@@ -329,363 +329,76 @@ onMounted(() => {
 </script>
 
 <template>
-  <main>
-    <h1 style="cursor: default">Chat</h1>
-    <Nav />
-    <div id="display" class="display">
-      <Bars3Icon class="dots" @click="handleToggleLeftPanel" />
-      <div id="left-panel" class="left-panel" v-if="showLeftPanel">
-        <div id="correspondents" class="correspondents">
-          <h2 @click="getContacts" style="cursor: pointer">Contacts</h2>
-          <div id="contacts" class="contact-section">
-            <Contact v-for="contact in User.contacts" :contact="{jid: contact.jid}" :key="contact" @setCorrespondent="handleContactClicked"  :status="contact.status"/>
-          </div>
+  <main class="flex flex-col items-center justify-center h-full">
+    <h1 class="cursor-default my-4">Chat</h1>
 
-          <h2 style="cursor: default">Group chats</h2>
-          <div id="conferences" class="contact-section">
-            <Contact v-for="(jid, name) in User.conferences" :contact="{jid: jid}" :alias="name" :key="jid" @setCorrespondent="handleConferenceClicked" />
+    <Nav />
+
+    <div id="display" class="flex justify-between w-full h-4/5">
+
+      <Bars3Icon class="w-12 h-12 m-3 ml-4 cursor-pointer" @click="handleToggleLeftPanel" />
+
+      <div id="left-panel" v-if="showLeftPanel" class="left-panel fixed top-12 left-16 flex flex-col items-center justify-start min-w-96 w-fit h-[calc(75%-2rem)] m-4 p-4 bg-gray-100 rounded-xl">
+        <div id="correspondents" class="correspondents flex flex-col items-center justify-start w-[calc(100%-2rem)] h-4/5 mt-4 overflow-y-auto scrollbar-thin scrollbar-thumb-black scrollbar-track-gray-600">
+          <h2 @click="getContacts" class="cursor-pointer text-lg text-center text-gray-900 border-b border-gray-900 py-2 px-4 bg-gray-100 rounded-xl">Contacts</h2>
+          <div id="contacts" class="contact-section w-full">
+            <Contact v-for="contact in User.contacts" :contact="{jid: contact.jid}" :key="contact" @setCorrespondent="handleContactClicked" :status="contact.status" @click="handleToggleLeftPanel"/>
+          </div>
+          <h2 class="cursor-default text-lg text-center text-gray-900 border-b border-gray-900 py-2 px-4 bg-gray-100 rounded-xl">Group chats</h2>
+          <div id="conferences" class="contact-section w-full">
+            <Contact v-for="(jid, name) in User.conferences" :contact="{jid: jid}" :alias="name" :key="jid" @setCorrespondent="handleConferenceClicked" @click="handleToggleLeftPanel"/>
           </div>
         </div>
-
-        <div id="current-account" class="current-account" @click="togglePopup">
-          <div :class="['status-indicator', statusColor]"></div>
-          <p>{{ User.jid }}</p>
+        <div id="current-account" class="current-account flex items-center justify-center w-[calc(100%-2rem)] h-fit my-4 p-4 border-2 border-gray-300 bg-white rounded-xl cursor-pointer" @click="togglePopup">
+          <div :class="['status-indicator', statusColor, 'w-3 h-3 mr-2 border border-black rounded-full']"></div>
+          <p class="text-lg text-gray-900">{{ User.jid }}</p>
         </div>
         <StatusPopup v-if="showPopup" @statusChanged="handleStatusChange" @closePopup="togglePopup" />
       </div>
 
-      <div id="current-chat" class="current-chat">
+      <div id="current-chat" class="current-chat w-11/12 mx-8 my-2">
 
-        <div id="top-bar" class="top-bar">
-          <div id="current-contact" class="current-contact">
-            <p class="current-contact-jid">{{ Message.jid }}</p>
-            <p v-if="Message.statusMessage" class="current-contact-status-message" >{{ Message.statusMessage }}</p>
+        <div id="top-bar" class="top-bar flex items-center justify-center h-fit my-4">
+          <div id="current-contact" class="current-contact flex flex-col items-center justify-center h-full w-full p-4 bg-white rounded-xl">
+            <p class="current-contact-jid text-lg text-gray-900">{{ Message.jid }}</p>
+            <p v-if="Message.statusMessage" class="current-contact-status-message text-sm text-gray-500">{{ Message.statusMessage }}</p>
           </div>
-          <CogIcon class="dots" @click="toggleOptions" />
+          <CogIcon class="dots w-11 h-11 ml-4 cursor-pointer" @click="toggleOptions" />
           <Options :is-conference="Message.isConference" :jid="Message.jid" v-if="showOptions" @close-options="toggleOptions" />
         </div>
 
-        <div id="messages" class="message-section" ref="messageSectionRef">
-          <Conversation :messages="Messages.messages"  :user="User.jid" :is-conference="Message.isConference"/>
+        <div id="messages" class="message-section h-[70%] my-8 border-2 rounded-md border-black overflow-y-auto scrollbar-thin scrollbar-thumb-black scrollbar-track-gray-600" ref="messageSectionRef">
+          <Conversation :messages="Messages.messages" :user="User.jid" :is-conference="Message.isConference"/>
         </div>
 
-        <div id="message-input" class="message-input">
-          <input id="message" v-model="Message.body" autocomplete="off" class="input" type="text"/>
-          <button class="btn" @click="sendMessage">Send</button>
+        <div id="message-input" class="message-input flex items-center justify-center my-8">
+          <input id="message" v-model="Message.body" autocomplete="off" class="input w-4/5 h-8 px-2 rounded-md border-none bg-gray-200 focus:bg-white text-black" type="text"/>
+          <button class="btn w-16 h-8 ml-4 rounded-md cursor-pointer bg-blue-500">Send</button>
         </div>
-
       </div>
-
     </div>
-
-    <div id="debug" class="debug">
-
-      <div id="result" class="result">{{ Debug.resultText }}</div>
-
-    </div>
-
 
   </main>
 </template>
 
 <style scoped>
-
-main {
-  display: flex;
-  flex-direction: column;
-
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-}
-
-main h1 {
-  margin: 1rem;
-}
-
-.display {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  height: 80%;
-}
-
-.left-panel {
-  position: fixed;
-  top: 2rem;
-  left: 2rem;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-
-  width: max(20%, 300px);
-  height: calc(80% - 2rem);
-  margin: 1rem;
-
-  box-sizing: border-box;
-  background-color: #f0f0f0;
-
-  border-radius: 0.75rem;
-
-}
-
-.correspondents {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-
-  width: calc(100% - 2rem);
-  height: 80%;
-  margin: 1rem;
-
-  box-sizing: border-box;
-
-  overflow-x: hidden;
-  overflow-y: scroll;
-  scrollbar-width: thin;
-  scrollbar-color: #000000 #464646;
-}
-
-.correspondents::-webkit-scrollbar {
-  width: 10px;
-}
-
-.correspondents::-webkit-scrollbar-thumb {
-  background-color: #000000;
-}
-
-.correspondents::-webkit-scrollbar-track {
-  background-color: #464646;
-}
-
-.correspondents h2 {
-  margin: 0.25rem;
-
-  font-size: min(1.25rem, 2vw);
-  color: #1b2636;
-
-  border-bottom: 1px solid #1b2636;
-  padding: 0.5rem;
-  width: 70%;
-  text-align: center;
-  background-color: #f0f0f0;
-  border-radius: 0.75rem;
-}
-
-.contact-section {
-  width: 100%;
-}
-
-.current-account {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  min-height: 10%;
-  width: calc(100% - 2rem);
-  height: fit-content;
-  margin: 1rem;
-
-  border: 2px solid #c4c4c4;
-  background-color: #ffffff;
-  border-radius: 1rem;
-  cursor: pointer;
-
-}
-
-.current-account p {
-  margin: 0.5rem;
-  font-size: 18px;
-  color: #1b2636;
-}
-
-.current-chat {
-  min-width: 75%;
-  width: 100%;
-  margin: 1rem;
-}
-
-.top-bar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  min-height: 10%;
-  height: fit-content;
-
-  margin: 1rem;
-}
-
-.dots {
-  width: 45px;
-  height: 45px;
-  margin-right: 1rem;
-
-  cursor: pointer;
-}
-
-.current-contact {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
-  height: 100%;
-  margin: 1rem;
-  width: 100%;
-
-  background-color: white;
-  border-radius: 0.75rem;
-}
-
-.current-contact-jid {
-  margin: 0.5rem;
-  font-size: 18px;
-
-  min-height: 100%;
-
-  color: #1b2636;
-}
-
-.current-contact-status-message {
-  margin: 0.25rem;
-  font-size: 14px;
-
-  color: gray;
-}
-
-.message-section {
-  height: 70%;
-
-  margin: 2rem;
-  border: 2px solid #000000;
-
-  overflow-y: scroll;
-  scrollbar-width: thin;
-  scrollbar-color: #000000 #464646;
-
-}
-
-.message-input {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  margin: 2rem;
-}
-
-.message-input .input {
-  width: 80%;
-  height: 30px;
-  line-height: 30px;
-  border-radius: 3px;
-  border: none;
-  padding: 0 10px;
-  background-color: rgba(240, 240, 240, 1);
-  -webkit-font-smoothing: antialiased;
-}
-
-.message-input .input:hover {
-  border: none;
-  background-color: rgba(255, 255, 255, 1);
-}
-
-.message-input .input:focus {
-  border: none;
-  background-color: rgba(255, 255, 255, 1);
-}
-
-.message-input .btn {
-  width: 60px;
-  height: 30px;
-  line-height: 30px;
-  border-radius: 3px;
-  border: none;
-  margin: 0 0 0 20px;
-  padding: 0 8px;
-  cursor: pointer;
-}
-
-.result {
-  height: 20px;
-  line-height: 20px;
-  margin: 1.5rem auto;
-}
-
-.input-box {
-  padding: 1em;
-}
-
-.input-box .btn {
-  width: 60px;
-  height: 30px;
-  line-height: 30px;
-  border-radius: 3px;
-  border: none;
-  margin: 0 0 0 20px;
-  padding: 0 8px;
-  cursor: pointer;
-}
-
-.input-box .btn:hover {
-  background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
-  color: #333333;
-}
-
-.input-box .input {
-  border: none;
-  border-radius: 3px;
-  outline: none;
-  height: 30px;
-  line-height: 30px;
-  padding: 0 10px;
-  background-color: rgba(240, 240, 240, 1);
-  -webkit-font-smoothing: antialiased;
-}
-
-.input-box .input:hover {
-  border: none;
-  background-color: rgba(255, 255, 255, 1);
-}
-
-.input-box .input:focus {
-  border: none;
-  background-color: rgba(255, 255, 255, 1);
-}
-
-.status-indicator {
-  width: 12px;
-  height: 12px;
-
-  border-radius: 50%;
-  border: 1px solid #000000;
-
-  margin-right: 0.5rem;
-}
-
-.green {
+.status-indicator.green {
   background-color: green;
 }
 
-.red {
+.status-indicator.red {
   background-color: red;
 }
 
-.yellow {
+.status-indicator.yellow {
   background-color: #cebd00;
 }
 
-.orange {
+.status-indicator.orange {
   background-color: #e57c03;
 }
 
-.gray {
+.status-indicator.gray {
   background-color: gray;
 }
-
-
-
 </style>
