@@ -179,6 +179,8 @@ func handlePresence(s xmpp.Sender, p stanza.Packet) {
 			// El usuario está desconectado.
 			_, _ = fmt.Fprintf(os.Stdout, "User %s is offline\n", presence.From)
 
+			events.EmitPresenceUpdate(AppContext, presence.From, "Disconnected", "")
+
 		default:
 			_, _ = fmt.Fprintf(os.Stdout, "(%s) Presence from: %s\n", presence.Type, presence.From)
 
@@ -278,6 +280,26 @@ func handleIQ(s xmpp.Sender, p stanza.Packet) {
 			}
 
 			_, _ = fmt.Fprintf(os.Stdout, "Responded Version request from: %s\n", iq.From)
+
+		case *cstanza.Ping:
+			log.Println("Received ping from: ", iq.From)
+
+			// Responder
+			resp := stanza.IQ{
+				Attrs: stanza.Attrs{
+					Type: stanza.IQTypeResult,
+					From: iq.To,
+					To:   iq.From,
+				},
+				Payload: &cstanza.Ping{},
+			}
+
+			err := s.Send(&resp)
+
+			if err != nil {
+				log.Println(err)
+				events.EmitError(AppContext, err.Error())
+			}
 
 		default:
 			fmt.Printf("Unhandled IQ payload type: %T\n", payload)
