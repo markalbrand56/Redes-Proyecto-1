@@ -24,6 +24,7 @@ import Options from "../components/Options.vue";
 import {CogIcon} from "@heroicons/vue/24/solid";
 import {Bars3Icon} from "@heroicons/vue/24/solid";
 import {useRouter} from "vue-router";
+import FileInput from "../components/FileInput.vue";
 
 const router = useRouter();
 
@@ -183,6 +184,14 @@ function handleConferenceClicked(jid) {
   Debug.resultText = "Setting correspondent to " + jid
 
   getConferenceMessages(jid)  // Get the messages for the current correspondent
+}
+
+function handleFileUploaded(url) {
+  console.log('File uploaded:', url);
+  Message.body = url;
+
+  console.log("Sending file", Message.body)
+  // sendMessage();
 }
 
 // Event listeners
@@ -373,6 +382,7 @@ onMounted(() => {
         <div id="message-input" class="message-input flex items-center justify-center mt-8">
           <input id="message" v-model="Message.body" autocomplete="off" class="input w-4/5 h-8 px-2 rounded-md border-none bg-gray-200 focus:bg-white text-black" type="text"/>
           <button @click="sendMessage" class="btn w-16 h-8 ml-4 rounded-md cursor-pointer bg-blue-500">Send</button>
+          <FileInput @fileUploaded="handleFileUploaded" />
         </div>
       </div>
     </div>
