@@ -17,10 +17,12 @@ import Swal from "sweetalert2";
 
 // Estado para las notificaciones
 const state = reactive({
-  Notifications: [
-      {type: "subscription", message: "John Doe has requested to subscribe to you.", username: "John Doe" },
-  ],
-  Errors: [{ type: "error", message: "Error message" }],
+  // Notifications: [
+  //   { type: "subscription", message: "Subscription request from user1", username: "user1" },
+  // ],
+  // Errors: [{ type: "error", message: "Error message" }],
+  Notifications: [],
+  Errors: [],
 });
 
 // Cálculo del total de notificaciones
@@ -46,6 +48,13 @@ const onError = async () => {
     state.Errors.push({
       type: "error",
       message: message,
+    });
+
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: message,
+      footer: '<a href="">Try logging in again</a>'
     });
   });
 };
@@ -75,6 +84,7 @@ const onNotification = async () => {
     state.Notifications.push({
       type: type,
       message: message,
+      username: ""
     });
   });
 };
@@ -179,19 +189,19 @@ onConferenceInvite();
           {{ totalNotifications }}
         </div>
         <div v-if="showNotificationPanel" class="absolute top-8 left-0 w-fit max-h-[calc(80vh-100px)] min-w-[300px] min-h-[100px] p-2 bg-white border border-gray-300 rounded-lg shadow-md z-10 overflow-x-hidden overflow-y-auto scrollbar-thin">
-          <button class="px-2 py-1 mb-2 bg-red-500 text-white rounded cursor-pointer" @click="dismissAllNotifications">Dismiss all</button>
+          <button class="px-2 py-1 mb-2 bg-blue-500 text-white rounded cursor-pointer" @click="dismissAllNotifications">Dismiss all</button>
           <div v-for="(notification, index) in state.Notifications" :key="index" class="flex justify-between items-center mb-2 p-2 border-b border-gray-300 cursor-default">
             <div class="flex flex-col my-1">
               <p class="mx-4 text-gray-800">{{ notification.message }}</p>
               <div v-if="notification.type === 'subscription' || notification.type === 'conference-invitation'" class="flex justify-center mt-1">
                 <button class="mx-1 px-2 py-1 bg-blue-500 text-white rounded cursor-pointer" @click.stop="acceptSubscription(index, notification.username, notification.type)">Accept</button>
-                <button class="mx-1 px-2 py-1 bg-blue-500 text-white rounded cursor-pointer" @click.stop="rejectSubscription(index, notification.username, notification.type)">Reject</button>
+                <button class="mx-1 px-2 py-1 bg-red-500 text-white rounded cursor-pointer" @click.stop="rejectSubscription(index, notification.username, notification.type)">Reject</button>
               </div>
             </div>
-            <button class="px-2 py-1 bg-red-500 text-white rounded cursor-pointer" @click.stop="dismissNotification(index, notification.type)">Dismiss</button>
+            <button class="px-2 py-1 bg-indigo-500 text-white rounded cursor-pointer" @click.stop="dismissNotification(index, notification.type)">Dismiss</button>
           </div>
           <div v-for="(error, index) in state.Errors" :key="index" class="flex justify-between items-center mb-2 p-2 border-b border-gray-300 cursor-default">
-            <p>{{ error.message }}</p>
+            <p class="text-gray-800">{{ error.message }}</p>
             <button class="px-2 py-1 bg-red-500 text-white rounded cursor-pointer" @click.stop="dismissNotification(index, 'error')">Dismiss</button>
           </div>
         </div>

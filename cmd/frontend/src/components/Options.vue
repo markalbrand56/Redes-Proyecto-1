@@ -33,13 +33,14 @@ const toggleInviting = () => {
   inviting.value = !inviting.value
 }
 
+// Invite contact to conference
 const inviteContact = (jid) => {
   console.log("Inviting contact", jid)
-  emit('invite-contact', jid)
 
   inviting.value = false
 }
 
+// Remove contact from roster
 const removeContact = () => {
   console.log("Removing contact", props.jid)
   // emit('remove-contact', jid)
@@ -47,9 +48,9 @@ const removeContact = () => {
   CancelSubscription(props.jid)
 }
 
+// Exit conference
 const exitConference = (jid) => {
   console.log("Exiting conference", jid)
-  emit('exit-conference', jid)
 }
 
 </script>
@@ -66,7 +67,7 @@ const exitConference = (jid) => {
       <input v-if="props.isConference && inviting" v-model="contactInvite.jid" type="text" placeholder="Enter JID" class="request-input" />
       <button v-if="props.isConference && inviting" class="btn-secondary" @click="inviteContact(contactInvite.jid)">Send invitation</button>
 
-      <button v-if="props.isConference" class="btn" @click="emit('exit-conference', jid)">Exit conference</button>
+      <button v-if="props.isConference" class="btn" @click="exitConference(jid)">Exit conference</button>
 
     </div>
   </div>
