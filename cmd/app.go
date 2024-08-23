@@ -128,6 +128,10 @@ func (a *App) AcceptConferenceInvitation(jid string) {
 	chat.ConferenceInvitationChannel <- jid
 }
 
+func (a *App) SendInvitation(conferenceJID string, to string) {
+	chat.InvitationChannel <- models.NewInvitation(conferenceJID, to)
+}
+
 // CancelSubscription cancels the subscription of the given username
 func (a *App) CancelSubscription(username string) {
 	chat.UnsubscribeFromChannel <- username

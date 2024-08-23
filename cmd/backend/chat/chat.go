@@ -32,6 +32,7 @@ var (
 	RejectionChannel           = make(chan string) // Canal para rechazar una solicitud de suscripción
 
 	ConferenceInvitationChannel = make(chan string) // Canal para recibir invitaciones a salas de chat
+	InviteToConferenceChannel   = make(chan models.Invitation)
 
 	StatusChannel = make(chan string) // Canal para cambiar el estado del usuario
 
@@ -57,15 +58,23 @@ func Start(ctx context.Context, username string, password string) bool {
 func Close() {
 	close(TextChannel)
 	close(FileChannel)
+
 	close(ConferenceTextChannel)
+	close(ConferenceFileChannel)
+
 	close(FetchContactsChannel)
 	close(ProbeContactsChannel)
+
 	close(SubscribeToChannel)
 	close(SubscriptionRequestChannel)
 	close(UnsubscribeFromChannel)
 	close(RejectionChannel)
+
 	close(ConferenceInvitationChannel)
+	close(InviteToConferenceChannel)
+
 	close(StatusChannel)
+
 	close(FetchArchiveChannel)
 
 	err := User.SaveConfig()
@@ -221,6 +230,7 @@ func startMessaging() {
 			if err != nil {
 				log.Println("Error sending message: ", err)
 				events.EmitError(AppContext, "Error sending message")
+				continue
 			}
 
 		case msg := <-ConferenceFileChannel:
@@ -368,6 +378,7 @@ func startMessaging() {
 
 				if err != nil {
 					log.Println("Error sending presence probe: ", err)
+					continue
 				}
 			}
 
@@ -430,6 +441,7 @@ func startMessaging() {
 			if err != nil {
 				log.Println("Error sending unsubscription request: ", err)
 				events.EmitError(AppContext, "Error sending unsubscription request")
+				continue
 			}
 
 			// Remove from roster
@@ -489,7 +501,6 @@ func startMessaging() {
 			err := User.Client.Send(presence)
 			if err != nil {
 				fmt.Println("Error al enviar presencia para unirse a la sala de chat:", err)
-
 				events.EmitError(AppContext, "Error joining conference")
 			} else {
 				fmt.Println("Presencia enviada para unirse a la sala de chat:", jid)
@@ -497,6 +508,43 @@ func startMessaging() {
 				User.InsertConference(models.NewConference(alias, jid))
 				events.EmitConferences(AppContext, User.Conferences)
 			}
+
+		case invite := <-InviteToConferenceChannel:
+			log.Println("Inviting to conference: ", invite)
+
+			/*
+				Example 1. A direct invitation¶
+				<message
+				    from='crone1@shakespeare.lit/desktop'
+				    to='hecate@shakespeare.lit'>
+				  <x xmlns='jabber:x:conference'
+				     jid='darkcave@macbeth.shakespeare.lit'
+				     password='cauldronburn'
+				     reason='Hey Hecate, this is the place for all good witches!'/>
+				</message>
+			*/
+
+			// Se envía una invitación a una sala de chat
+			inviteMessage := stanza.Message{
+				Attrs: stanza.Attrs{
+					To:   invite.To,
+					From: User.UserName,
+				},
+			}
+
+			inviteExtension := cstanza.NewConferenceInvite(invite.ConferenceJID, fmt.Sprintf("%s has invited you to the conference '%s'", User.UserName, invite.ConferenceJID))
+
+			inviteMessage.Extensions = append(inviteMessage.Extensions, inviteExtension)
+
+			err := User.Client.Send(inviteMessage)
+
+			if err != nil {
+				log.Println("Error sending conference invitation: ", err)
+				events.EmitError(AppContext, "Error sending conference invitation")
+				continue
+			}
+
+			events.EmitSuccess(AppContext, "Conference invitation sent")
 
 		// Cambiar el estado del usuario
 		case status := <-StatusChannel:
