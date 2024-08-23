@@ -44,67 +44,37 @@ const isImage = props.message.body.startsWith("https://") && (props.message.body
   </div>
 </template>
 
-
 <style scoped>
-
 .message-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-
-  margin: 0.5rem;
+  @apply flex flex-col justify-start my-2;
 }
 
 .message-container img {
-  max-width: 65%;
-  max-height: 300px;
-
-  margin: 0.5rem;
-
-  border-radius: 0.5rem;
-  object-fit: contain;
+  @apply max-w-[65%] max-h-[300px] my-2 rounded-lg object-contain;
 }
 
 .inner-message {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+  @apply flex flex-row items-center;
 }
 
 .message-body {
-  padding: 0.5rem;
-  background-color: #f0f0f0;
-  border-radius: 0.5rem;
-  color: #333;
-  max-width: 65%;
-
+  @apply p-2 bg-gray-100 rounded-lg text-gray-800 max-w-[65%] ml-4 my-2;
 }
 
-
 .message-timestamp {
-  color: #666;
-  font-size: 12px;
-  margin: 0 1rem;
+  @apply text-gray-500 text-xs mx-4;
 }
 
 .message-sender {
-  color: #d5d5d5;
-  font-size: 12px;
-  margin: 0 1rem;
-
-  border: 1px solid #d5d5d5;
-  border-radius: 0.5rem;
-  padding: 5px;
+  @apply text-gray-400 text-sm ml-4 border border-gray-400 rounded-lg p-1;
 }
 
 .message-container.user-message {
-  align-items: flex-end;
-  justify-content: flex-end;
+  @apply items-end justify-end;
 }
 
 .message-container.other-message {
-  align-items: flex-start;
-  justify-content: flex-start;
+  @apply items-start justify-start;
 }
-
 </style>
+

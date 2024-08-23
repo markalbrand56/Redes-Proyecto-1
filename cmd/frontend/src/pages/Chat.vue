@@ -329,12 +329,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <main class="flex flex-col items-center justify-center h-full">
-    <h1 class="cursor-default my-4">Chat</h1>
+  <main class="flex flex-col items-center justify-start h-full">
 
     <Nav />
 
-    <div id="display" class="flex justify-between w-full h-4/5">
+    <div id="display" class="flex justify-between w-full h-[90%]">
 
       <Bars3Icon class="w-12 h-12 m-3 ml-4 cursor-pointer" @click="handleToggleLeftPanel" />
 
@@ -356,7 +355,7 @@ onMounted(() => {
         <StatusPopup v-if="showPopup" @statusChanged="handleStatusChange" @closePopup="togglePopup" />
       </div>
 
-      <div id="current-chat" class="current-chat w-11/12 mx-8 my-2">
+      <div id="current-chat" class="current-chat w-11/12 mx-8 mt-2">
 
         <div id="top-bar" class="top-bar flex items-center justify-center h-fit my-4">
           <div id="current-contact" class="current-contact flex flex-col items-center justify-center h-full w-full p-4 bg-white rounded-xl">
@@ -367,11 +366,11 @@ onMounted(() => {
           <Options :is-conference="Message.isConference" :jid="Message.jid" v-if="showOptions" @close-options="toggleOptions" />
         </div>
 
-        <div id="messages" class="message-section h-[70%] my-8 border-2 rounded-md border-black overflow-y-auto scrollbar-thin scrollbar-thumb-black scrollbar-track-gray-600" ref="messageSectionRef">
+        <div id="messages" class="message-section h-3/4 my-8 border-2 rounded-md border-black overflow-y-auto scrollbar-thin scrollbar-thumb-black scrollbar-track-gray-600" ref="messageSectionRef">
           <Conversation :messages="Messages.messages" :user="User.jid" :is-conference="Message.isConference"/>
         </div>
 
-        <div id="message-input" class="message-input flex items-center justify-center my-8">
+        <div id="message-input" class="message-input flex items-center justify-center mt-8">
           <input id="message" v-model="Message.body" autocomplete="off" class="input w-4/5 h-8 px-2 rounded-md border-none bg-gray-200 focus:bg-white text-black" type="text"/>
           <button @click="sendMessage" class="btn w-16 h-8 ml-4 rounded-md cursor-pointer bg-blue-500">Send</button>
         </div>
@@ -382,6 +381,12 @@ onMounted(() => {
 </template>
 
 <style scoped>
+
+.message-section {
+  scrollbar-width: thin;
+  scrollbar-color: black gray;
+}
+
 .status-indicator.green {
   background-color: green;
 }
