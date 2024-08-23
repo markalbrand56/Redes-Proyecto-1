@@ -373,7 +373,7 @@ onMounted(() => {
 
         <div id="message-input" class="message-input flex items-center justify-center my-8">
           <input id="message" v-model="Message.body" autocomplete="off" class="input w-4/5 h-8 px-2 rounded-md border-none bg-gray-200 focus:bg-white text-black" type="text"/>
-          <button class="btn w-16 h-8 ml-4 rounded-md cursor-pointer bg-blue-500">Send</button>
+          <button @click="sendMessage" class="btn w-16 h-8 ml-4 rounded-md cursor-pointer bg-blue-500">Send</button>
         </div>
       </div>
     </div>
