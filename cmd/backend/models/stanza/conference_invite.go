@@ -6,12 +6,23 @@ import (
 )
 
 /*
-<message xmlns="jabber:client" from="ogivox@conference.alumchat.lol" to="alb210041@alumchat.lol">
-	<x xmlns="http://jabber.org/protocol/muc#user">
-		<invite from="alb21004@alumchat.lol"/>
-	</x>
-	<x xmlns="jabber:x:conference" jid="ogivox@conference.alumchat.lol"/>
-</message>
+Las definiciones de este modelo se usan para manejar las invitaciones a conferencias y las afiliaciones en salas de conferencia MUC
+Las afiliaciones son necesarias de manejar al momento de invitar a un usuario a una sala de conferencia
+
+<message
+	 from="alb21004@alumchat.lol"
+	 to="alb210041@alumchat.lol"
+	 >
+	 <x
+		 xmlns="jabber:x:conference"
+		 jid="ogivox@conference.alumchat.lol"
+		 reason="alb21004@alumchat.lol has invited you to the conference &#39;ogivox@conference.alumchat.lol&#39;">
+	 </x>
+
+	 <x xmlns="http://jabber.org/protocol/muc#user">
+		 <invite from="alb21004@alumchat.lol"></invite>
+	 </x>
+ </message>
 */
 
 type ConferenceInvite struct {
