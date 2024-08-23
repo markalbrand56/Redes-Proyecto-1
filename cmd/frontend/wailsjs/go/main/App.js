@@ -54,8 +54,16 @@ export function RequestContact(arg1) {
   return window['go']['main']['App']['RequestContact'](arg1);
 }
 
+export function SendConferenceFileMessage(arg1, arg2, arg3) {
+  return window['go']['main']['App']['SendConferenceFileMessage'](arg1, arg2, arg3);
+}
+
 export function SendConferenceMessage(arg1, arg2, arg3) {
   return window['go']['main']['App']['SendConferenceMessage'](arg1, arg2, arg3);
+}
+
+export function SendFileMessage(arg1, arg2, arg3) {
+  return window['go']['main']['App']['SendFileMessage'](arg1, arg2, arg3);
 }
 
 export function SendMessage(arg1, arg2, arg3) {

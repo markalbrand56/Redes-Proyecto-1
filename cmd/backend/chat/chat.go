@@ -15,9 +15,13 @@ import (
 )
 
 var (
-	LogoutChannel         = make(chan bool)           // Canal para cerrar la sesión
-	TextChannel           = make(chan models.Message) // Canal para enviar mensajes
+	LogoutChannel = make(chan bool) // Canal para cerrar la sesión
+
+	TextChannel = make(chan models.Message) // Canal para enviar mensajes
+	FileChannel = make(chan models.Message) // Canal para enviar archivos
+
 	ConferenceTextChannel = make(chan models.Message) // Canal para enviar mensajes a salas de chat
+	ConferenceFileChannel = make(chan models.Message) // Canal para enviar archivos a salas de chat
 
 	FetchContactsChannel = make(chan bool) // Canal para enviar una solicitud de lista de contactos
 	ProbeContactsChannel = make(chan bool) // Canal para enviar una solicitud de estado de contactos
@@ -52,11 +56,17 @@ func Start(ctx context.Context, username string, password string) bool {
 
 func Close() {
 	close(TextChannel)
+	close(FileChannel)
+	close(ConferenceTextChannel)
 	close(FetchContactsChannel)
+	close(ProbeContactsChannel)
 	close(SubscribeToChannel)
 	close(SubscriptionRequestChannel)
 	close(UnsubscribeFromChannel)
+	close(RejectionChannel)
 	close(ConferenceInvitationChannel)
+	close(StatusChannel)
+	close(FetchArchiveChannel)
 
 	err := User.SaveConfig()
 	if err != nil {
@@ -167,6 +177,41 @@ func startMessaging() {
 			User.InsertMessage(msg)
 			events.EmitSuccess(AppContext, "Message sent")
 
+		case msg := <-FileChannel:
+			// Envío de archivo a un contacto
+
+			/*
+				ejemplo de como se hace en js, replicar acá
+				        if (isFile) {
+				            const x = xml('x', { xmlns: 'jabber:x:oob' }, xml('url', {}, message));
+				            messageXML.append(x);
+			*/
+
+			fmt.Printf("Correspondent: %s File: %s\n", msg.To, msg.Body)
+			message := stanza.Message{
+				Attrs: stanza.Attrs{
+					To:   msg.To,
+					Type: stanza.MessageTypeChat,
+					From: User.UserName,
+				},
+				Body: msg.Body,
+			}
+
+			f := cstanza.NewFile(msg.Body)
+
+			message.Extensions = append(message.Extensions, f)
+
+			err := User.Client.Send(message)
+
+			if err != nil {
+				log.Println("Error sending file: ", err)
+				events.EmitError(AppContext, "Error sending file")
+				continue
+			}
+
+			User.InsertMessage(msg)
+			events.EmitSuccess(AppContext, "File sent")
+
 		case msg := <-ConferenceTextChannel:
 			// Envío de mensaje a una sala de chat
 			fmt.Printf("Conference: %s Message: %s\n", msg.To, msg.Body)
@@ -177,6 +222,33 @@ func startMessaging() {
 				log.Println("Error sending message: ", err)
 				events.EmitError(AppContext, "Error sending message")
 			}
+
+		case msg := <-ConferenceFileChannel:
+			// Envío de archivo a una sala de chat
+			fmt.Printf("Conference: %s File: %s\n", msg.To, msg.Body)
+			message := stanza.Message{
+				Attrs: stanza.Attrs{
+					To:   msg.To,
+					Type: stanza.MessageTypeGroupchat,
+					From: User.UserName,
+				},
+				Body: msg.Body,
+			}
+
+			f := cstanza.NewFile(msg.Body)
+
+			message.Extensions = append(message.Extensions, f)
+
+			err := User.Client.Send(message)
+
+			if err != nil {
+				log.Println("Error sending file: ", err)
+				events.EmitError(AppContext, "Error sending file")
+				continue
+			}
+
+			User.InsertMessage(msg)
+			events.EmitSuccess(AppContext, "File sent")
 
 		// Obtener la lista de contactos
 		case <-FetchContactsChannel:

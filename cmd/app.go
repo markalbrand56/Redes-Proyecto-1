@@ -47,12 +47,28 @@ func (a *App) SendMessage(body string, to string, from string) {
 	chat.TextChannel <- message
 }
 
+func (a *App) SendFileMessage(file string, to string, from string) {
+	message := models.NewMessage(file, to, from)
+
+	fmt.Printf("Sending file message: %s\n", message)
+
+	chat.FileChannel <- message
+}
+
 func (a *App) SendConferenceMessage(body string, to string, from string) {
 	message := models.NewMessage(body, to, from)
 
 	fmt.Printf("Sending conference message: %s\n", message)
 
 	chat.ConferenceTextChannel <- message
+}
+
+func (a *App) SendConferenceFileMessage(file string, to string, from string) {
+	message := models.NewMessage(file, to, from)
+
+	fmt.Printf("Sending conference file message: %s\n", message)
+
+	chat.ConferenceFileChannel <- message
 }
 
 func (a *App) GetContacts() []string {

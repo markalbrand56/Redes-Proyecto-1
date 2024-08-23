@@ -28,7 +28,11 @@ export function RejectSubscription(arg1:string):Promise<void>;
 
 export function RequestContact(arg1:string):Promise<void>;
 
+export function SendConferenceFileMessage(arg1:string,arg2:string,arg3:string):Promise<void>;
+
 export function SendConferenceMessage(arg1:string,arg2:string,arg3:string):Promise<void>;
+
+export function SendFileMessage(arg1:string,arg2:string,arg3:string):Promise<void>;
 
 export function SendMessage(arg1:string,arg2:string,arg3:string):Promise<void>;
 

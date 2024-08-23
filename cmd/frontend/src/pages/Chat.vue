@@ -10,6 +10,8 @@ import {
   GetMessages,
   GetMessagesConference,
   GetCurrentUser,
+  SendFileMessage,
+  SendConferenceFileMessage
 } from '../../wailsjs/go/main/App.js'
 
 import {EventsOn} from "../../wailsjs/runtime/runtime.js";
@@ -188,10 +190,14 @@ function handleConferenceClicked(jid) {
 
 function handleFileUploaded(url) {
   console.log('File uploaded:', url);
-  Message.body = url;
 
   console.log("Sending file", Message.body)
-  // sendMessage();
+  // file, to, from
+  if (Message.isConference) {
+    SendConferenceFileMessage(url, Message.jid)
+  } else {
+    SendFileMessage(url, Message.jid, User.jid)
+  }
 }
 
 // Event listeners
