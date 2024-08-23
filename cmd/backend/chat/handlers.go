@@ -167,7 +167,13 @@ func handlePresence(s xmpp.Sender, p stanza.Packet) {
 			// Un usuario ha cancelado la suscripción a nuestro estado de presencia.
 			_, _ = fmt.Fprintf(os.Stdout, "Unsubscribed from: %s\n", presence.From)
 
-			events.EmitError(AppContext, "User "+presence.From+" has unsubscribed")
+			// TODO Notificar al usuario que se ha cancelado la suscripción
+
+		case stanza.PresenceTypeUnsubscribe:
+			// Un usuario ha solicitado cancelar la suscripción a nuestro estado de presencia.
+			_, _ = fmt.Fprintf(os.Stdout, "Unsubscribe request from: %s\n", presence.From)
+
+			// TODO Notificar al usuario que se ha solicitado cancelar la suscripción
 
 		case stanza.PresenceTypeUnavailable:
 			// El usuario está desconectado.

@@ -5,6 +5,7 @@ import { EventsOn } from "../../wailsjs/runtime/runtime.js";
 import {
   AcceptSubscription,
   CancelSubscription,
+  RejectSubscription,
   RequestContact,
   AcceptConferenceInvitation,
   Logout
@@ -132,7 +133,7 @@ const acceptSubscription = (index, username, type) => {
 // Función para rechazar una suscripción
 const rejectSubscription = (index, username, type) => {
   // Aquí iría la lógica para rechazar la suscripción
-  CancelSubscription(username)
+  RejectSubscription(username)
   dismissNotification(index, "subscription");
 };
 
@@ -210,7 +211,7 @@ onConferenceInvite();
     <div class="flex justify-evenly items-center">
       <PlusIcon class="w-7 h-7 mx-4 cursor-pointer" @click="showRequestPanel = !showRequestPanel" />
       <div v-if="showRequestPanel" class="flex items-center ml-4">
-        <input v-model="newContact" type="text" placeholder="Enter JID" class="px-2 py-1 border border-gray-300 rounded mr-2" />
+        <input v-model="newContact" type="text" placeholder="Enter JID" class="px-2 py-1 border border-gray-300 rounded mr-2 text-gray-500" />
         <button class="px-2 py-1 bg-blue-500 text-white rounded cursor-pointer" @click="sendSubscriptionRequest">Send Request</button>
       </div>
       <PowerIcon class="w-7 h-7 mx-4 cursor-pointer" @click="logout" />

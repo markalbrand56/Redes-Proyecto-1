@@ -24,7 +24,8 @@ var (
 
 	SubscribeToChannel         = make(chan string) // Canal para enviar una solicitud de suscripción
 	SubscriptionRequestChannel = make(chan string) // Canal para recibir solicitudes de suscripción
-	UnsubscribeFromChannel     = make(chan string) // Canal para enviar una solicitud de cancelación de suscripción
+	UnsubscribeFromChannel     = make(chan string) // Canal para enviar una solicitud de cancelación de suscripción (eliminar contacto)
+	RejectionChannel           = make(chan string) // Canal para rechazar una solicitud de suscripción
 
 	ConferenceInvitationChannel = make(chan string) // Canal para recibir invitaciones a salas de chat
 
@@ -339,7 +340,7 @@ func startMessaging() {
 
 			User.Contacts = append(User.Contacts, userFormatted)
 
-			events.EmitSuccess(AppContext, "Subscription accepted")
+			events.EmitContacts(AppContext, User.Contacts)
 
 		// Cancelar suscripción
 		case u := <-UnsubscribeFromChannel:
@@ -367,7 +368,32 @@ func startMessaging() {
 			if err != nil {
 				log.Println("Error removing contact from roster: ", err)
 				events.EmitError(AppContext, "Error removing contact from roster")
+				continue
 			}
+
+			userFormatted := strings.Split(u, "/")[0]
+
+			events.EmitSuccess(AppContext, "Unsubscribed from: "+userFormatted)
+
+		case u := <-RejectionChannel:
+			// Rechazar solicitud de suscripción
+			log.Println("Rejecting subscription from: ", u)
+			presence := stanza.Presence{
+				Attrs: stanza.Attrs{
+					To:   u,
+					Type: stanza.PresenceTypeUnsubscribe,
+				},
+			}
+
+			err := User.Client.Send(presence)
+
+			if err != nil {
+				log.Println("Error rejecting subscription: ", err)
+				events.EmitError(AppContext, "Error rejecting subscription")
+				continue
+			}
+
+			events.EmitSuccess(AppContext, "Subscription rejected")
 
 		// Invitación a sala de chat
 		case jid := <-ConferenceInvitationChannel:
@@ -391,10 +417,13 @@ func startMessaging() {
 			err := User.Client.Send(presence)
 			if err != nil {
 				fmt.Println("Error al enviar presencia para unirse a la sala de chat:", err)
+
+				events.EmitError(AppContext, "Error joining conference")
 			} else {
 				fmt.Println("Presencia enviada para unirse a la sala de chat:", jid)
 
 				User.InsertConference(models.NewConference(alias, jid))
+				events.EmitConferences(AppContext, User.Conferences)
 			}
 
 		// Cambiar el estado del usuario

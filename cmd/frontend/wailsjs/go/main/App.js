@@ -46,6 +46,10 @@ export function ProbeContacts() {
   return window['go']['main']['App']['ProbeContacts']();
 }
 
+export function RejectSubscription(arg1) {
+  return window['go']['main']['App']['RejectSubscription'](arg1);
+}
+
 export function RequestContact(arg1) {
   return window['go']['main']['App']['RequestContact'](arg1);
 }

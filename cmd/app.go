@@ -103,6 +103,10 @@ func (a *App) CancelSubscription(username string) {
 	chat.UnsubscribeFromChannel <- username
 }
 
+func (a *App) RejectSubscription(username string) {
+	chat.RejectionChannel <- username
+}
+
 func (a *App) SetStatus(status int) {
 	switch status {
 	case 0: // Online

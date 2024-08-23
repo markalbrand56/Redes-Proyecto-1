@@ -24,6 +24,8 @@ export function Logout():Promise<void>;
 
 export function ProbeContacts():Promise<void>;
 
+export function RejectSubscription(arg1:string):Promise<void>;
+
 export function RequestContact(arg1:string):Promise<void>;
 
 export function SendConferenceMessage(arg1:string,arg2:string,arg3:string):Promise<void>;

@@ -48,11 +48,11 @@ EventsOn("login-error", (error) => {
     <h2 class="text-4xl text-blue-500 mb-8 font-bold">Login</h2>
     <form @submit.prevent="handleLogin" class="flex flex-col gap-4">
       <div class="flex flex-col gap-2">
-        <label for="username" class="text-2xl">Username:</label>
+        <label for="username" class="text-xl">Username:</label>
         <input type="text" v-model="user.username" id="username" class="p-2 border border-gray-300 rounded" required />
       </div>
       <div class="flex flex-col gap-2">
-        <label for="password" class="text-2xl">Password:</label>
+        <label for="password" class="text-xl">Password:</label>
         <input type="password" v-model="user.password" id="password" class="p-2 border border-gray-300 rounded text-black" required />
       </div>
       <button type="submit" class="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 m-2">Login</button>
