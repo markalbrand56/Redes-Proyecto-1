@@ -82,6 +82,15 @@ func (a *App) GetContacts() []string {
 	return chat.User.Contacts
 }
 
+func (a *App) GetConferences() map[string]string {
+	mp := make(map[string]string) // map[alias]jid
+
+	for _, conference := range chat.User.Conferences {
+		mp[conference.Alias] = conference.JID
+	}
+	return mp
+}
+
 // GetMessages returns the messages of the given user
 func (a *App) GetMessages(username string) []models.Message {
 	//chat.User.ShowConversations()
@@ -109,6 +118,7 @@ func (a *App) GetMessagesConference(jid string) []models.Message {
 
 // UpdateContacts updates the contacts of the user from the server
 func (a *App) UpdateContacts() {
+	log.Println("Updating contacts")
 	chat.FetchContactsChannel <- true
 }
 

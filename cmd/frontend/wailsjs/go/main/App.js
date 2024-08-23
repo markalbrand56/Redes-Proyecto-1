@@ -18,6 +18,10 @@ export function GetArchive(arg1) {
   return window['go']['main']['App']['GetArchive'](arg1);
 }
 
+export function GetConferences() {
+  return window['go']['main']['App']['GetConferences']();
+}
+
 export function GetContacts() {
   return window['go']['main']['App']['GetContacts']();
 }

@@ -148,14 +148,15 @@ func startClient(username string, password string) {
 
 // startMessaging es una goroutine que escucha los canales de mensajes y solicitudes de suscripción
 func startMessaging() {
-	sendPresence(User.Show)
+	sendPresence(User.Show, User.Status)
 	getArchivedMessages(User.UserName)
 
 	listening := true
 	for listening {
 		select {
+
+		// Cerrar la sesión
 		case <-LogoutChannel:
-			// Cerrar la sesión
 			err := User.Client.Disconnect()
 			if err != nil {
 				return // No se pudo cerrar la sesión
@@ -165,8 +166,8 @@ func startMessaging() {
 			events.EmitLogout(AppContext)
 			listening = false
 
+		// Envío de mensaje a un contacto (chat)
 		case msg := <-TextChannel:
-			// Envío de mensaje a un contacto V2
 			fmt.Printf("Correspondent: %s Message: %s\n", msg.To, msg.Body)
 			message := stanza.Message{
 				Attrs: stanza.Attrs{
@@ -186,8 +187,8 @@ func startMessaging() {
 			User.InsertMessage(msg)
 			events.EmitSuccess(AppContext, "Message sent")
 
+		// Envío de archivo a un contacto
 		case msg := <-FileChannel:
-			// Envío de archivo a un contacto
 
 			/*
 				ejemplo de como se hace en js, replicar acá
@@ -221,8 +222,8 @@ func startMessaging() {
 			User.InsertMessage(msg)
 			events.EmitSuccess(AppContext, "File sent")
 
+		// Envío de mensaje a una sala de chat
 		case msg := <-ConferenceTextChannel:
-			// Envío de mensaje a una sala de chat
 			fmt.Printf("Conference: %s Message: %s\n", msg.To, msg.Body)
 			message := stanza.Message{Attrs: stanza.Attrs{To: msg.To, Type: stanza.MessageTypeGroupchat}, Body: msg.Body}
 			err := User.Client.Send(message)
@@ -233,8 +234,8 @@ func startMessaging() {
 				continue
 			}
 
+		// Envío de archivo a una sala de chat
 		case msg := <-ConferenceFileChannel:
-			// Envío de archivo a una sala de chat
 			fmt.Printf("Conference: %s File: %s\n", msg.To, msg.Body)
 			message := stanza.Message{
 				Attrs: stanza.Attrs{
@@ -344,12 +345,17 @@ func startMessaging() {
 					for _, item := range discoItems.Items {
 						//User.InsertConference(models.NewConference(item.Name, item.JID))
 						// Si la sala de chat no está en la lista de salas de chat del usuario, se agrega
+						log.Println("Conference: ", item.Name, item.JID)
 						if _, ok := User.Conferences[item.JID]; !ok {
+							log.Println("Inserting conference: ", item.Name)
 							User.InsertConference(models.NewConference(item.Name, item.JID))
+						} else {
+							// Si la sala de chat ya está en la lista de salas de chat del usuario, se actualiza el alias
+							User.Conferences[item.JID].Alias = item.Name
 						}
 					}
 
-					sendPresence(User.Show)
+					sendPresence(User.Show, User.Status)
 
 					events.EmitConferences(AppContext, User.Conferences)
 
@@ -382,7 +388,7 @@ func startMessaging() {
 				}
 			}
 
-		// Suscripción a un contacto
+		// Suscripción a un contacto (solitud de contacto)
 		case u := <-SubscribeToChannel:
 			// Para enviar una solicitud de suscripción a un contacto, se debe enviar un mensaje de presencia con el tipo "subscribe"
 			fmt.Println("Subscribing to: ", u)
@@ -401,7 +407,7 @@ func startMessaging() {
 
 			events.EmitSuccess(AppContext, "Subscription request sent")
 
-		// Aceptar solicitud de suscripción
+		// Aceptar solicitud de suscripción (agregar contacto)
 		case u := <-SubscriptionRequestChannel:
 			// Se ha decidido aceptar la solicitud de suscripción
 			log.Println("Accepting subscription from: ", u)
@@ -425,7 +431,7 @@ func startMessaging() {
 
 			events.EmitContacts(AppContext, User.Contacts)
 
-		// Cancelar suscripción
+		// Cancelar suscripción a un contacto (eliminar contacto)
 		case u := <-UnsubscribeFromChannel:
 			// Para cancelar la suscripción a un contacto, se debe enviar un mensaje de presencia con el tipo "unsubscribe"
 			fmt.Println("Unsubscribing from: ", u)
@@ -459,6 +465,7 @@ func startMessaging() {
 
 			events.EmitSuccess(AppContext, "Unsubscribed from: "+userFormatted)
 
+		// Rechazar solicitud de suscripción (rechazar contacto)
 		case u := <-RejectionChannel:
 			// Rechazar solicitud de suscripción
 			log.Println("Rejecting subscription from: ", u)
@@ -504,10 +511,9 @@ func startMessaging() {
 				events.EmitError(AppContext, "Error joining conference")
 			} else {
 				fmt.Println("Presencia enviada para unirse a la sala de chat:", jid)
-
-				FetchContactsChannel <- true // Volver a obtener la lista de contactos y salas de chat
 			}
 
+		// Invitar a sala de chat (enviar invitación a un contacto)
 		case invite := <-InviteToConferenceChannel:
 			log.Println("Inviting to conference: ", invite)
 
@@ -592,7 +598,7 @@ func startMessaging() {
 			}
 
 			err := User.Client.Send(presence)
-			sendPresence(presence.Show)
+			sendPresence(presence.Show, User.Status)
 			User.Show = presence.Show
 
 			if err != nil {
@@ -611,7 +617,7 @@ func startMessaging() {
 }
 
 // sendPresence envía una presencia para unirse a las salas de chat a las que pertenece el usuario
-func sendPresence(pres stanza.PresenceShow) {
+func sendPresence(pres stanza.PresenceShow, status string) {
 	for jid, name := range User.Conferences {
 		log.Println("Joining conference: ", name)
 		alias := User.UserName[:strings.Index(User.UserName, "@")]
@@ -625,7 +631,8 @@ func sendPresence(pres stanza.PresenceShow) {
 			Extensions: []stanza.PresExtension{
 				&stanza.MucPresence{},
 			},
-			Show: pres,
+			Show:   pres,   // Estado de presencia
+			Status: status, // Mensaje de estado
 		}
 
 		// Aquí enviamos el `presence` usando el cliente XMPP para unirse a la sala de chat.

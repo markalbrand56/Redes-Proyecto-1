@@ -107,7 +107,6 @@ function sendMessage() {
 
 function getContacts() {
   console.log("Getting contacts")
-  Debug.resultText = "Getting contacts"
   UpdateContacts()
 }
 

@@ -10,6 +10,8 @@ export function CancelSubscription(arg1:string):Promise<void>;
 
 export function GetArchive(arg1:string):Promise<void>;
 
+export function GetConferences():Promise<{[key: string]: string}>;
+
 export function GetContacts():Promise<Array<string>>;
 
 export function GetCurrentUser():Promise<string>;
