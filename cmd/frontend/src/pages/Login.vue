@@ -45,7 +45,7 @@ EventsOn("login-error", (error) => {
 
 <template>
   <div class="flex flex-col items-center justify-center h-full">
-    <h2 class="text-4xl text-blue-500 mb-4">Login</h2>
+    <h2 class="text-4xl text-blue-500 mb-8 font-bold">Login</h2>
     <form @submit.prevent="handleLogin" class="flex flex-col gap-4">
       <div class="flex flex-col gap-2">
         <label for="username" class="text-2xl">Username:</label>

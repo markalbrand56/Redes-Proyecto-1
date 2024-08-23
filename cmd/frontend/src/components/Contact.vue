@@ -62,73 +62,43 @@ const usernameDisplay = props.contact.jid.split('@')[0]
 
 <style scoped>
 .contact-container {
-  display: flex;
-  align-items: center;
-  margin: 0.5rem;
-  cursor: pointer;
-  background-color: #f0f0f0;
-  border-radius: 0.5rem;
-  padding: 0 0.5rem;
+  @apply flex items-center my-2 cursor-pointer bg-gray-100 rounded-lg px-2;
 }
 
 .contact-icon {
-  width: 30px;
-  height: 30px;
-
-  background-color: #007bff;
-  color: white;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  border-radius: 50%;
-  font-size: 1.25rem;
-  margin: 0.5rem 1.25rem 0.5rem 0.5rem;
+  @apply w-8 h-8 bg-blue-600 text-white flex justify-center items-center rounded-full text-xl mr-5;
 }
 
 .contact-jid {
-  color: #333;
-  margin: 0.25rem;
+  @apply text-gray-800 my-1;
 }
 
 .arrow-right {
-  height: 16px;
-  width: 16px;
-  margin-left: auto;
-  color: #666;
-  font-size: 1.15rem;
-  font-weight: bold;
+  @apply h-4 w-4 ml-auto text-gray-600 text-lg font-bold;
 }
 
 .status-indicator {
-  width: 12px;
-  height: 12px;
-
-  border-radius: 50%;
-  border: 1px solid #000000;
-
-  margin-right: 0.5rem;
+  @apply w-3 h-3 rounded-full border border-black mr-2;
 }
 
 .green {
-  background-color: green;
+  @apply bg-green-500;
 }
 
 .red {
-  background-color: red;
+  @apply bg-red-500;
 }
 
 .yellow {
-  background-color: #ceb300;
+  @apply bg-yellow-500;
 }
 
 .orange {
-  background-color: #ff4c00;
+  @apply bg-orange-500;
 }
 
 .gray {
-  background-color: gray;
+  @apply bg-gray-500;
 }
-
 </style>
+
