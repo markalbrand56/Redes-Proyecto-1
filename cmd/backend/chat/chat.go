@@ -59,6 +59,9 @@ func Start(ctx context.Context, username string, password string) bool {
 }
 
 func Close() {
+	close(LogoutChannel)
+	close(DeleteAccountChannel)
+
 	close(TextChannel)
 	close(FileChannel)
 
