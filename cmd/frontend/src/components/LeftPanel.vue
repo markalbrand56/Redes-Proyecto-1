@@ -4,7 +4,8 @@ import {
   GetContacts,
   GetCurrentUser,
   ProbeContacts,
-  SetStatus
+  SetStatus,
+  UpdateContacts
 } from '../../wailsjs/go/main/App.js'
 
 import Contact from "./Contact.vue";
@@ -182,13 +183,13 @@ onMounted(() => {
 <template>
 
   <div id="left-panel" class="left-panel fixed top-12 left-16 flex flex-col items-center justify-start min-w-96 w-fit h-[calc(75%-2rem)] m-4 p-4 bg-gray-100 rounded-xl">
-    <div @click.stop="handleClose" id="correspondents" class="correspondents flex flex-col items-center justify-start w-[calc(100%-2rem)] h-4/5 mt-4 overflow-y-auto object-contain scrollbar-thin scrollbar-thumb-black scrollbar-track-gray-600">
-      <h2 class="cursor-pointer text-lg text-center text-gray-900 border-b border-gray-900 py-2 px-4 bg-gray-100 rounded-xl">Contacts</h2>
-      <div id="contacts" class="contact-section w-full">
+    <div id="correspondents" class="correspondents flex flex-col items-center justify-start w-[calc(100%-2rem)] h-4/5 mt-4 overflow-y-auto object-contain scrollbar-thin scrollbar-thumb-black scrollbar-track-gray-600">
+      <h2 @click="UpdateContacts" class="cursor-pointer text-lg text-center text-gray-900 border-b border-gray-900 py-2 px-4 bg-gray-100 rounded-xl">Contacts</h2>
+      <div @click.stop="handleClose" id="contacts" class="contact-section w-full">
         <Contact v-for="contact in User.contacts" :contact="{jid: contact.jid}" :key="contact" @setCorrespondent="handleContactClicked" :status="contact.status"/>
       </div>
-      <h2 class="cursor-default text-lg text-center text-gray-900 border-b border-gray-900 py-2 px-4 bg-gray-100 rounded-xl">Group chats</h2>
-      <div id="conferences" class="contact-section w-full">
+      <h2 @click="UpdateContacts" class="cursor-default text-lg text-center text-gray-900 border-b border-gray-900 py-2 px-4 bg-gray-100 rounded-xl">Group chats</h2>
+      <div @click.stop="handleClose" id="conferences" class="contact-section w-full">
         <Contact v-for="(conference) in User.conferences" :contact="{jid: conference.jid}" :alias="conference.name" :key="conference.jid" @setCorrespondent="handleConferenceClicked"/>
       </div>
     </div>
