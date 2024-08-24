@@ -44,4 +44,6 @@ export function SendMessage(arg1:string,arg2:string,arg3:string):Promise<void>;
 
 export function SetStatus(arg1:number):Promise<void>;
 
+export function SetStatusMessage(arg1:string):Promise<void>;
+
 export function UpdateContacts():Promise<void>;

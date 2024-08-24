@@ -182,18 +182,23 @@ func (a *App) RejectSubscription(username string) {
 func (a *App) SetStatus(status int) {
 	switch status {
 	case 0: // Online
-		chat.StatusChannel <- models.StatusOnline
+		chat.ShowChannel <- models.StatusOnline
 	case 1: // Away
-		chat.StatusChannel <- models.StatusAway
+		chat.ShowChannel <- models.StatusAway
 	case 2: // Busy
-		chat.StatusChannel <- models.StatusBusy
+		chat.ShowChannel <- models.StatusBusy
 	case 3: // Not Available
-		chat.StatusChannel <- models.StatusNotAvailable
+		chat.ShowChannel <- models.StatusNotAvailable
 	case 4: // Offline
-		chat.StatusChannel <- models.StatusOffline
+		chat.ShowChannel <- models.StatusOffline
 	default:
-		chat.StatusChannel <- models.StatusOnline
+		chat.ShowChannel <- models.StatusOnline
 	}
+}
+
+// SetStatusMessage sets the status message of the user
+func (a *App) SetStatusMessage(message string) {
+	chat.StatusChannel <- message
 }
 
 // GetArchive gets the archive of the given username

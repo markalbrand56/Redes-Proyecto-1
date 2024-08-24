@@ -1,9 +1,22 @@
 <script setup>
+import {reactive, ref} from "vue";
 
-const emit = defineEmits(['statusChanged', 'closePopup']);
+const emit = defineEmits(['statusChanged', 'closePopup', 'statusMessageChanged']);
+
+const updatingStatus = ref(false);
+
+const StatusMessage = reactive({
+  message: ''
+});
 
 const updateStatus = (status) => {
   emit('statusChanged', status);
+  closePopup();
+};
+
+const updateStatusMessage = () => {
+  console.log('Updating status message');
+  emit('statusMessageChanged', StatusMessage.message);
   closePopup();
 };
 
@@ -11,55 +24,28 @@ const closePopup = () => {
   emit('closePopup');
 };
 
+function handleSetStatusMessage() {
+  updatingStatus.value = !updatingStatus.value;
+}
+
 </script>
 
 <template>
-  <div class="popup-overlay" @click="closePopup">
-    <div class="popup-content" @click.stop>
-      <button class="btn" @click="updateStatus(0)">Online</button>
-      <button class="btn" @click="updateStatus(1)">Away</button>
-      <button class="btn" @click="updateStatus(2)">Busy</button>
-      <button class="btn" @click="updateStatus(3)">Not Available</button>
-      <button class="btn" @click="updateStatus(4)">Offline</button>
+  <div class="flex flex-col fixed inset-0 bg-black bg-opacity-50 justify-center items-center" @click="closePopup">
+    <div class="flex flex-col bg-white p-5 rounded-lg shadow-md text-center space-y-4 w-fit" @click.stop>
+      <button class="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600" @click="updateStatus(0)">Online</button>
+      <button class="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600" @click="updateStatus(1)">Away</button>
+      <button class="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600" @click="updateStatus(2)">Busy</button>
+      <button class="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600" @click="updateStatus(3)">Not Available</button>
+      <button class="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600" @click="updateStatus(4)">Offline</button>
+      <button class="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600" @click="handleSetStatusMessage">Set Status</button>
+      <div v-if="updatingStatus" class="flex flex-col items-center justify-center">
+        <input type="text" class="border border-gray-300 rounded-lg p-2 text-gray-600" placeholder="Status message" v-model="StatusMessage.message">
+        <button class="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600" @click="updateStatusMessage">Update</button>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.popup-content {
-  width: fit-content;
-
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-.btn {
-  display: block;
-  width: 100%;
-
-  margin-bottom: 1rem;
-  padding: 1rem 2rem;
-
-  border: none;
-  border-radius: 4px;
-  background-color: #007bff;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-}
 </style>

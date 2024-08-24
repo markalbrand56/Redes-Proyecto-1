@@ -35,7 +35,8 @@ var (
 	InviteToConferenceChannel          = make(chan models.Invitation)
 	ConferenceDeclineInvitationChannel = make(chan models.Invitation) // Canal para rechazar una invitación a sala de chat
 
-	StatusChannel = make(chan string) // Canal para cambiar el estado del usuario
+	ShowChannel   = make(chan string) // Canal para cambiar el estado del usuario
+	StatusChannel = make(chan string) // Canal para cambiar el mensaje de estado del usuario
 
 	FetchArchiveChannel = make(chan string) // Canal para solicitar mensajes archivados
 )
@@ -74,7 +75,7 @@ func Close() {
 	close(ConferenceInvitationChannel)
 	close(InviteToConferenceChannel)
 
-	close(StatusChannel)
+	close(ShowChannel)
 
 	close(FetchArchiveChannel)
 
@@ -604,7 +605,7 @@ func startMessaging() {
 			}
 
 		// Cambiar el estado del usuario
-		case status := <-StatusChannel:
+		case show := <-ShowChannel:
 			// Para cambiar el estado del usuario, se debe enviar un mensaje de presencia con el estado deseado
 			presence := stanza.Presence{
 				Attrs: stanza.Attrs{
@@ -612,7 +613,7 @@ func startMessaging() {
 				},
 			}
 
-			switch status {
+			switch show {
 			case models.StatusOnline:
 				log.Println("Setting status to online")
 				presence.Show = stanza.PresenceShowChat // <show>chat</show>
@@ -645,6 +646,28 @@ func startMessaging() {
 			if err != nil {
 				log.Println("Error al enviar presencia para cambiar el estado del usuario:", err)
 			}
+
+		// Cambiar el mensaje de estado del usuario
+		case status := <-StatusChannel:
+			// Para cambiar el mensaje de estado del usuario, se debe enviar un mensaje de presencia con el mensaje deseado
+			presence := stanza.Presence{
+				Attrs: stanza.Attrs{
+					From: User.UserName,
+				},
+				Status: status,
+				Show:   User.Show,
+			}
+
+			err := User.Client.Send(presence)
+
+			if err != nil {
+				log.Println("Error al enviar presencia para cambiar el mensaje de estado del usuario:", err)
+				events.EmitError(AppContext, "Error changing status message")
+				continue
+			}
+
+			User.Status = status
+			sendPresence(User.Show, status)
 
 		// Obtener mensajes archivados
 		case username := <-FetchArchiveChannel:

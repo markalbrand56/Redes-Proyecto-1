@@ -5,7 +5,8 @@ import {
   GetCurrentUser,
   ProbeContacts,
   SetStatus,
-  UpdateContacts
+  UpdateContacts,
+  SetStatusMessage
 } from '../../wailsjs/go/main/App.js'
 
 import Contact from "./Contact.vue";
@@ -94,6 +95,14 @@ function handleStatusChange(status) {
   User.status = status;
 
   SetStatus(status);
+}
+
+function handleStatusMessageChange(statusMessage) {
+  console.log("Status message changed: ", statusMessage);
+  User.statusMessage = statusMessage;
+
+  SetStatusMessage(statusMessage);
+
 }
 
 function handleClose() {
@@ -193,11 +202,14 @@ onMounted(() => {
         <Contact v-for="(conference) in User.conferences" :contact="{jid: conference.jid}" :alias="conference.name" :key="conference.jid" @setCorrespondent="handleConferenceClicked"/>
       </div>
     </div>
-    <div id="current-account" class="current-account flex items-center justify-center w-[calc(100%-2rem)] h-fit mt-4 p-4 border-2 border-gray-300 bg-white rounded-xl cursor-pointer" @click="togglePopup">
-      <div :class="['status-indicator', statusColor, 'w-3 h-3 mr-2 border border-black rounded-full']"></div>
-      <p class="text-lg text-gray-900">{{ User.jid }}</p>
+    <div id="current-account" class="current-account flex flex-col items-center justify-center w-[calc(100%-2rem)] h-fit mt-4 p-4 border-2 border-gray-300 bg-white rounded-xl cursor-pointer" @click="togglePopup">
+      <div class="flex items-center justify-center">
+        <div :class="['status-indicator', statusColor, 'w-3 h-3 mr-2 border border-black rounded-full']"></div>
+        <p class="text-lg text-gray-900">{{ User.jid }}</p>
+      </div>
+      <p class="text-sm text-gray-500" v-if="User.statusMessage !== ''">{{ User.statusMessage }}</p>
     </div>
-    <StatusPopup v-if="showPopup" @statusChanged="handleStatusChange" @closePopup="togglePopup" />
+    <StatusPopup v-if="showPopup" @statusChanged="handleStatusChange" @closePopup="togglePopup" @statusMessageChanged="handleStatusMessageChange" />
   </div>
 
 </template>

@@ -86,6 +86,10 @@ export function SetStatus(arg1) {
   return window['go']['main']['App']['SetStatus'](arg1);
 }
 
+export function SetStatusMessage(arg1) {
+  return window['go']['main']['App']['SetStatusMessage'](arg1);
+}
+
 export function UpdateContacts() {
   return window['go']['main']['App']['UpdateContacts']();
 }
