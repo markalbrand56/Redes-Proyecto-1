@@ -591,7 +591,7 @@ func startMessaging() {
 				Attrs: stanza.Attrs{
 					To:   inv.ConferenceJID,
 					From: User.UserName,
-					Type: stanza.PresenceTypeUnsubscribed,
+					Type: stanza.PresenceTypeUnsubscribe,
 				},
 			}
 
