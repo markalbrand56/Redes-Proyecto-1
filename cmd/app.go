@@ -215,3 +215,8 @@ func (a *App) GetCurrentUser() string {
 func (a *App) ProbeContacts() {
 	chat.ProbeContactsChannel <- true
 }
+
+// GetCurrentStatus returns the current status of the user
+func (a *App) GetCurrentStatus() string {
+	return chat.User.Status
+}

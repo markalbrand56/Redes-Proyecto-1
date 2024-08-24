@@ -6,7 +6,8 @@ import {
   ProbeContacts,
   SetStatus,
   UpdateContacts,
-  SetStatusMessage
+  SetStatusMessage,
+  GetCurrentStatus
 } from '../../wailsjs/go/main/App.js'
 
 import Contact from "./Contact.vue";
@@ -71,6 +72,12 @@ const getConferences = async () => {
 
   console.log("User conferences: ", User.conferences);
 };
+
+const getStatusMessage = async () => {
+  const statusMessage = await GetCurrentStatus();
+  console.log("Status message: ", statusMessage);
+  User.statusMessage = statusMessage;
+}
 
 
 function handleContactClicked(jid) {
@@ -180,6 +187,7 @@ onMounted(() => {
   getCurrentUser();
   getContacts();
   getConferences();
+  getStatusMessage();
 
   // Event listeners
   listenPresenceUpdate();

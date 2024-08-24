@@ -30,6 +30,10 @@ export function GetContacts() {
   return window['go']['main']['App']['GetContacts']();
 }
 
+export function GetCurrentStatus() {
+  return window['go']['main']['App']['GetCurrentStatus']();
+}
+
 export function GetCurrentUser() {
   return window['go']['main']['App']['GetCurrentUser']();
 }
