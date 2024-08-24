@@ -133,7 +133,8 @@ func startClient(username string, password string) {
 		Attrs: stanza.Attrs{
 			From: User.UserName,
 		},
-		Show: User.Show,
+		Show:   User.Show,
+		Status: User.Status,
 	}
 
 	err = User.Client.Send(presence)
