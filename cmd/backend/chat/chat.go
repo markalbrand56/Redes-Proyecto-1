@@ -183,7 +183,14 @@ func startMessaging() {
 				continue
 			}
 
+			err = User.Client.Disconnect()
+
+			if err != nil {
+				return // No se pudo cerrar la sesión
+			}
+
 			events.EmitLogout(AppContext)
+			listening = false
 
 		// Envío de mensaje a un contacto (chat)
 		case msg := <-TextChannel:
