@@ -16,7 +16,7 @@ import {computed, onMounted, reactive, ref} from "vue";
 import {EventsOn} from "../../wailsjs/runtime/runtime.js";
 
 
-const emit = defineEmits(["contactClicked", "conferenceClicked", "statusChanged", "closePanel"]);
+const emit = defineEmits(["contactClicked", "conferenceClicked", "closePanel"]);
 const showPopup = ref(false);
 
 const User = reactive({

@@ -57,16 +57,16 @@ function handleDeleteAccount() {
 
 <template>
   <div class="flex flex-col fixed inset-0 bg-black bg-opacity-50 justify-center items-center" @click="closePopup">
-    <div class="flex flex-col bg-white p-5 rounded-lg shadow-md text-center space-y-4 w-fit h-fit" @click.stop>
-      <button class="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600" @click="updateStatus(0)">Online</button>
-      <button class="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600" @click="updateStatus(1)">Away</button>
-      <button class="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600" @click="updateStatus(2)">Busy</button>
-      <button class="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600" @click="updateStatus(3)">Not Available</button>
-      <button class="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600" @click="updateStatus(4)">Offline</button>
+    <div class="flex flex-col bg-white p-5 rounded-lg shadow-md text-center space-y-4 w-fit min-w-64 h-fit" @click.stop>
+      <button class="py-2 px-4 bg-green-500 text-white rounded-lg hover:bg-blue-600" @click="updateStatus(0)">Online</button>
+      <button class="py-2 px-4 bg-yellow-500 text-white rounded-lg hover:bg-blue-600" @click="updateStatus(1)">Away</button>
+      <button class="py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-blue-600" @click="updateStatus(2)">Busy</button>
+      <button class="py-2 px-4 bg-red-700 text-white rounded-lg hover:bg-blue-600" @click="updateStatus(3)">Not Available</button>
+      <button class="py-2 px-4 bg-gray-500 text-white rounded-lg hover:bg-blue-600" @click="updateStatus(4)">Offline</button>
       <br>
       <button class="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600" @click="handleSetStatusMessage">Set Status</button>
       <div v-if="updatingStatus" class="flex flex-col items-center justify-center">
-        <input type="text" class="border border-gray-300 rounded-lg p-2 text-gray-600" placeholder="Status message" v-model="StatusMessage.message">
+        <input type="text" class="border border-gray-300 rounded-lg p-2 text-gray-600 my-4" placeholder="Status message" v-model="StatusMessage.message">
         <button class="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600" @click="updateStatusMessage">Update</button>
       </div>
       <br>

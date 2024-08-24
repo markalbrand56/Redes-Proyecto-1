@@ -1,5 +1,5 @@
 <script setup>
-import {reactive, onMounted, nextTick, ref, computed} from 'vue'
+import {reactive, onMounted, nextTick, ref} from 'vue'
 import {
   SendMessage,
   SendFileMessage,
@@ -37,9 +37,6 @@ const Message = reactive({
 
 const User = reactive({
   jid: "",
-  contacts: [],
-  conferences: {},
-  status: 0,
 })
 
 const Messages = reactive({
@@ -68,11 +65,6 @@ const toggleOptions = () => {
   showOptions.value = !showOptions.value;
 };
 
-const handleStatusChange = (status) => {
-  console.log('Nuevo estado:', status);
-  updateStatus(status);
-};
-
 
 function sendMessage() {
   if (Message.body === "") {
@@ -96,13 +88,6 @@ function sendMessage() {
 function getContacts() {
   console.log("Getting contacts")
   UpdateContacts()
-}
-
-function updateStatus(status) {
-  console.log("Updating status")
-  Debug.resultText = "Updating status"
-  SetStatus(status)
-  User.status = status
 }
 
 function getMessages() {
@@ -275,7 +260,7 @@ onMounted(() => {
 
       <Bars3Icon class="w-12 h-12 m-3 ml-4 cursor-pointer" @click="handleToggleLeftPanel" />
 
-      <LeftPanel v-if="showLeftPanel" @contactClicked="handleContactClicked" @conferenceClicked="handleConferenceClicked" @statusChanged="handleStatusChange" @closePanel="handleToggleLeftPanel" />
+      <LeftPanel v-if="showLeftPanel" @contactClicked="handleContactClicked" @conferenceClicked="handleConferenceClicked" @closePanel="handleToggleLeftPanel" />
 
       <div id="current-chat" class="current-chat w-11/12 mx-8 mt-2">
 
