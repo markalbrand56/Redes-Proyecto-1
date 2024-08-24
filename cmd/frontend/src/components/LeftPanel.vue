@@ -61,8 +61,6 @@ const getConferences = async () => {
 
   User.conferences = [];
   conferences.forEach(conference => {
-    // conferences: [{alias: jid}, ...]
-    console.log("Conference: ", conference);
     User.conferences.push({
       jid: conference.jid,
       name: conference.alias
