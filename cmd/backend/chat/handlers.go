@@ -26,7 +26,7 @@ func handleMessage(s xmpp.Sender, p stanza.Packet) {
 			fmt.Println("Conference invitation from: ", invite.JID)
 			//ConferenceInvitationChannel <- invite.JID
 
-			events.EmitConferenceInvitation(AppContext, invite.JID)
+			events.EmitConferenceInvitation(AppContext, invite.JID, strings.Split(msg.From, "/")[0])
 
 			return
 		} else if mam, ok := ext.(*cstanza.MAM); ok {

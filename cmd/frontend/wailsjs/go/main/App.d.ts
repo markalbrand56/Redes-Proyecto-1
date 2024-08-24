@@ -8,6 +8,8 @@ export function AcceptSubscription(arg1:string):Promise<void>;
 
 export function CancelSubscription(arg1:string):Promise<void>;
 
+export function DeclineConference(arg1:string,arg2:string):Promise<void>;
+
 export function GetArchive(arg1:string):Promise<void>;
 
 export function GetConferences():Promise<{[key: string]: string}>;

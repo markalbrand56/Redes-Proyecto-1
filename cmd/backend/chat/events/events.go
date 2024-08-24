@@ -72,6 +72,6 @@ func EmitPresenceUpdate(ctx context.Context, user string, presence string, statu
 }
 
 // EmitConferenceInvitation emite un evento acerca de que se ha recibido una invitación a una conferencia
-func EmitConferenceInvitation(ctx context.Context, jid string) {
-	runtime.EventsEmit(ctx, "conference-invitation", jid)
+func EmitConferenceInvitation(ctx context.Context, jid string, sender string) {
+	runtime.EventsEmit(ctx, "conference-invitation", jid, sender)
 }

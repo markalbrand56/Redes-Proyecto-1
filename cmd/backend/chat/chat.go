@@ -31,8 +31,9 @@ var (
 	UnsubscribeFromChannel     = make(chan string) // Canal para enviar una solicitud de cancelación de suscripción (eliminar contacto)
 	RejectionChannel           = make(chan string) // Canal para rechazar una solicitud de suscripción
 
-	ConferenceInvitationChannel = make(chan string) // Canal para recibir invitaciones a salas de chat
-	InviteToConferenceChannel   = make(chan models.Invitation)
+	ConferenceInvitationChannel        = make(chan string) // Canal para recibir invitaciones a salas de chat
+	InviteToConferenceChannel          = make(chan models.Invitation)
+	ConferenceDeclineInvitationChannel = make(chan models.Invitation) // Canal para rechazar una invitación a sala de chat
 
 	StatusChannel = make(chan string) // Canal para cambiar el estado del usuario
 
@@ -561,6 +562,46 @@ func startMessaging() {
 			}
 
 			events.EmitSuccess(AppContext, "Conference invitation sent")
+
+		// Rechazar invitación a sala de chat
+		case inv := <-ConferenceDeclineInvitationChannel:
+			log.Println("Declining conference invitation: ", inv)
+			// Se ha rechazado una invitación a una sala de chat
+
+			/*
+				<message xmlns="jabber:client" from="testingv2@conference.alumchat.lol" to="alb210041@alumchat.lol"><x xmlns="http://jabber.org/protocol/muc#user"><decline from="alb21005@alumchat.lol"/></x></message>
+				message.from = inv.ConferenceJID
+				message.to = inv.To  // El dueño de la sala de chat / quien envió la invitación
+				message.x.decline.from = User.UserName  // El usuario que rechaza la invitación
+			*/
+
+			decline := cstanza.NewConferenceDeclineMessage(inv.ConferenceJID, User.UserName, inv.To)
+
+			err := User.Client.Send(decline)
+
+			if err != nil {
+				log.Println("Error sending conference decline: ", err)
+				events.EmitError(AppContext, "Error sending conference decline")
+				continue
+			}
+
+			// Eliminar la sala de chat del disco items del servidor
+			// Mandar unsubscribe a la sala de chat
+			preference := stanza.Presence{
+				Attrs: stanza.Attrs{
+					To:   inv.ConferenceJID,
+					From: User.UserName,
+					Type: stanza.PresenceTypeUnsubscribed,
+				},
+			}
+
+			err = User.Client.Send(preference)
+
+			if err != nil {
+				log.Println("Error sending conference unsubscribe: ", err)
+				events.EmitError(AppContext, "Error sending conference unsubscribe")
+				continue
+			}
 
 		// Cambiar el estado del usuario
 		case status := <-StatusChannel:

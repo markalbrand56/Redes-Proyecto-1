@@ -138,6 +138,11 @@ func (a *App) AcceptConferenceInvitation(jid string) {
 	chat.ConferenceInvitationChannel <- jid
 }
 
+// DeclineConference declines the conference invitation of the given JID
+func (a *App) DeclineConference(conferenceJID string, sender string) {
+	chat.ConferenceDeclineInvitationChannel <- models.NewInvitation(conferenceJID, sender)
+}
+
 // SendInvitation sends an invitation to the given username to join the conference
 func (a *App) SendInvitation(conferenceJID string, to string) {
 	log.Printf("Inviting %s to conference %s\n", to, conferenceJID)

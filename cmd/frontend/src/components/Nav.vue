@@ -8,6 +8,7 @@ import {
   RejectSubscription,
   RequestContact,
   AcceptConferenceInvitation,
+  DeclineConference,
   Logout
 } from '../../wailsjs/go/main/App.js';
 
@@ -71,11 +72,13 @@ const onSubscribe = async () => {
 };
 
 const onConferenceInvite = async () => {
-  EventsOn("conference-invitation", (room) => {
+  EventsOn("conference-invitation", (room, sender) => {
+    console.log("Conference invitation from", sender, "to join", room);
     state.Notifications.push({
       type: "conference-invitation",
       message: `You have been invited to join ${room}`,
       username: room,  // JID de la sala
+      sender: sender,
     });
   });
 };
@@ -131,10 +134,22 @@ const acceptSubscription = (index, username, type) => {
 };
 
 // Función para rechazar una suscripción
-const rejectSubscription = (index, username, type) => {
+const rejectSubscription = (index, username, type, sender) => {
+  console.log("username", username, "type", type, "sender", sender);
   // Aquí iría la lógica para rechazar la suscripción
-  RejectSubscription(username)
-  dismissNotification(index, "subscription");
+  if (type === "subscription") {
+
+    console.log("Rejecting subscription from", username);
+    RejectSubscription(username);
+    dismissNotification(index, "subscription");
+
+  } else if (type === "conference-invitation") {
+
+    console.log("Declining conference invitation from", username, "by", sender);
+
+    DeclineConference(username, sender);
+    dismissNotification(index, "conference-invitation");
+  }
 };
 
 // Funciones para cerrar sesión
@@ -196,7 +211,7 @@ onConferenceInvite();
               <p class="mx-4 text-gray-800">{{ notification.message }}</p>
               <div v-if="notification.type === 'subscription' || notification.type === 'conference-invitation'" class="flex justify-center mt-1">
                 <button class="mx-1 px-2 py-1 bg-blue-500 text-white rounded cursor-pointer" @click.stop="acceptSubscription(index, notification.username, notification.type)">Accept</button>
-                <button class="mx-1 px-2 py-1 bg-red-500 text-white rounded cursor-pointer" @click.stop="rejectSubscription(index, notification.username, notification.type)">Reject</button>
+                <button class="mx-1 px-2 py-1 bg-red-500 text-white rounded cursor-pointer" @click="rejectSubscription(index, notification.username, notification.type, notification.sender)">Reject</button>
               </div>
             </div>
             <button class="px-2 py-1 bg-indigo-500 text-white rounded cursor-pointer" @click.stop="dismissNotification(index, notification.type)">Dismiss</button>
