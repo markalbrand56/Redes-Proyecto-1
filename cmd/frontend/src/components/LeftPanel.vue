@@ -7,7 +7,7 @@ import {
   SetStatus,
   UpdateContacts,
   SetStatusMessage,
-  GetCurrentStatus
+  GetCurrentStatus,
 } from '../../wailsjs/go/main/App.js'
 
 import Contact from "./Contact.vue";

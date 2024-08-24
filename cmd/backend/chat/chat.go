@@ -15,7 +15,8 @@ import (
 )
 
 var (
-	LogoutChannel = make(chan bool) // Canal para cerrar la sesión
+	LogoutChannel        = make(chan bool) // Canal para cerrar la sesión
+	DeleteAccountChannel = make(chan bool) // Canal para eliminar la cuenta
 
 	TextChannel = make(chan models.Message) // Canal para enviar mensajes
 	FileChannel = make(chan models.Message) // Canal para enviar archivos
@@ -168,6 +169,21 @@ func startMessaging() {
 
 			events.EmitLogout(AppContext)
 			listening = false
+
+		// Eliminar la cuenta
+		case <-DeleteAccountChannel:
+			log.Println("Deleting account ", User.UserName)
+			cr := cstanza.NewCancelRegistration(User.UserName)
+
+			err := User.Client.Send(&cr)
+
+			if err != nil {
+				log.Println("Error deleting account: ", err)
+				events.EmitError(AppContext, "Error deleting account")
+				continue
+			}
+
+			events.EmitLogout(AppContext)
 
 		// Envío de mensaje a un contacto (chat)
 		case msg := <-TextChannel:

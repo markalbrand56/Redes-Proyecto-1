@@ -1,4 +1,7 @@
 <script setup>
+
+import {DeleteAccount} from "../../wailsjs/go/main/App.js";
+
 import {reactive, ref} from "vue";
 import Swal from "sweetalert2";
 
@@ -41,6 +44,8 @@ function handleDeleteAccount() {
   }).then((result) => {
     if (result.isConfirmed) {
       console.log('Deleting account');
+
+      DeleteAccount();
 
       Swal.fire({
         title: 'Account deleted',

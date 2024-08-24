@@ -18,6 +18,10 @@ export function DeclineConference(arg1, arg2) {
   return window['go']['main']['App']['DeclineConference'](arg1, arg2);
 }
 
+export function DeleteAccount() {
+  return window['go']['main']['App']['DeleteAccount']();
+}
+
 export function GetArchive(arg1) {
   return window['go']['main']['App']['GetArchive'](arg1);
 }

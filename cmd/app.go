@@ -41,6 +41,11 @@ func (a *App) Logout() {
 	chat.LogoutChannel <- true
 }
 
+// DeleteAccount deletes the account of the user
+func (a *App) DeleteAccount() {
+	chat.DeleteAccountChannel <- true
+}
+
 // SendMessage sends a message to the given user
 func (a *App) SendMessage(body string, to string, from string) {
 	message := models.NewMessage(body, to, from)

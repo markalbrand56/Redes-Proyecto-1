@@ -49,7 +49,7 @@ EventsOn("login-error", (error) => {
     <form @submit.prevent="handleLogin" class="flex flex-col gap-4">
       <div class="flex flex-col gap-2">
         <label for="username" class="text-xl">Username:</label>
-        <input type="text" v-model="user.username" id="username" class="p-2 border border-gray-300 rounded" required />
+        <input type="text" v-model="user.username" id="username" class="p-2 border border-gray-300 rounded text-gray-600" required />
       </div>
       <div class="flex flex-col gap-2">
         <label for="password" class="text-xl">Password:</label>
