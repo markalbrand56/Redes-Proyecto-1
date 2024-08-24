@@ -52,13 +52,17 @@ func EmitMessage(ctx context.Context, from string) {
 
 // EmitConferences emite un evento de conferencias, con un mapa de alias de conferencias y sus JID
 func EmitConferences(ctx context.Context, conferences map[string]*models.Conference) {
-	mp := make(map[string]string) // map[alias]jid
+	var conferencesMap []map[string]string
 
 	for _, conference := range conferences {
-		mp[conference.Alias] = conference.JID
+		c := make(map[string]string)
+		c["alias"] = conference.Alias
+		c["jid"] = conference.JID
+
+		conferencesMap = append(conferencesMap, c)
 	}
 
-	runtime.EventsEmit(ctx, "conferences", mp)
+	runtime.EventsEmit(ctx, "conferences", conferencesMap)
 }
 
 // EmitSubscription emite un evento acerca de que un usuario ha solicitado suscribirse a nuestro estado de presencia

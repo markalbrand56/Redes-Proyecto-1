@@ -221,7 +221,7 @@ func startMessaging() {
 			}
 
 			User.InsertMessage(msg)
-			events.EmitSuccess(AppContext, "File sent")
+			events.EmitSuccess(AppContext, "Message sent")
 
 		// Envío de mensaje a una sala de chat
 		case msg := <-ConferenceTextChannel:
@@ -260,7 +260,7 @@ func startMessaging() {
 			}
 
 			User.InsertMessage(msg)
-			events.EmitSuccess(AppContext, "File sent")
+			events.EmitSuccess(AppContext, "Message sent")
 
 		// Obtener la lista de contactos
 		case <-FetchContactsChannel:

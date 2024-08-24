@@ -12,7 +12,7 @@ export function DeclineConference(arg1:string,arg2:string):Promise<void>;
 
 export function GetArchive(arg1:string):Promise<void>;
 
-export function GetConferences():Promise<{[key: string]: string}>;
+export function GetConferences():Promise<Array<{[key: string]: string}>>;
 
 export function GetContacts():Promise<Array<string>>;
 

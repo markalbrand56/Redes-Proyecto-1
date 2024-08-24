@@ -2,31 +2,30 @@
 import {reactive, onMounted, nextTick, ref, computed} from 'vue'
 import {
   SendMessage,
+  SendFileMessage,
   SendConferenceMessage,
-  UpdateContacts,
-  ProbeContacts,
-  AcceptSubscription,
+  SendConferenceFileMessage,
+
   SetStatus,
   GetMessages,
   GetMessagesConference,
+  UpdateContacts,
+  AcceptSubscription,
   GetCurrentUser,
-  SendFileMessage,
-  SendConferenceFileMessage
 } from '../../wailsjs/go/main/App.js'
 
 import {EventsOn} from "../../wailsjs/runtime/runtime.js";
 import {models} from "../../wailsjs/go/models.ts";
 
 import Conversation from "../components/Conversation.vue";
-import Contact from "../components/Contact.vue";
-import StatusPopup from "../components/StatusPopUp.vue";
 import Nav from "../components/Nav.vue";
 import Options from "../components/Options.vue";
+import FileInput from "../components/FileInput.vue";
+import LeftPanel from "../components/LeftPanel.vue";
 
 import {CogIcon} from "@heroicons/vue/24/solid";
 import {Bars3Icon} from "@heroicons/vue/24/solid";
 import {useRouter} from "vue-router";
-import FileInput from "../components/FileInput.vue";
 
 const router = useRouter();
 
@@ -84,14 +83,11 @@ const handleStatusChange = (status) => {
 
 
 function sendMessage() {
-  // TODO Implementar nuevos mensajes para el usuario cuando falte algo en el formulario
   if (Message.body === "") {
-    Debug.resultText = "Please enter a message to send"
     return
   }
 
   if (Message.jid === "") {
-    Debug.resultText = "Please select a contact to send a message to"
     return
   }
 
@@ -162,25 +158,28 @@ function getConferenceMessages(jid) {
 }
 
 const handleToggleLeftPanel = () => {
+  console.log("Toggling left panel", showLeftPanel.value)
   showLeftPanel.value = !showLeftPanel.value
 }
 
-function handleContactClicked(jid) {
+function handleContactClicked(jid, statusMessage) {
   console.log("Contact clicked", jid)
+
   Message.jid = jid  // Set the current correspondent on the frontend
   Message.isConference = false
   Message.body = ""
-  Message.statusMessage = User.contacts.find((contact) => contact.jid === jid).statusMessage
+  Message.statusMessage = statusMessage
 
   Debug.resultText = "Setting correspondent to " + jid + " " + Message.statusMessage
 
   getMessages()  // Get the messages for the current correspondent
 }
 
-function handleConferenceClicked(jid) {
+function handleConferenceClicked(jid, alias) {
   console.log("Conference clicked", jid)
 
   Message.jid = jid  // Set the current correspondent on the frontend
+  Message.statusMessage = alias
   Message.isConference = true
   Debug.resultText = "Setting correspondent to " + jid
 
@@ -199,7 +198,7 @@ function handleFileUploaded(url) {
   }
 }
 
-// Event listeners
+// *************************************** Event listeners ***************************************
 
 const listenMessages = async () => {
   EventsOn("message", (from) => {
@@ -217,31 +216,6 @@ const listenMessages = async () => {
         getMessages()
       }
     }
-  })
-}
-
-const listenContacts = async () => {
-  EventsOn("contacts", (contacts) => {
-    // contacts is an array of strings
-    Debug.resultText = "Contacts: " + contacts.join(", ")
-    console.log("Contacts", contacts)
-    // map each contact to a Contact object
-    User.contacts = contacts.map((contact) => {
-      return {jid: contact, status: "Disconnected"}
-    })
-
-    ProbeContacts()
-  })
-}
-
-const listenConferences = async () => {
-  EventsOn("conferences", (conferences) => {
-    // conferences is a map conferences[item.Name] = item.Jid
-    console.log("Conferences", conferences)
-    Debug.resultText = "Conferences: " + Object.keys(conferences).join(", ")
-
-    User.conferences = conferences
-
   })
 }
 
@@ -271,23 +245,6 @@ const listenUpdateMessages = async () => {
   })
 }
 
-const listenPresenceUpdate = async () => {
-  EventsOn("presence", (jid, status, statusMessage) => {
-    console.log("Presence update", jid, status, statusMessage)
-
-    User.contacts.forEach((contact) => {
-      if (contact.jid === jid) {
-        contact.status = status
-        contact.statusMessage = statusMessage
-      }
-    })
-
-    if (Message.jid === jid) {
-      Message.statusMessage = statusMessage
-    }
-  })
-}
-
 const listenLogout = async () => {
   EventsOn("logout", () => {
     console.log("Logout")
@@ -302,35 +259,10 @@ GetCurrentUser().then((user) => {
   Debug.resultText = "User: " + user
 })
 
-const statusColor = computed(() => {
-  switch (User.status) {
-    case 0:  //  Online
-      return 'green'
-
-    case 4:  //  Disconnected / Invisible
-      return 'gray'
-
-    case 1:  //  Away
-      return 'yellow'
-
-    case 2:  //  Busy
-      return 'red'
-
-    case 3:  //  Extended Away
-      return 'orange'
-
-    default:
-      return 'green'
-  }
-})
-
 listenMessages()
-listenContacts()
 listenSuccess()
 listenSubRequest()
 listenUpdateMessages()
-listenConferences()
-listenPresenceUpdate()
 listenLogout()
 
 getContacts()
@@ -351,23 +283,7 @@ onMounted(() => {
 
       <Bars3Icon class="w-12 h-12 m-3 ml-4 cursor-pointer" @click="handleToggleLeftPanel" />
 
-      <div id="left-panel" v-if="showLeftPanel" class="left-panel fixed top-12 left-16 flex flex-col items-center justify-start min-w-96 w-fit h-[calc(75%-2rem)] m-4 p-4 bg-gray-100 rounded-xl">
-        <div id="correspondents" class="correspondents flex flex-col items-center justify-start w-[calc(100%-2rem)] h-4/5 mt-4 overflow-y-auto object-contain scrollbar-thin scrollbar-thumb-black scrollbar-track-gray-600">
-          <h2 @click="getContacts" class="cursor-pointer text-lg text-center text-gray-900 border-b border-gray-900 py-2 px-4 bg-gray-100 rounded-xl">Contacts</h2>
-          <div id="contacts" class="contact-section w-full">
-            <Contact v-for="contact in User.contacts" :contact="{jid: contact.jid}" :key="contact" @setCorrespondent="handleContactClicked" :status="contact.status" @click="handleToggleLeftPanel"/>
-          </div>
-          <h2 class="cursor-default text-lg text-center text-gray-900 border-b border-gray-900 py-2 px-4 bg-gray-100 rounded-xl">Group chats</h2>
-          <div id="conferences" class="contact-section w-full">
-            <Contact v-for="(jid, name) in User.conferences" :contact="{jid: jid}" :alias="name" :key="jid" @setCorrespondent="handleConferenceClicked" @click="handleToggleLeftPanel"/>
-          </div>
-        </div>
-        <div id="current-account" class="current-account flex items-center justify-center w-[calc(100%-2rem)] h-fit mt-4 p-4 border-2 border-gray-300 bg-white rounded-xl cursor-pointer" @click="togglePopup">
-          <div :class="['status-indicator', statusColor, 'w-3 h-3 mr-2 border border-black rounded-full']"></div>
-          <p class="text-lg text-gray-900">{{ User.jid }}</p>
-        </div>
-        <StatusPopup v-if="showPopup" @statusChanged="handleStatusChange" @closePopup="togglePopup" />
-      </div>
+      <LeftPanel v-if="showLeftPanel" @contactClicked="handleContactClicked" @conferenceClicked="handleConferenceClicked" @statusChanged="handleStatusChange" @closePanel="handleToggleLeftPanel" />
 
       <div id="current-chat" class="current-chat w-11/12 mx-8 mt-2">
 
@@ -400,25 +316,5 @@ onMounted(() => {
 .message-section {
   scrollbar-width: thin;
   scrollbar-color: black gray;
-}
-
-.status-indicator.green {
-  background-color: green;
-}
-
-.status-indicator.red {
-  background-color: red;
-}
-
-.status-indicator.yellow {
-  background-color: #cebd00;
-}
-
-.status-indicator.orange {
-  background-color: #e57c03;
-}
-
-.status-indicator.gray {
-  background-color: gray;
 }
 </style>

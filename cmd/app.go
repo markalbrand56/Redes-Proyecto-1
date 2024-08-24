@@ -82,13 +82,32 @@ func (a *App) GetContacts() []string {
 	return chat.User.Contacts
 }
 
-func (a *App) GetConferences() map[string]string {
-	mp := make(map[string]string) // map[alias]jid
+func (a *App) GetConferences() []map[string]string {
+	//mp := make(map[string]string) // map[alias]jid
+	//
+	//for _, conference := range chat.User.Conferences {
+	//	mp[conference.Alias] = conference.JID
+	//}
+	//return mp
+
+	// return a list of conferences: [{alias: "alias", jid: "jid"}, ...]
+
+	var conferences []map[string]string
 
 	for _, conference := range chat.User.Conferences {
-		mp[conference.Alias] = conference.JID
+		//c := map[string]{
+		//	"alias": conference.Alias,
+		//	"jid": conference.JID,
+		//}
+
+		c := make(map[string]string)
+		c["alias"] = conference.Alias
+		c["jid"] = conference.JID
+
+		conferences = append(conferences, c)
 	}
-	return mp
+
+	return conferences
 }
 
 // GetMessages returns the messages of the given user
