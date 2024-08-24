@@ -34,6 +34,8 @@ const totalNotifications = computed(() => {
 
 // Estado para mostrar/ocultar el panel de notificaciones
 const showNotificationPanel = ref(false);
+const addContact = ref(false);
+const createConference = ref(false);
 
 // Funciones para manejar los eventos
 const onSuccess = async () => {
@@ -176,13 +178,33 @@ const toggleNotificationPanel = () => {
 // Request panel
 const showRequestPanel = ref(false);
 const newContact = ref("");  // Estado para almacenar el JID introducido
+const newConference = ref("");  // Estado para almacenar el nombre de la sala de conferencias
 
+// Función para mostrar/ocultar el panel de solicitudes
+const toggleRequestPanel = () => {
+  showRequestPanel.value = !showRequestPanel.value;
+  addContact.value = false;
+  createConference.value = false;
+};
+
+// Lógica para enviar una solicitud de suscripción
 const sendSubscriptionRequest = () => {
   if (newContact.value) {
     console.log("Sending subscription request to", newContact.value);
     RequestContact(newContact.value);
     newContact.value = "";  // Limpiar el input después de enviar la solicitud
     showRequestPanel.value = false;  // Cerrar el panel después de enviar la solicitud
+  }
+};
+
+// Lógica para crear una sala de conferencias
+const createNewConference = () => {
+  // TODO: Implementar la lógica para crear una sala de conferencias
+  if (newConference.value) {
+    console.log("Creating conference", newConference.value);
+    // CreateConference(newConference.value);
+    newConference.value = "";  // Limpiar el input después de crear la sala
+    showRequestPanel.value = false;  // Cerrar el panel después de crear la sala
   }
 };
 
@@ -223,11 +245,27 @@ onConferenceInvite();
         </div>
       </div>
     </div>
+
     <div class="flex justify-evenly items-center">
-      <PlusIcon class="w-7 h-7 mx-4 cursor-pointer" @click="showRequestPanel = !showRequestPanel" />
-      <div v-if="showRequestPanel" class="flex items-center ml-4">
-        <input v-model="newContact" type="text" placeholder="Enter JID" class="px-2 py-1 border border-gray-300 rounded mr-2 text-gray-500" />
-        <button class="px-2 py-1 bg-blue-500 text-white rounded cursor-pointer" @click="sendSubscriptionRequest">Send Request</button>
+      <PlusIcon class="w-7 h-7 mx-4 cursor-pointer" @click="toggleRequestPanel" />
+      <div v-if="showRequestPanel" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-20">
+        <div class="bg-white p-4 rounded-lg flex flex-col justify-center items-center content-between">
+
+          <button class="px-2 py-1 bg-blue-500 text-white rounded cursor-pointer mb-4" @click="addContact = !addContact">Add contact</button>
+          <div v-if="addContact" class="flex justify-center items-center">
+            <input v-model="newContact" type="text" placeholder="Enter JID" class="px-2 py-1 border border-gray-300 rounded mr-2 mb-4 text-gray-500" />
+            <button class="px-2 py-1 bg-blue-500 text-white rounded cursor-pointer mb-4" @click="sendSubscriptionRequest">Send Request</button>
+          </div>
+
+          <button class="px-2 py-1 bg-blue-500 text-white rounded cursor-pointer mb-4" @click="createConference = !createConference">Create conference</button>
+          <div v-if="createConference" class="flex justify-center items-center">
+            <input v-model="newConference" type="text" placeholder="Enter conference name" class="px-2 py-1 border border-gray-300 rounded mr-2 mb-4 text-gray-500" />
+            <button class="px-2 py-1 bg-blue-500 text-white rounded cursor-pointer mb-4" @click="createNewConference">Create</button>
+          </div>
+
+          <button class="px-2 py-1 bg-red-500 text-white rounded cursor-pointer" @click="toggleRequestPanel">Close</button>
+
+        </div>
       </div>
       <PowerIcon class="w-7 h-7 mx-4 cursor-pointer" @click="logout" />
     </div>
