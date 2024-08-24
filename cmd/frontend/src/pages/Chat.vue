@@ -23,8 +23,7 @@ import Options from "../components/Options.vue";
 import FileInput from "../components/FileInput.vue";
 import LeftPanel from "../components/LeftPanel.vue";
 
-import {CogIcon} from "@heroicons/vue/24/solid";
-import {Bars3Icon} from "@heroicons/vue/24/solid";
+import {CogIcon, Bars3Icon, PaperAirplaneIcon} from "@heroicons/vue/24/solid";
 import {useRouter} from "vue-router";
 
 const router = useRouter();
@@ -41,7 +40,6 @@ const User = reactive({
   contacts: [],
   conferences: {},
   status: 0,
-  statusColor: 'green'
 })
 
 const Messages = reactive({
@@ -54,9 +52,8 @@ const Debug = reactive({
   resultText: "Please enter your name below 👇",
 })
 
-const messageSectionRef = ref(null)
-const showPopup = ref(false);
-const showOptions = ref(false);
+const messageSectionRef = ref(null)  // Reference to the message section
+const showOptions = ref(false);  // Show options for current conversation
 
 function scrollToBottom() {
   nextTick(() => {
@@ -65,11 +62,6 @@ function scrollToBottom() {
     }
   })
 }
-
-const togglePopup = () => {
-  console.log('Toggling popup');
-  showPopup.value = !showPopup.value;
-};
 
 const toggleOptions = () => {
   console.log('Toggling options');
@@ -302,7 +294,7 @@ onMounted(() => {
 
         <div v-if="Message.jid" id="message-input" class="message-input flex items-center justify-center mt-8">
           <input id="message" v-model="Message.body" autocomplete="off" class="input w-4/5 h-8 px-2 rounded-md border-none bg-gray-200 focus:bg-white text-black" type="text"/>
-          <button @click="sendMessage" class="btn w-16 h-8 ml-4 rounded-md cursor-pointer bg-blue-500">Send</button>
+          <PaperAirplaneIcon @click="sendMessage" class="w-16 h-8 ml-4 p-1 rounded-md cursor-pointer bg-blue-500" />
           <FileInput  @fileUploaded="handleFileUploaded" />
         </div>
       </div>
