@@ -9,6 +9,7 @@ import {
   RequestContact,
   AcceptConferenceInvitation,
   DeclineConference,
+  CreateConference,
   Logout
 } from '../../wailsjs/go/main/App.js';
 
@@ -202,9 +203,11 @@ const createNewConference = () => {
   // TODO: Implementar la lógica para crear una sala de conferencias
   if (newConference.value) {
     console.log("Creating conference", newConference.value);
-    // CreateConference(newConference.value);
+    CreateConference(newConference.value);
+
     newConference.value = "";  // Limpiar el input después de crear la sala
     showRequestPanel.value = false;  // Cerrar el panel después de crear la sala
+
   }
 };
 

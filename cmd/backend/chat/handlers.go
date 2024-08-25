@@ -143,6 +143,78 @@ func handlePresence(s xmpp.Sender, p stanza.Packet) {
 	//_, _ = fmt.Fprintf(os.Stdout, "Presence = %s\n", p)
 
 	if presence, ok := p.(stanza.Presence); ok {
+
+		/*
+			<presence
+			    from='coven@chat.shakespeare.lit/firstwitch'
+			    to='crone1@shakespeare.lit/desktop'>
+
+			<x xmlns='http://jabber.org/protocol/muc#user'>
+			    <item affiliation='owner'
+			          role='moderator'/>
+			    <status code='110'/>
+			    <status code='201'/>
+			  </x>
+			</presence>
+		*/
+
+		if presence.Extensions != nil {
+			// https://xmpp.org/extensions/xep-0045.html#createroom
+
+			for _, ext := range presence.Extensions {
+
+				if mucUser, ok := ext.(*cstanza.MUCUser); ok && mucUser != nil && mucUser.Item.Role == "moderator" && mucUser.Item.Affiliation == "owner" && mucUser.Item.JID != "" {
+					itemJid := strings.Split(mucUser.Item.JID, "/")[0] // jid="alb21004@alumchat.lol/9790d249-1efd-4341-9635-3dae9314b511"
+
+					if itemJid == User.UserName {
+						// Verificar si es de una sala existente de la cuál el usuario ya es dueño, o si es de una nueva sala que se acaba de crear
+
+						if _, ok := User.Conferences[presence.From]; ok {
+							events.EmitSuccess(AppContext, fmt.Sprintf("You are owner of conference: %s", presence.From))
+							continue
+						} else {
+							// Crear la sala
+							alias := strings.Split(presence.From, "@")[0]
+							User.Conferences[presence.From] = models.NewConference(alias, presence.From)
+						}
+
+						log.Println("---------------------------------> MUC User extension: ", mucUser, presence.From)
+
+						iq := &stanza.IQ{
+							Attrs: stanza.Attrs{
+								Type: stanza.IQTypeSet,
+								From: itemJid,                              // JID of the user
+								To:   strings.Split(presence.From, "/")[0], // JID of the conference
+							},
+							Payload: cstanza.NewMUCOwner(),
+						}
+
+						c, err := s.SendIQ(AppContext, iq)
+
+						if err != nil {
+							log.Println(err)
+							events.EmitError(AppContext, err.Error())
+							continue
+						}
+
+						go func() {
+							serverResponse := <-c
+
+							log.Println("Server response: ", serverResponse)
+
+							// join conference
+							ConferenceInvitationChannel <- strings.Split(presence.From, "/")[0]
+						}()
+
+						events.EmitSuccess(AppContext, "Conference created")
+
+					}
+
+				}
+			}
+
+		}
+
 		switch presence.Type {
 		case stanza.PresenceTypeSubscribe:
 			// Un usuario ha solicitado suscribirse a nuestro estado de presencia.

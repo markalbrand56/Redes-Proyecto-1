@@ -173,6 +173,20 @@ func (a *App) SendInvitation(conferenceJID string, to string) {
 	chat.InviteToConferenceChannel <- models.NewInvitation(conferenceJID, to)
 }
 
+// CreateConference creates a new conference with the given alias
+func (a *App) CreateConference(alias string) {
+	if alias == "" {
+		log.Println("Alias is empty")
+		return
+	}
+
+	conf := models.NewConference(alias, fmt.Sprintf("%s@conference.alumchat.lol", alias))
+
+	log.Printf("Creating conference: %s {%s}\n", conf.Alias, conf.JID)
+
+	chat.NewConferenceChannel <- *conf
+}
+
 // CancelSubscription cancels the subscription of the given username
 func (a *App) CancelSubscription(username string) {
 	chat.UnsubscribeFromChannel <- username

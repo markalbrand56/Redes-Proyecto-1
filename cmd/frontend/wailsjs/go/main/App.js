@@ -14,6 +14,10 @@ export function CancelSubscription(arg1) {
   return window['go']['main']['App']['CancelSubscription'](arg1);
 }
 
+export function CreateConference(arg1) {
+  return window['go']['main']['App']['CreateConference'](arg1);
+}
+
 export function DeclineConference(arg1, arg2) {
   return window['go']['main']['App']['DeclineConference'](arg1, arg2);
 }

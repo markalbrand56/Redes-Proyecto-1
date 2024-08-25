@@ -35,6 +35,7 @@ var (
 	ConferenceInvitationChannel        = make(chan string) // Canal para recibir invitaciones a salas de chat
 	InviteToConferenceChannel          = make(chan models.Invitation)
 	ConferenceDeclineInvitationChannel = make(chan models.Invitation) // Canal para rechazar una invitación a sala de chat
+	NewConferenceChannel               = make(chan models.Conference)
 
 	ShowChannel   = make(chan string) // Canal para cambiar el estado del usuario
 	StatusChannel = make(chan string) // Canal para cambiar el mensaje de estado del usuario
@@ -628,6 +629,29 @@ func startMessaging() {
 			if err != nil {
 				log.Println("Error sending conference unsubscribe: ", err)
 				events.EmitError(AppContext, "Error sending conference unsubscribe")
+				continue
+			}
+
+		// Crear sala de chat
+		case conference := <-NewConferenceChannel:
+			log.Println("Creating conference: ", conference.Alias)
+
+			// Se envía un mensaje de presencia para crear la sala de chat
+			p := stanza.Presence{
+				Attrs: stanza.Attrs{
+					From: User.UserName,
+					To:   fmt.Sprintf("%s/%s", conference.JID, User.UserName[:strings.Index(User.UserName, "@")]), // JID de la sala de chat + alias del usuario
+				},
+				Extensions: []stanza.PresExtension{
+					&stanza.MucPresence{},
+				},
+			}
+
+			err := User.Client.Send(p)
+
+			if err != nil {
+				log.Println("Error creating conference: ", err)
+				events.EmitError(AppContext, "Error creating conference")
 				continue
 			}
 
