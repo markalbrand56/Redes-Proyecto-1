@@ -1,5 +1,7 @@
 # Project #1: XMPP Chat Client
 
+[![Wails build](https://github.com/markalbrand56/Redes-Proyecto-1/actions/workflows/wails.yml/badge.svg)](https://github.com/markalbrand56/Redes-Proyecto-1/actions/workflows/wails.yml)
+
 Universidad del Valle de Guatemala
 
 ## Author
