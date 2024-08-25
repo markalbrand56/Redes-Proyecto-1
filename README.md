@@ -16,10 +16,10 @@ Universidad del Valle de Guatemala
   - [Project Description](#project-description)
     - [Tech Stack](#tech-stack)
       - [Installation of dependencies](#installation-of-dependencies)
-      - [Go](#go)
-      - [Wails](#wails)
-      - [Node.js](#nodejs)
-      - [Tailwind CSS](#tailwind-css)
+        - [Go](#go)
+        - [Wails](#wails)
+        - [Node.js](#nodejs)
+        - [Tailwind CSS](#tailwind-css)
   - [Functionalities](#functionalities)
     - [Project requirements](#project-requirements)
       - [Account Management](#account-management)
@@ -42,11 +42,13 @@ This project is built using the Wails framework, which allows to build desktop a
 
 #### Installation of dependencies
 
-#### Go
+To run this project, you need to have the following dependencies installed on your system:
+
+##### Go
 
 To install Go, follow the instructions on the [official website](https://golang.org/doc/install) and download the installer for your operating system. Make sure to get at least **Go 1.21**.
 
-#### Wails
+##### Wails
 
 To install Wails, follow the instructions on the [official website](https://wails.io/docs/gettingstarted/installation). In summary, you can install Wails using the following command:
 
@@ -54,20 +56,20 @@ To install Wails, follow the instructions on the [official website](https://wail
 go install github.com/wailsapp/wails/v2/cmd/wails@latest
 ```
 
-#### Node.js
+This command will install the Wails CLI tool, which is used to build and run Wails applications.
+
+##### Node.js
 
 To install Node.js, follow the instructions on the [official website](https://nodejs.org/en/download/). Make sure to get at least **Node.js 14**.
 
-#### Tailwind CSS
+##### Tailwind CSS
 
-To install Tailwind CSS, run the following command on the frontend directory:
+Tailwind does not require a global installation, but you can install it as a development dependency on the frontend project. To do so, run the following commands:
 
 ```bash
 npm install -D tailwindcss postcss autoprefixer
 npx tailwindcss init -p
 ```
-
-This command will install the Wails CLI tool, which is used to build and run Wails applications.
 
 ## Functionalities
 
