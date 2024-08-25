@@ -10,6 +10,7 @@ import (
 //		<x xmlns="jabber:x:conference" jid="ogivox@conference.alumchat.lol"></x>
 // </message>
 
+// Conference es una estructura que representa un mensaje de tipo Message con namespace jabber:x:conference para manejar las invitaciones a salas de chat
 type Conference struct {
 	XMLName xml.Name `xml:"jabber:x:conference x"`
 	JID     string   `xml:"jid,attr"`
@@ -27,6 +28,7 @@ func (c Conference) GetSet() *stanza.ResultSet {
 	return nil
 }
 
+// NewConferenceInvitation crea un nuevo mensaje de tipo Message con namespace jabber:x:conference para invitar a un usuario a una sala de chat
 func (c Conference) NewConferenceInvitation(jid string) Conference {
 	return Conference{
 		XMLName: xml.Name{Space: "jabber:x:conference", Local: "x"},

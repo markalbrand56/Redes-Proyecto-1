@@ -6,6 +6,7 @@ import (
 	"gosrc.io/xmpp/stanza"
 )
 
+// Archive es una estructura que representa un mensaje de tipo IQ con namespace urn:xmpp:mam:2
 type Archive struct {
 	XMLName xml.Name `xml:"urn:xmpp:mam:2 query"`
 	Type    string   `xml:"type,attr"`
@@ -56,6 +57,7 @@ func (a Archive) GetSet() *stanza.ResultSet {
 	return nil
 }
 
+// NewArchiveQuery crea un nuevo mensaje de tipo IQ con namespace urn:xmpp:mam:2 para solicitar el historial de mensajes
 func NewArchiveQuery(jid string, max int) Archive {
 	return Archive{
 		XMLName: xml.Name{Space: "urn:xmpp:mam:2", Local: "query"},

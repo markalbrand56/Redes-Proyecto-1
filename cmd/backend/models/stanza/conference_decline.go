@@ -9,6 +9,7 @@ import (
 <message xmlns="jabber:client" from="testingv2@conference.alumchat.lol" to="alb210041@alumchat.lol"><x xmlns="http://jabber.org/protocol/muc#user"><decline from="alb21005@alumchat.lol"/></x></message>
 */
 
+// ConferenceDeclineMessage es una estructura que representa un mensaje de tipo Message con namespace http://jabber.org/protocol/muc#user para declinar una invitación a una sala de chat
 type ConferenceDeclineMessage struct {
 	XMLName           xml.Name          `xml:"message"`
 	XMLNS             string            `xml:"xmlns,attr"`
@@ -29,6 +30,7 @@ func (c ConferenceDeclineMessage) GetSet() *stanza.ResultSet {
 	return nil
 }
 
+// NewConferenceDeclineMessage crea un nuevo mensaje de tipo Message con namespace http://jabber.org/protocol/muc#user para declinar una invitación a una sala de chat
 func NewConferenceDeclineMessage(conference, from, to string) ConferenceDeclineMessage {
 	return ConferenceDeclineMessage{
 		XMLName: xml.Name{Space: "jabber:client", Local: "message"},
@@ -45,6 +47,7 @@ func NewConferenceDeclineMessage(conference, from, to string) ConferenceDeclineM
 	}
 }
 
+// ConferenceDecline es una estructura que representa un mensaje de tipo Message con namespace http://jabber.org/protocol/muc#user para declinar una invitación a una sala de chat
 type ConferenceDecline struct {
 	XMLName xml.Name `xml:"x"`
 	XMLNS   string   `xml:"xmlns,attr"`
@@ -69,14 +72,3 @@ func (f ConferenceDecline) Namespace() string {
 func (f ConferenceDecline) GetSet() *stanza.ResultSet {
 	return nil
 }
-
-//// NewConferenceDecline crea una nueva instancia de la estructura ConferenceDecline con un JID asignado
-//func NewConferenceDecline(from string) ConferenceDecline {
-//	return ConferenceDecline{
-//		XMLName: xml.Name{Space: "jabber:x:conference", Local: "x"},
-//		XMLNS:   "jabber:x:conference",
-//		Decline: Decline{
-//			From: from, // Asigna el JID al campo JID
-//		},
-//	}
-//}

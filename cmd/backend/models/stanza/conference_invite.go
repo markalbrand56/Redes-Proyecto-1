@@ -25,6 +25,7 @@ Las afiliaciones son necesarias de manejar al momento de invitar a un usuario a 
  </message>
 */
 
+// ConferenceInvite es una estructura que representa un mensaje de tipo Message con namespace jabber:x:conference para manejar las invitaciones a salas de chat
 type ConferenceInvite struct {
 	XMLName xml.Name `xml:"x"`
 	XMLNS   string   `xml:"xmlns,attr"`
@@ -47,7 +48,7 @@ func (f ConferenceInvite) GetSet() *stanza.ResultSet {
 	return nil
 }
 
-// NewConferenceInvite crea una nueva instancia de la estructura ConferenceInvite con un JID, contraseña y razón
+// NewConferenceInvite crea una nueva instancia de la estructura ConferenceInvite con un JID y una razón
 func NewConferenceInvite(jid string, reason string) ConferenceInvite {
 	return ConferenceInvite{
 		XMLName: xml.Name{Space: "jabber:x:conference", Local: "x"},

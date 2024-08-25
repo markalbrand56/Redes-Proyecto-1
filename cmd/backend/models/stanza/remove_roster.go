@@ -13,6 +13,7 @@ import (
 	</iq>
 */
 
+// RosterRemove es una estructura que representa un mensaje de tipo IQ con namespace jabber:iq:roster para eliminar un contacto del roster
 type RosterRemove struct {
 	XMLName xml.Name `xml:"iq"`
 	Type    string   `xml:"type,attr"`
@@ -44,6 +45,7 @@ func (r RosterRemove) GetSet() *stanza.ResultSet {
 	return nil
 }
 
+// NewRosterRemove crea un nuevo mensaje de tipo IQ con namespace jabber:iq:roster para eliminar un contacto del roster
 func NewRosterRemove(jid string) RosterRemove {
 	return RosterRemove{
 		XMLName: xml.Name{Space: "jabber:client", Local: "iq"},

@@ -13,6 +13,7 @@ import (
 </iq>
 */
 
+// CancelRegistration es una estructura que representa un mensaje de tipo IQ con namespace jabber:iq:register para cancelar el registro (eliminar cuenta)
 type CancelRegistration struct {
 	XMLName xml.Name       `xml:"iq"`
 	Type    string         `xml:"type,attr"`
@@ -39,6 +40,7 @@ func (c CancelRegistration) GetSet() *stanza.ResultSet {
 	return nil
 }
 
+// NewCancelRegistration crea un nuevo mensaje de tipo IQ con namespace jabber:iq:register para eliminar la cuenta del JID dado
 func NewCancelRegistration(from string) CancelRegistration {
 	return CancelRegistration{
 		Type: "set",
