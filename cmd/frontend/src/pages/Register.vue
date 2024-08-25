@@ -22,7 +22,6 @@ async function handleRegister() {
   const res = await Register(newUser.email, newUser.password);  // Boolean
 
   if (res) {
-    // Success
 
    // show pop with button to go to login
     Swal.fire({

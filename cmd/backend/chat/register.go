@@ -11,6 +11,7 @@ import (
 	"strings"
 )
 
+// RegisterNewUser registers a new user with the given username and password
 func RegisterNewUser(ctx context.Context, username string, password string) bool {
 	AppContext = ctx
 
@@ -21,6 +22,7 @@ func RegisterNewUser(ctx context.Context, username string, password string) bool
 	return <-successChannel
 }
 
+// Register registers a new user with the given username and password
 func register(successChan chan bool, email string, password string) {
 	defer close(successChan)
 	done := make(chan struct{})
