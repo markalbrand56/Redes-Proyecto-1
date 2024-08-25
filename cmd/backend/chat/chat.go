@@ -36,6 +36,7 @@ var (
 	InviteToConferenceChannel          = make(chan models.Invitation)
 	ConferenceDeclineInvitationChannel = make(chan models.Invitation) // Canal para rechazar una invitación a sala de chat
 	NewConferenceChannel               = make(chan models.Conference)
+	DeleteConferenceChannel            = make(chan string)
 
 	ShowChannel   = make(chan string) // Canal para cambiar el estado del usuario
 	StatusChannel = make(chan string) // Canal para cambiar el mensaje de estado del usuario
@@ -654,6 +655,42 @@ func startMessaging() {
 				events.EmitError(AppContext, "Error creating conference")
 				continue
 			}
+
+		// Eliminar sala de chat
+		case jid := <-DeleteConferenceChannel:
+			log.Println("Deleting conference: ", jid)
+
+			jid = strings.Split(jid, "/")[0]
+
+			iq := stanza.IQ{
+				Attrs: stanza.Attrs{
+					From: User.UserName,
+					Type: stanza.IQTypeSet,
+					Id:   "destroy_1",
+					To:   jid,
+				},
+				Payload: cstanza.NewRoomDestruction(jid, "Room destruction request"),
+			}
+
+			res, err := User.Client.SendIQ(AppContext, &iq)
+
+			if err != nil {
+				log.Println("Error destroying conference: ", err)
+				events.EmitError(AppContext, "Error destroying conference")
+				continue
+			}
+
+			go func() {
+				serverResp := <-res
+
+				if serverResp.Type == stanza.IQTypeResult {
+					log.Println("Conference destroyed: ", jid)
+					events.EmitSuccess(AppContext, "Conference destroyed")
+				} else {
+					log.Println("Error destroying conference: ", serverResp.Error)
+					events.EmitError(AppContext, "Error destroying conference")
+				}
+			}()
 
 		// Cambiar el estado del usuario
 		case show := <-ShowChannel:

@@ -26,6 +26,10 @@ export function DeleteAccount() {
   return window['go']['main']['App']['DeleteAccount']();
 }
 
+export function DeleteConference(arg1) {
+  return window['go']['main']['App']['DeleteConference'](arg1);
+}
+
 export function GetArchive(arg1) {
   return window['go']['main']['App']['GetArchive'](arg1);
 }

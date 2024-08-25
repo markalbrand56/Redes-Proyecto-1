@@ -169,16 +169,18 @@ func handlePresence(s xmpp.Sender, p stanza.Packet) {
 					if itemJid == User.UserName {
 						// Verificar si es de una sala existente de la cuál el usuario ya es dueño, o si es de una nueva sala que se acaba de crear
 
-						if _, ok := User.Conferences[presence.From]; ok {
-							events.EmitSuccess(AppContext, fmt.Sprintf("You are owner of conference: %s", presence.From))
+						fromFormatted := strings.Split(presence.From, "/")[0]
+
+						if _, ok := User.Conferences[fromFormatted]; ok {
+							events.EmitSuccess(AppContext, fmt.Sprintf("You are owner of conference: %s", fromFormatted))
 							continue
 						} else {
 							// Crear la sala
-							alias := strings.Split(presence.From, "@")[0]
-							User.Conferences[presence.From] = models.NewConference(alias, presence.From)
+							alias := strings.Split(fromFormatted, "@")[0]
+							User.Conferences[fromFormatted] = models.NewConference(alias, fromFormatted)
 						}
 
-						log.Println("---------------------------------> MUC User extension: ", mucUser, presence.From)
+						log.Println("---------------------------------> MUC User extension: ", mucUser, fromFormatted)
 
 						iq := &stanza.IQ{
 							Attrs: stanza.Attrs{

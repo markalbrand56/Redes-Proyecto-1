@@ -174,6 +174,11 @@ func (a *App) CreateConference(alias string) {
 	chat.NewConferenceChannel <- *conf
 }
 
+// DeleteConference deletes the conference with the given JID
+func (a *App) DeleteConference(jid string) {
+	chat.DeleteConferenceChannel <- jid
+}
+
 // CancelSubscription cancels the subscription of the given username
 func (a *App) CancelSubscription(username string) {
 	chat.UnsubscribeFromChannel <- username

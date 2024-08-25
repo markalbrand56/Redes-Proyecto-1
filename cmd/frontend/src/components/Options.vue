@@ -5,6 +5,7 @@ import {reactive, ref} from "vue";
 import {
   CancelSubscription,
   SendInvitation,
+  DeleteConference,
 } from '../../wailsjs/go/main/App.js';
 
 const contactInvite = reactive({
@@ -56,6 +57,12 @@ const exitConference = (jid) => {
   console.log("Exiting conference", jid)
 }
 
+// Delete conference
+const deleteConference = (jid) => {
+  console.log("Deleting conference", jid)
+  DeleteConference(jid)
+}
+
 </script>
 
 <template>
@@ -71,6 +78,8 @@ const exitConference = (jid) => {
       <button v-if="props.isConference && inviting" class="btn-secondary" @click="inviteContact(contactInvite.jid)">Send invitation</button>
 
       <button v-if="props.isConference" class="btn" @click="exitConference(jid)">Exit conference</button>
+
+      <button v-if="props.isConference" class="btn" @click="deleteConference(jid)">Delete conference</button>
 
     </div>
   </div>
