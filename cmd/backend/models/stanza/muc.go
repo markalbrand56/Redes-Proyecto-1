@@ -132,11 +132,3 @@ func NewMUCOwnerGet() MUCOwnerGet {
 		XMLName: xml.Name{Space: "http://jabber.org/protocol/muc#owner", Local: "query"},
 	}
 }
-
-type MUCOwnerWithRoomConfig struct {
-	XMLName xml.Name `xml:"http://jabber.org/protocol/muc#owner query"`
-	X       struct {
-		XMLName xml.Name `xml:"jabber:x:data x"`
-		Type    string   `xml:"type,attr"`
-	} `xml:"x"`
-}
