@@ -58,7 +58,7 @@ This implementation uses the XMPP protocol to communicate with a server, and it 
 
 This project had to be built around the server given for this project, which is a custom server built by the course instructors. This means that this project will not be fully functional with other XMPP servers, as it uses custom implementations for some functionalities.
 
-> **Note**: One of this functionalities is to be able to create an account. This was simply not posible with the server provided, as it did not allow anonymous connections. This is why for this functionality this project has to connect to a pre-existing account in order to create a new account.
+> **Note**: One of this functionalities is to be able to create an account. This was a challenge with the server provided, as it did not allow anonymous connections. This is why for this functionality this project has to connect to a pre-existing account in order to create a new account.
 
 ### Project requirements
 
