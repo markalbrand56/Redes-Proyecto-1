@@ -1,12 +1,12 @@
 <script setup>
 
-import {reactive, ref} from "vue";
+import {onMounted, reactive, ref} from "vue";
 
-import {
-  CancelSubscription,
-  SendInvitation,
-  DeleteConference,
-} from '../../wailsjs/go/main/App.js';
+import {CancelSubscription, DeleteConference, GetContacts, SendInvitation,} from '../../wailsjs/go/main/App.js';
+
+const Contacts = reactive({
+  contacts: [],
+})
 
 const contactInvite = reactive({
   jid: "",
@@ -63,103 +63,45 @@ const deleteConference = (jid) => {
   DeleteConference(jid)
 }
 
+const getContacts = async () => {
+  Contacts.contacts = await GetContacts()
+
+  console.log("Contacts: ", Contacts.contacts)
+}
+
+onMounted(() => {
+  getContacts()
+})
+
 </script>
 
 <template>
-
-  <div class="options-container" @click="closeOptions">
-    <div class="options-content" @click.stop>
+  <div class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center" @click="closeOptions">
+    <div class="bg-white p-5 rounded-lg shadow-lg text-center w-full max-w-sm" @click.stop>
       <!--  Botones de contactos    -->
-      <button v-if="!props.isConference" class="btn" @click="removeContact">Remove contact</button>
+      <button v-if="!props.isConference" class="w-full my-4 py-2 px-4 rounded-md bg-blue-500 text-white hover:bg-blue-600" @click="removeContact">Remove contact</button>
 
       <!--  Botones de conferencias    -->
-      <button v-if="props.isConference" class="btn" @click="toggleInviting">Invite contact</button>
-      <input v-if="props.isConference && inviting" v-model="contactInvite.jid" type="text" placeholder="Enter JID" class="request-input" />
-      <button v-if="props.isConference && inviting" class="btn-secondary" @click="inviteContact(contactInvite.jid)">Send invitation</button>
+      <button v-if="props.isConference" class="w-full my-4 py-2 px-4 rounded-md bg-blue-500 text-white hover:bg-blue-600" @click="toggleInviting">Invite contact</button>
 
-      <button v-if="props.isConference" class="btn" @click="exitConference(jid)">Exit conference</button>
+      <select v-if="props.isConference && inviting" v-model="contactInvite.jid" class="w-4/5 my-4 py-2 rounded-md bg-gray-200 text-gray-700">
+        <option value="" disabled selected>Select a contact</option>
+        <option v-for="contact in Contacts.contacts" :key="contact" :value="contact" class="text-gray-600">
+          {{ contact }}
+        </option>
+      </select>
 
-      <button v-if="props.isConference" class="btn" @click="deleteConference(jid)">Delete conference</button>
+      <button v-if="props.isConference && inviting" class="w-4/5 my-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300" @click="inviteContact(contactInvite.jid)">Send invitation</button>
 
+      <button v-if="props.isConference" class="w-full my-4 py-2 px-4 rounded-md bg-blue-500 text-white hover:bg-blue-600" @click="exitConference(jid)">Exit conference</button>
+
+      <button v-if="props.isConference" class="w-full my-4 py-2 px-4 rounded-md bg-blue-500 text-white hover:bg-blue-600" @click="deleteConference(jid)">Delete conference</button>
     </div>
   </div>
-
-
 </template>
+
 
 <style scoped>
 
-.options-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-
-  width: 100%;
-  height: 100%;
-
-  min-height: 40%;
-
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.options-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
-  width: fit-content;
-
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-.btn {
-  display: block;
-  width: 100%;
-
-  margin: 1rem;
-  padding: 1rem 2rem;
-
-  border: none;
-  border-radius: 4px;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
-}
-
-.request-input {
-  width: 80%;
-  min-width: fit-content;
-
-  margin: 1rem;
-  padding: 0.5rem;
-
-  border: none;
-  border-radius: 4px;
-  background-color: #f0f0f0;
-  color: #333;
-}
-
-.btn-secondary {
-  display: block;
-  width: 80%;
-  min-width: fit-content;
-
-  margin: 1rem;
-  padding: 0.5rem;
-
-  border: none;
-  border-radius: 4px;
-  background-color: #f0f0f0;
-  color: #333;
-  cursor: pointer;
-}
 
 </style>
