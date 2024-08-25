@@ -16,6 +16,8 @@ Universidad del Valle de Guatemala
       - [Installation of dependencies](#installation-of-dependencies)
       - [Go](#go)
       - [Wails](#wails)
+      - [Node.js](#nodejs)
+      - [Tailwind CSS](#tailwind-css)
   - [Functionalities](#functionalities)
     - [Project requirements](#project-requirements)
       - [Account Management](#account-management)
@@ -29,6 +31,7 @@ Universidad del Valle de Guatemala
 ### Tech Stack
 
 - **Frontend**: Vue.js
+  - **Styling**: Tailwind CSS
 - **Backend**: Go 1.21
 - **Linker**: Wails
 
@@ -46,6 +49,19 @@ To install Wails, follow the instructions on the [official website](https://wail
 
 ```bash
 go install github.com/wailsapp/wails/v2/cmd/wails@latest
+```
+
+#### Node.js
+
+To install Node.js, follow the instructions on the [official website](https://nodejs.org/en/download/). Make sure to get at least **Node.js 14**.
+
+#### Tailwind CSS
+
+To install Tailwind CSS, run the following command on the frontend directory:
+
+```bash
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
 ```
 
 This command will install the Wails CLI tool, which is used to build and run Wails applications.
@@ -131,7 +147,7 @@ This project provides binaries for Windows, MacOS and Linux in the release secti
 
 Additionally, you can run the project from source code. To do so, you need to have the dependencies listed on the [tech stack](#tech-stack) section.
 
-To run the project from source code, follow these steps:
+Wails handles the building and running of the project, including the frontend and backend. So, to run the project from source code, follow these steps:
 
 1. Clone the repository
 2. Navigate to the project directory
