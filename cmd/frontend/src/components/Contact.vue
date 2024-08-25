@@ -71,6 +71,7 @@ const usernameDisplay = props.contact.jid.split('@')[0]
 
 .contact-jid {
   @apply text-gray-800 my-1;
+  font-size: clamp(0.75rem, 1vw, 0.9rem);
 }
 
 .arrow-right {
