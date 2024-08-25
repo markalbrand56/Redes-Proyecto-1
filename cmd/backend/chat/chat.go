@@ -80,14 +80,18 @@ func Close() {
 
 	close(ConferenceInvitationChannel)
 	close(InviteToConferenceChannel)
+	close(ConferenceDeclineInvitationChannel)
+	close(NewConferenceChannel)
 
 	close(ShowChannel)
 
 	close(FetchArchiveChannel)
 
-	err := User.SaveConfig()
-	if err != nil {
-		log.Println("Error saving user configuration: ", err)
+	if User != nil {
+		err := User.SaveConfig()
+		if err != nil {
+			log.Println("Error saving user configuration: ", err)
+		}
 	}
 }
 
@@ -686,6 +690,7 @@ func startMessaging() {
 				if serverResp.Type == stanza.IQTypeResult {
 					log.Println("Conference destroyed: ", jid)
 					events.EmitSuccess(AppContext, "Conference destroyed")
+					User.DeleteConference(jid) // Borrar localmente la sala de chat
 				} else {
 					log.Println("Error destroying conference: ", serverResp.Error)
 					events.EmitError(AppContext, "Error destroying conference")

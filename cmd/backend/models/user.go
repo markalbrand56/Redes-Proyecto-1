@@ -45,6 +45,10 @@ func (u *User) InsertConference(conference *Conference) {
 	u.Conferences[conference.JID] = conference
 }
 
+func (u *User) DeleteConference(jid string) {
+	delete(u.Conferences, jid)
+}
+
 func (u *User) InsertMessage(message Message) {
 	//u.Messages[message.From] = append(u.Messages[message.From], message)
 
