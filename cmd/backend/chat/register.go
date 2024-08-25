@@ -15,8 +15,8 @@ import (
 func RegisterNewUser(ctx context.Context, username string, password string) bool {
 	AppContext = ctx
 
-	successChannel := make(chan bool)
-	// Register the user
+	successChannel := make(chan bool) // Channel to return the result of the registration
+
 	go register(successChannel, username, password)
 
 	return <-successChannel
@@ -25,7 +25,7 @@ func RegisterNewUser(ctx context.Context, username string, password string) bool
 // Register registers a new user with the given username and password
 func register(successChan chan bool, email string, password string) {
 	defer close(successChan)
-	done := make(chan struct{})
+	done := make(chan struct{}) // Channel to wait for the response from the server before closing the client
 
 	// Register the user{
 	config := xmpp.Config{
@@ -90,10 +90,10 @@ func register(successChan chan bool, email string, password string) {
 		close(done)
 	}()
 
-	select {
+	select { // Wait for the response from the server
 	case <-done:
-		return
-	} // Keep the client running
+		return // Close the client
+	}
 }
 
 func registerHandleIQ(s xmpp.Sender, p stanza.Packet) {
