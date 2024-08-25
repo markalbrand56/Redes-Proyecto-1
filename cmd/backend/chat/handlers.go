@@ -186,7 +186,7 @@ func handlePresence(s xmpp.Sender, p stanza.Packet) {
 								From: itemJid,                              // JID of the user
 								To:   strings.Split(presence.From, "/")[0], // JID of the conference
 							},
-							Payload: cstanza.NewMUCOwner(),
+							Payload: cstanza.NewMUCOwnerGet(),
 						}
 
 						c, err := s.SendIQ(AppContext, iq)
@@ -200,10 +200,33 @@ func handlePresence(s xmpp.Sender, p stanza.Packet) {
 						go func() {
 							serverResponse := <-c
 
-							log.Println("Server response: ", serverResponse)
+							if serverResponse.Type == stanza.IQTypeResult {
+								log.Println("Server response: ", serverResponse)
 
-							// join conference
-							ConferenceInvitationChannel <- strings.Split(presence.From, "/")[0]
+								// Construir el IQ para enviar la configuración modificada
+								acceptConfigIQ := &stanza.IQ{
+									Attrs: stanza.Attrs{
+										Type: stanza.IQTypeSet,
+										From: itemJid,                              // JID del usuario
+										To:   strings.Split(presence.From, "/")[0], // JID de la sala de conferencia
+										Id:   "accept-config",
+									},
+									Payload: cstanza.NewMUCOwnerWithForm(), // Crea un MUCOwnerWithForm con el campo muc#roomconfig_persistentroom
+								}
+
+								// Enviar el IQ con la configuración modificada
+								_, err := s.SendIQ(AppContext, acceptConfigIQ)
+
+								if err != nil {
+									log.Println(err)
+									events.EmitError(AppContext, err.Error())
+								} else {
+									log.Println("Configuration updated and submitted for conference")
+								}
+
+							} else {
+								log.Println("Unexpected server response type:", serverResponse.Type)
+							}
 						}()
 
 						events.EmitSuccess(AppContext, "Conference created")

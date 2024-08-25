@@ -101,3 +101,42 @@ func NewMUCOwner() MUCOwner {
 		},
 	}
 }
+
+/*
+<iq from='crone1@shakespeare.lit/desktop'
+    id='create1'
+    to='coven@chat.shakespeare.lit'
+    type='get'>
+  <query xmlns='http://jabber.org/protocol/muc#owner'/>
+</iq>
+*/
+
+type MUCOwnerGet struct {
+	XMLName xml.Name `xml:"http://jabber.org/protocol/muc#owner query"`
+}
+
+func (MUCOwnerGet) Name() string {
+	return "MUCOwnerGet"
+}
+
+func (m MUCOwnerGet) Namespace() string {
+	return m.XMLName.Space
+}
+
+func (MUCOwnerGet) GetSet() *stanza.ResultSet {
+	return nil
+}
+
+func NewMUCOwnerGet() MUCOwnerGet {
+	return MUCOwnerGet{
+		XMLName: xml.Name{Space: "http://jabber.org/protocol/muc#owner", Local: "query"},
+	}
+}
+
+type MUCOwnerWithRoomConfig struct {
+	XMLName xml.Name `xml:"http://jabber.org/protocol/muc#owner query"`
+	X       struct {
+		XMLName xml.Name `xml:"jabber:x:data x"`
+		Type    string   `xml:"type,attr"`
+	} `xml:"x"`
+}
