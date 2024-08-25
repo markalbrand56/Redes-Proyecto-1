@@ -33,7 +33,7 @@ func register(successChan chan bool, email string, password string) {
 			Address: address,
 		},
 		Jid:          "alb21004@alumchat.lol", // Admin
-		Credential:   xmpp.Password("221756"),
+		Credential:   xmpp.Password("mark123"),
 		StreamLogger: os.Stdout,
 		Insecure:     true,
 	}
