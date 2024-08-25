@@ -58,5 +58,6 @@ EventsOn("login-error", (error) => {
       <button type="submit" class="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 m-2">Login</button>
     </form>
     <pulse-loader v-if="user.loggingIn" color="#007bff" size="10px" class="mt-4"/>
+    <button @click="router.push('/register')" class="text-blue-500 hover:underline">Register</button>
   </div>
 </template>

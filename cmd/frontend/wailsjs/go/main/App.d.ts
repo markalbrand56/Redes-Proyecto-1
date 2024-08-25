@@ -34,6 +34,8 @@ export function Logout():Promise<void>;
 
 export function ProbeContacts():Promise<void>;
 
+export function Register(arg1:string,arg2:string):Promise<boolean>;
+
 export function RejectSubscription(arg1:string):Promise<void>;
 
 export function RequestContact(arg1:string):Promise<void>;

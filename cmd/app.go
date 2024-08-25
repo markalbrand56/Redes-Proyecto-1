@@ -37,6 +37,11 @@ func (a *App) Login(username string, password string) {
 	//chat.RegisterNewUser(a.ctx, username, password)
 }
 
+// Register registers a new user with the given username, password and email
+func (a *App) Register(email string, password string) bool {
+	return chat.RegisterNewUser(a.ctx, email, password)
+}
+
 // Logout logs out the user
 func (a *App) Logout() {
 	chat.LogoutChannel <- true

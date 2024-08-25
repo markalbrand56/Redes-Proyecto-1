@@ -11,15 +11,20 @@ import (
 	"strings"
 )
 
-func RegisterNewUser(ctx context.Context, username string, password string) {
+func RegisterNewUser(ctx context.Context, username string, password string) bool {
 	AppContext = ctx
+
+	successChannel := make(chan bool)
 	// Register the user
+	go register(successChannel, username, password)
 
-	go register(username, password)
-
+	return <-successChannel
 }
 
-func register(email string, password string) {
+func register(successChan chan bool, email string, password string) {
+	defer close(successChan)
+	done := make(chan struct{})
+
 	// Register the user{
 	config := xmpp.Config{
 		TransportConfiguration: xmpp.TransportConfiguration{
@@ -73,13 +78,20 @@ func register(email string, password string) {
 
 		if serverResponse.Type == stanza.IQTypeResult {
 			fmt.Println("Server response: ", serverResponse)
+			successChan <- true
 
 		} else if serverResponse.Type == stanza.IQTypeError {
 			fmt.Println("Error while registering the user")
+			successChan <- false
 		}
+
+		close(done)
 	}()
 
-	select {} // Keep the client running
+	select {
+	case <-done:
+		return
+	} // Keep the client running
 }
 
 func registerHandleIQ(s xmpp.Sender, p stanza.Packet) {
