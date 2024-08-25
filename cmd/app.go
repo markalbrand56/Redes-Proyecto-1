@@ -21,9 +21,6 @@ func NewApp() *App {
 // startup is called when the app starts
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
-
-	// DEBUG
-	//a.Login("alb21004@alumchat.lol", "mark123")
 }
 
 // OnShutdown is called when the app is shutting down
@@ -94,23 +91,9 @@ func (a *App) GetContacts() []string {
 }
 
 func (a *App) GetConferences() []map[string]string {
-	//mp := make(map[string]string) // map[alias]jid
-	//
-	//for _, conference := range chat.User.Conferences {
-	//	mp[conference.Alias] = conference.JID
-	//}
-	//return mp
-
-	// return a list of conferences: [{alias: "alias", jid: "jid"}, ...]
-
 	var conferences []map[string]string
 
 	for _, conference := range chat.User.Conferences {
-		//c := map[string]{
-		//	"alias": conference.Alias,
-		//	"jid": conference.JID,
-		//}
-
 		c := make(map[string]string)
 		c["alias"] = conference.Alias
 		c["jid"] = conference.JID
@@ -123,8 +106,6 @@ func (a *App) GetConferences() []map[string]string {
 
 // GetMessages returns the messages of the given user
 func (a *App) GetMessages(username string) []models.Message {
-	//chat.User.ShowConversations()
-
 	if _, ok := chat.User.Messages[username]; !ok {
 		return []models.Message{}
 	}
