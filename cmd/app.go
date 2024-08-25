@@ -34,6 +34,7 @@ func (a *App) OnShutdown(ctx context.Context) {
 // Login logs in the user with the given username and password
 func (a *App) Login(username string, password string) {
 	chat.Start(a.ctx, username, password)
+	//chat.RegisterNewUser(a.ctx, username, password)
 }
 
 // Logout logs out the user
