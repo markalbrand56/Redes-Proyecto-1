@@ -89,6 +89,42 @@ This project had to be built around the server given for this project, which is 
 
 ## Project Structure
 
+The project is structured as follows, the project itself is contained in the `cmd` directory. This directory contains the backend application, which is built using Go, and the frontend application, which is built using Vue.js.
+
+```bash
+├── cmd/
+│   └── backend/
+│       ├── models/              # Models for the backend application
+│       │    └── stanza/         # Structs to represent XMPP stanzas not covered by the library
+│       └── chat/
+│           ├── chat.go        # Core chat event handling functions
+│           ├── handlers.go    # Event handlers for various chat operations
+│           └── register.go    # Functions to register events
+│           └── events/        # Event definitions for the chat application
+├── frontend/
+│   ├── dist/                      # Distribution folder for the frontend build
+│   ├── src/                       # Source code for the frontend
+│   │   ├── assets/                # Static assets like images and fonts
+│   │   ├── components/            # Vue components used across the application
+│   │   ├── pages/                 # Vue components representing pages/views
+│   │   ├── App.vue                # Root Vue component
+│   │   ├── main.js                # Entry point for the frontend application
+│   │   ├── router.js              # Vue Router setup for page navigation
+│   │   └── style.css              # Global CSS styles
+├── wailsjs/                       # Wails-related configuration and files
+│   ├── index.html                 # Entry HTML file for Wails application
+├── .gitignore                     # Git ignore file to exclude specific files/folders
+├── app.go                         # Entry point for the Go backend application
+├── go.mod                         # Go module file
+├── go.sum                         # Go dependencies checksum file
+├── main.go                        # Main Go application logic
+├── package.json                   # Node.js package configuration
+├── postcss.config.js              # PostCSS configuration for processing CSS
+├── tailwind.config.js             # Tailwind CSS configuration file
+└── vite.config.js                 # Vite configuration for frontend bundling
+
+```
+
 ## How to Run
 
 This project provides binaries for Windows, MacOS and Linux in the release section on GitHub.
@@ -113,3 +149,5 @@ wails build
 ```
 
 6. The binaries will be available in the `build` directory
+
+> As stated before on the [project functionalities](#functionalities) section, this project was built around a custom server. If you want to use a different server, you will need to modify the `address` variable on the `chat.go` file over on the `cmd/backend/chat` directory. 
