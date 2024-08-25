@@ -102,6 +102,7 @@ This project had to be built around the server given for this project, which is 
 - [x] Delete group chat
 - [x] Invite a contact to a existing private group chat
 - [x] Delete a contact from the contact list
+- [x] Persistent user status and status message
 
 ## Project Structure
 
@@ -143,7 +144,7 @@ The project is structured as follows, the project itself is contained in the `cm
 
 ## How to Run
 
-This project provides binaries for Windows, MacOS and Linux in the release section on GitHub.
+This project provides binaries for Windows, MacOS and Linux in the release section on GitHub. For Windows, it also provides a NSIS installer to install the application.
 
 Additionally, you can run the project from source code. To do so, you need to have the dependencies listed on the [tech stack](#tech-stack) section.
 
