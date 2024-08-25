@@ -80,6 +80,7 @@ crear un struct para el formulario de configuracion de la sala con el campo muc#
 
 */
 
+// RoomConfigForm es una stanza utilizada para enviar la configuración de una sala, en esta implementación solo se necesita que el room sea persistente
 type RoomConfigForm struct {
 	XMLName xml.Name `xml:"jabber:x:data x"`
 	Type    string   `xml:"type,attr"`
@@ -101,6 +102,7 @@ func (m RoomConfigForm) GetSet() *stanza.ResultSet {
 	return nil
 }
 
+// NewRoomConfigForm crea un formulario de configuración de sala con el campo muc#roomconfig_persistentroom
 func NewRoomConfigForm() RoomConfigForm {
 	return RoomConfigForm{
 		XMLName: xml.Name{Space: "jabber:x:data", Local: "x"},
@@ -115,6 +117,7 @@ func NewRoomConfigForm() RoomConfigForm {
 	}
 }
 
+// MUCOwnerWithForm es una stanza utilizada para enviar la configuración de una sala
 type MUCOwnerWithForm struct {
 	XMLName xml.Name       `xml:"http://jabber.org/protocol/muc#owner query"`
 	X       RoomConfigForm `xml:"x"`
@@ -132,6 +135,7 @@ func (MUCOwnerWithForm) GetSet() *stanza.ResultSet {
 	return nil
 }
 
+// NewMUCOwnerWithForm crea una stanza para enviar la configuración de una sala
 func NewMUCOwnerWithForm() MUCOwnerWithForm {
 	return MUCOwnerWithForm{
 		XMLName: xml.Name{Space: "http://jabber.org/protocol/muc#owner", Local: "query"},
