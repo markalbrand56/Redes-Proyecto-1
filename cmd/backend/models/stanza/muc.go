@@ -69,38 +69,38 @@ Example 155. Owner Requests Instant Room¶
   </query>
 */
 
-type MUCOwner struct {
-	XMLName xml.Name `xml:"http://jabber.org/protocol/muc#owner query"`
-	X       struct {
-		XMLName xml.Name `xml:"jabber:x:data x"`
-		Type    string   `xml:"type,attr"`
-	} `xml:"x"`
-}
-
-func (MUCOwner) Name() string {
-	return "MUCOwner"
-}
-
-func (m MUCOwner) Namespace() string {
-	return m.XMLName.Space
-}
-
-func (MUCOwner) GetSet() *stanza.ResultSet {
-	return nil
-}
-
-func NewMUCOwner() MUCOwner {
-	return MUCOwner{
-		XMLName: xml.Name{Space: "http://jabber.org/protocol/muc#owner", Local: "query"},
-		X: struct {
-			XMLName xml.Name `xml:"jabber:x:data x"`
-			Type    string   `xml:"type,attr"`
-		}{
-			XMLName: xml.Name{Space: "jabber:x:data", Local: "x"},
-			Type:    "submit",
-		},
-	}
-}
+//type MUCOwner struct {
+//	XMLName xml.Name `xml:"http://jabber.org/protocol/muc#owner query"`
+//	X       struct {
+//		XMLName xml.Name `xml:"jabber:x:data x"`
+//		Type    string   `xml:"type,attr"`
+//	} `xml:"x"`
+//}
+//
+//func (MUCOwner) Name() string {
+//	return "MUCOwner"
+//}
+//
+//func (m MUCOwner) Namespace() string {
+//	return m.XMLName.Space
+//}
+//
+//func (MUCOwner) GetSet() *stanza.ResultSet {
+//	return nil
+//}
+//
+//func NewMUCOwner() MUCOwner {
+//	return MUCOwner{
+//		XMLName: xml.Name{Space: "http://jabber.org/protocol/muc#owner", Local: "query"},
+//		X: struct {
+//			XMLName xml.Name `xml:"jabber:x:data x"`
+//			Type    string   `xml:"type,attr"`
+//		}{
+//			XMLName: xml.Name{Space: "jabber:x:data", Local: "x"},
+//			Type:    "submit",
+//		},
+//	}
+//}
 
 /*
 <iq from='crone1@shakespeare.lit/desktop'
