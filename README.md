@@ -121,28 +121,31 @@ The project is structured as follows, the project itself is contained in the `cm
 │   │       ├── handlers.go        # Event handlers for various chat operations
 │   │       ├── register.go        # Functions to register events
 │   │       └── events/            # Event definitions for the chat application
-│   └── frontend/
-│       ├── wails/             # Wails files for linking the frontend and backend
-│       ├── index.html         # HTML template for the frontend
-│       ├── dist/              # Distribution folder for the frontend build
-│       ├── src/               # Source code for the frontend
-│       │   ├── assets/        # Static assets like images and fonts
-│       │   ├── components/        # Vue components used across the application
-│       │   ├── pages/             # Vue components representing pages/views
-│       │   ├── App.vue            # Root Vue component
-│       │   ├── main.js            # Entry point for the frontend application
-│       │   ├── router.js          # Vue Router setup for page navigation
-│       │   └── style.css          # Global CSS styles
-│       ├── package.json       # Node.js package file
-│       ├── tailwind.config.js # Tailwind CSS configuration file
-│       └── vite.config.js     # Vite configuration file
-├── .gitignore                 # Git ignore file to exclude specific files/folders
-├── README.md                  # Project README file
-├── wails.json                 # Wails configuration file
-├── app.go                     # Entry point for the Go backend application
-├── go.mod                     # Go module file
-├── go.sum                     # Go dependencies checksum file
-└── main.go                    # Main Go application logic
+│   ├── frontend/
+│   │   ├── index.html         # HTML template for the frontend
+│   │   ├── wails/             # Wails files for linking the frontend and backend
+│   │   ├── dist/              # Distribution folder for the frontend build
+│   │   ├── src/               # Source code for the frontend
+│   │   │   ├── assets/        # Static assets like images and fonts
+│   │   │   ├── components/        # Vue components used across the application
+│   │   │   ├── pages/             # Vue components representing pages/views
+│   │   │   ├── App.vue            # Root Vue component
+│   │   │   ├── main.js            # Entry point for the frontend application
+│   │   │   ├── router.js          # Vue Router setup for page navigation
+│   │   │   └── style.css          # Global CSS styles
+│   │   ├── package.json       # Node.js package file
+│   │   ├── tailwind.config.js # Tailwind CSS configuration file
+│   │   └── vite.config.js     # Vite configuration file
+│   ├── wails.json                 # Wails configuration file
+│   ├── app.go                     # Entry point for the Go backend application
+│   ├── go.mod                     # Go module file
+│   ├── go.sum                     # Go dependencies checksum file
+│   └── main.go                    # Main Go application logic
+│
+├── .gitignore                      # Git ignore file
+├─  README.md                      # Project README file 
+└── LICENSE                        # Project license file
+
 
 ```
 
