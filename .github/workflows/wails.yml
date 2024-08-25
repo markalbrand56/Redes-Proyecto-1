@@ -51,12 +51,12 @@ jobs:
         with:
           name: Wails Build ${{ runner.os }} ${{ matrix.build.name }}
           path: |
-            src/build/bin/
-            src/build/bin/*
+            cmd/build/bin/
+            cmd/build/bin/*
 
       - name: Release
         uses: softprops/action-gh-release@v1
         if: github.ref_type == 'tag'
         with:
           files: |
-            src/build/bin/*
+            cmd/build/bin/*
