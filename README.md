@@ -25,6 +25,7 @@ Universidad del Valle de Guatemala
       - [Account Management](#account-management)
       - [Communication](#communication)
     - [Additional functionalities](#additional-functionalities)
+      - [File sharing](#file-sharing)
   - [Project Structure](#project-structure)
   - [How to Run](#how-to-run)
   - [License](#license)
@@ -108,6 +109,12 @@ This project had to be built around the server given for this project, which is 
 - [x] Invite a contact to a existing private group chat
 - [x] Delete a contact from the contact list
 - [x] Persistent user status and status message
+
+#### File sharing
+
+As the given server did not support XMPP's extensions for file sharing, instead of sending files through the XMPP server as a base64 encoded string, it was developed a simple [File Server](https://github.com/markalbrand56/XMPP-File-Server) which allows to upload and access files through a REST API. This server is built using Go and uploads files to a `AWS S3 bucket`.
+
+This file server was shared with a close group of friends, and it is not intended to be used by the public. This allowed us to have a simple file sharing system and file preview system in our projects.
 
 ## Project Structure
 
