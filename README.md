@@ -134,6 +134,8 @@ The project is structured as follows, the project itself is contained in the `cm
 │       ├── tailwind.config.js # Tailwind CSS configuration file
 │       └── vite.config.js     # Vite configuration file
 ├── .gitignore                 # Git ignore file to exclude specific files/folders
+├── README.md                  # Project README file
+├── wails.json                 # Wails configuration file
 ├── app.go                     # Entry point for the Go backend application
 ├── go.mod                     # Go module file
 ├── go.sum                     # Go dependencies checksum file
