@@ -25,6 +25,7 @@ Universidad del Valle de Guatemala
     - [Additional functionalities](#additional-functionalities)
   - [Project Structure](#project-structure)
   - [How to Run](#how-to-run)
+  - [License](#license)
 
 ## Project Description
 
@@ -169,3 +170,7 @@ wails build
 6. The binaries will be available in the `build` directory
 
 > As stated before on the [project functionalities](#functionalities) section, this project was built around a custom server. If you want to use a different server, you will need to modify the `address` variable on the `chat.go` file over on the `cmd/backend/chat` directory. 
+
+## License
+
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
