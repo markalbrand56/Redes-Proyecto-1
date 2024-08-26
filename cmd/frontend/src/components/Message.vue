@@ -57,7 +57,7 @@ onMounted(() => {
     <p v-if="isConference && !isUserMessage" class="message-sender"> {{ sender }} </p>
     <PulseLoader v-if="isImage && !imageLoaded" color="#007bff" size="10px" class="mt-4 min-w-32"/>
     <img v-if="isImage && imageLoaded" :src="message.body" alt="Image">
-    <div class="inner-message">
+    <div :class="['inner-message', isUserMessage ? 'max-w-[65%]' : 'max-w-[65%]']">
       <p class="message-body" v-if="!isImage"> {{ message.body }}  </p>
       <p class="message-timestamp"> {{ message.timestamp }} </p>
     </div>
@@ -78,7 +78,7 @@ onMounted(() => {
 }
 
 .message-body {
-  @apply p-2 bg-gray-100 rounded-lg text-gray-800 max-w-[65%] ml-4 my-2;
+  @apply p-2 bg-gray-100 rounded-lg text-gray-800 ml-4 my-2 max-w-[85%];
 }
 
 .message-timestamp {
@@ -96,4 +96,13 @@ onMounted(() => {
 .message-container.other-message {
   @apply items-start justify-start;
 }
+
+.message-container.user-message .inner-message {
+  @apply justify-end;
+}
+
+.message-container.other-message .inner-message {
+  @apply max-w-[65%];
+}
 </style>
+
