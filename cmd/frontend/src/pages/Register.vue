@@ -7,6 +7,7 @@ import {EventsOn} from "../../wailsjs/runtime/runtime.js";
 
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue';
 import Swal from "sweetalert2";
+import logo from "../assets/images/logo.png";
 
 const newUser = reactive({
   email: "",
@@ -54,7 +55,8 @@ async function handleRegister() {
 
 <template>
 
-  <div class="flex flex-col items-center justify-center h-full">
+  <div class="flex flex-col items-center justify-center h-fit">
+    <img :src="logo" alt="logo" class="w-96 mt-4"/>
     <h2 class="text-4xl text-blue-500 mb-8 font-bold">Register</h2>
     <form @submit.prevent="handleRegister" class="flex flex-col gap-4">
       <div class="flex flex-col gap-2">
