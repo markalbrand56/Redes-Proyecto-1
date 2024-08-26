@@ -17,11 +17,9 @@ body {
 }
 
 @font-face {
-    font-family: "Nunito";
+    font-family: "Rubik", sans-serif;
+    font-weight: normal;
     font-style: normal;
-    font-weight: 400;
-    src: local(""),
-    url("assets/fonts/nunito-v16-latin-regular.woff2") format("woff2");
 }
 
 #app {
