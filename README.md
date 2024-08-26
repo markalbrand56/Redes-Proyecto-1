@@ -4,6 +4,8 @@
 
 Universidad del Valle de Guatemala
 
+![XMPP Chatting Login](assets/app.png)
+
 ## Author
 
 **Mark Albrand** (21004)
@@ -28,6 +30,7 @@ Universidad del Valle de Guatemala
       - [File sharing](#file-sharing)
   - [Project Structure](#project-structure)
   - [How to Run](#how-to-run)
+  - [Image Gallery](#image-gallery)
   - [License](#license)
 
 ## Project Description
@@ -186,6 +189,14 @@ wails build
 6. The binaries will be available in the `build` directory
 
 > As stated before on the [project functionalities](#functionalities) section, this project was built around a custom server. If you want to use a different server, you will need to modify the `address` variable on the `chat.go` file over on the `cmd/backend/chat` directory. 
+
+## Image Gallery
+
+![Conversation](assets/demo_1.png)
+
+![Conversation with files](assets/demo_2.png)
+
+![Register screen](assets/register.png)
 
 ## License
 
