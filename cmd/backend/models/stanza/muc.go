@@ -91,3 +91,44 @@ func NewMUCOwnerGet() MUCOwnerGet {
 		XMLName: xml.Name{Space: "http://jabber.org/protocol/muc#owner", Local: "query"},
 	}
 }
+
+/*
+<iq from="tu_jid@tu_dominio" to="grupo_jid@conference.dominio" type="set" id="remove1">
+  <query xmlns="http://jabber.org/protocol/muc#admin">
+    <item jid="tu_jid@tu_dominio" affiliation="none"/>
+  </query>
+</iq>
+*/
+
+type MUCAdmin struct {
+	XMLName xml.Name `xml:"http://jabber.org/protocol/muc#admin query"`
+	Item    struct {
+		JID         string `xml:"jid,attr"`
+		Affiliation string `xml:"affiliation,attr"`
+	} `xml:"item"`
+}
+
+func (MUCAdmin) Name() string {
+	return "MUCAdmin"
+}
+
+func (m MUCAdmin) Namespace() string {
+	return m.XMLName.Space
+}
+
+func (MUCAdmin) GetSet() *stanza.ResultSet {
+	return nil
+}
+
+func NewMUCAdmin(jid, affiliation string) MUCAdmin {
+	return MUCAdmin{
+		XMLName: xml.Name{Space: "http://jabber.org/protocol/muc#admin", Local: "query"},
+		Item: struct {
+			JID         string `xml:"jid,attr"`
+			Affiliation string `xml:"affiliation,attr"`
+		}{
+			JID:         jid,
+			Affiliation: affiliation,
+		},
+	}
+}

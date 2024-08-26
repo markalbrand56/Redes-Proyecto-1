@@ -179,6 +179,11 @@ func (a *App) DeleteConference(jid string) {
 	chat.DeleteConferenceChannel <- jid
 }
 
+// ExitConference edits the conference with the given JID
+func (a *App) ExitConference(jid string) {
+	chat.ExitConferenceChannel <- jid
+}
+
 // CancelSubscription cancels the subscription of the given username
 func (a *App) CancelSubscription(username string) {
 	chat.UnsubscribeFromChannel <- username

@@ -16,6 +16,8 @@ export function DeleteAccount():Promise<void>;
 
 export function DeleteConference(arg1:string):Promise<void>;
 
+export function ExitConference(arg1:string):Promise<void>;
+
 export function GetArchive(arg1:string):Promise<void>;
 
 export function GetConferences():Promise<Array<{[key: string]: string}>>;

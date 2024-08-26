@@ -37,6 +37,7 @@ var (
 	ConferenceDeclineInvitationChannel = make(chan models.Invitation) // Canal para rechazar una invitación a sala de chat
 	NewConferenceChannel               = make(chan models.Conference)
 	DeleteConferenceChannel            = make(chan string)
+	ExitConferenceChannel              = make(chan string)
 
 	ShowChannel   = make(chan string) // Canal para cambiar el estado del usuario
 	StatusChannel = make(chan string) // Canal para cambiar el mensaje de estado del usuario
@@ -696,6 +697,50 @@ func startMessaging() {
 					events.EmitError(AppContext, "Error destroying conference")
 				}
 			}()
+
+		// Salir de sala de chat
+		case jid := <-ExitConferenceChannel:
+			log.Println("Exiting conference: ", jid)
+
+			// Primero, eliminar la afiliación a la sala de chat
+
+			iqAffiliationDelete := stanza.IQ{
+				Attrs: stanza.Attrs{
+					From: User.UserName,
+					To:   jid,
+					Type: stanza.IQTypeSet,
+					Id:   "affiliation_delete_1",
+				},
+				Payload: cstanza.NewMUCAdmin(jid, "none"),
+			}
+
+			_, err := User.Client.SendIQ(AppContext, &iqAffiliationDelete)
+
+			if err != nil {
+				log.Println("Error deleting affiliation: ", err)
+				events.EmitError(AppContext, fmt.Sprintf("Error deleting affiliation for %s", jid))
+				continue
+			}
+
+			// Luego, enviar un mensaje de presencia para salir de la sala de chat
+			presence := stanza.Presence{
+				Attrs: stanza.Attrs{
+					From: User.UserName,
+					To:   fmt.Sprintf("%s/%s", jid, User.UserName[:strings.Index(User.UserName, "@")]),
+					Type: stanza.PresenceTypeUnavailable,
+				},
+			}
+
+			err = User.Client.Send(presence)
+
+			if err != nil {
+				log.Println("Error exiting conference: ", err)
+				events.EmitError(AppContext, "Error exiting conference")
+				continue
+			}
+
+			User.DeleteConference(jid) // Borrar localmente la sala de chat
+			events.EmitSuccess(AppContext, fmt.Sprintf("Exited conference %s", jid))
 
 		// Cambiar el estado del usuario
 		case show := <-ShowChannel:

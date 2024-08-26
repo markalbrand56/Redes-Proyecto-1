@@ -2,7 +2,13 @@
 
 import {onMounted, reactive, ref} from "vue";
 
-import {CancelSubscription, DeleteConference, GetContacts, SendInvitation,} from '../../wailsjs/go/main/App.js';
+import {
+  CancelSubscription,
+  DeleteConference,
+  GetContacts,
+  SendInvitation,
+  ExitConference,
+} from '../../wailsjs/go/main/App.js';
 
 const Contacts = reactive({
   contacts: [],
@@ -55,6 +61,8 @@ const removeContact = () => {
 // Exit conference
 const exitConference = (jid) => {
   console.log("Exiting conference", jid)
+
+  ExitConference(jid)
 }
 
 // Delete conference
