@@ -59,7 +59,6 @@ const onError = async () => {
       icon: 'error',
       title: 'Error',
       text: message,
-      footer: '<a href="">Try logging in again</a>'
     });
   });
 };
@@ -200,7 +199,6 @@ const sendSubscriptionRequest = () => {
 
 // Lógica para crear una sala de conferencias
 const createNewConference = () => {
-  // TODO: Implementar la lógica para crear una sala de conferencias
   if (newConference.value) {
     console.log("Creating conference", newConference.value);
     CreateConference(newConference.value);

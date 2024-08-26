@@ -10,6 +10,8 @@ import {
   ExitConference,
 } from '../../wailsjs/go/main/App.js';
 
+import Swal from "sweetalert2";
+
 const Contacts = reactive({
   contacts: [],
 })
@@ -48,6 +50,8 @@ const inviteContact = (jid) => {
   inviting.value = false
 
   SendInvitation(props.jid, jid);
+
+  closeOptions()
 }
 
 // Remove contact from roster
@@ -56,6 +60,8 @@ const removeContact = () => {
   // emit('remove-contact', jid)
 
   CancelSubscription(props.jid)
+
+  closeOptions()
 }
 
 // Exit conference
@@ -63,14 +69,34 @@ const exitConference = (jid) => {
   console.log("Exiting conference", jid)
 
   ExitConference(jid)
+
+  closeOptions()
 }
 
 // Delete conference
 const deleteConference = (jid) => {
   console.log("Deleting conference", jid)
-  DeleteConference(jid)
+
+  Swal.fire({
+    title: 'Are you sure?',
+    text: "You won't be able to revert this!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, delete it!'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      DeleteConference(jid)
+      closeOptions()
+    } else {
+      closeOptions()
+    }
+  })
+
 }
 
+// Get contacts for providing a list of contacts to invite
 const getContacts = async () => {
   Contacts.contacts = await GetContacts()
 
