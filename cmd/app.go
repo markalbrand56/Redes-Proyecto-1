@@ -5,6 +5,7 @@ import (
 	"RedesProyecto/backend/models"
 	"context"
 	"fmt"
+	"gosrc.io/xmpp/stanza"
 	"log"
 )
 
@@ -235,4 +236,20 @@ func (a *App) ProbeContacts() {
 // GetCurrentStatus returns the current status of the user
 func (a *App) GetCurrentStatus() string {
 	return chat.User.Status
+}
+
+// GetCurrentShow returns the current status message of the user
+func (a *App) GetCurrentShow() int {
+	switch chat.User.Show {
+	case stanza.PresenceShowChat:
+		return 0
+	case stanza.PresenceShowAway:
+		return 1
+	case stanza.PresenceShowDND:
+		return 2
+	case stanza.PresenceShowXA:
+		return 3
+	default:
+		return 4
+	}
 }

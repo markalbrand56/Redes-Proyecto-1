@@ -46,6 +46,10 @@ export function GetContacts() {
   return window['go']['main']['App']['GetContacts']();
 }
 
+export function GetCurrentShow() {
+  return window['go']['main']['App']['GetCurrentShow']();
+}
+
 export function GetCurrentStatus() {
   return window['go']['main']['App']['GetCurrentStatus']();
 }

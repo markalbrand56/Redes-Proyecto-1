@@ -24,6 +24,8 @@ export function GetConferences():Promise<Array<{[key: string]: string}>>;
 
 export function GetContacts():Promise<Array<string>>;
 
+export function GetCurrentShow():Promise<number>;
+
 export function GetCurrentStatus():Promise<string>;
 
 export function GetCurrentUser():Promise<string>;

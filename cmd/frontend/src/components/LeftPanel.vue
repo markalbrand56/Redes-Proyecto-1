@@ -8,6 +8,7 @@ import {
   UpdateContacts,
   SetStatusMessage,
   GetCurrentStatus,
+  GetCurrentShow
 } from '../../wailsjs/go/main/App.js'
 
 import Contact from "./Contact.vue";
@@ -77,6 +78,13 @@ const getStatusMessage = async () => {
   const statusMessage = await GetCurrentStatus();
   console.log("Status message: ", statusMessage);
   User.statusMessage = statusMessage;
+}
+
+const getPresence = async () => {
+  const presence = await GetCurrentShow();
+  console.log("Presence: ", presence);
+
+  User.status = presence;
 }
 
 
@@ -187,7 +195,9 @@ onMounted(() => {
   getCurrentUser();
   getContacts();
   getConferences();
+
   getStatusMessage();
+  getPresence();
 
   // Event listeners
   listenPresenceUpdate();
