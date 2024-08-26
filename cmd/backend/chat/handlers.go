@@ -341,6 +341,12 @@ func handleIQ(s xmpp.Sender, p stanza.Packet) {
 
 			for _, item := range items {
 				fmt.Println("Item: ", item.Jid, item.Name, item.Subscription)
+
+				if item.Subscription == "none" {
+					log.Printf("Contact %s stopped sharing his status with you\n", item.Jid)
+					events.EmitSuccess(AppContext, fmt.Sprintf("Contact %s stopped sharing his status with you", item.Jid))
+				}
+
 				contacts = append(contacts, item.Jid)
 			}
 

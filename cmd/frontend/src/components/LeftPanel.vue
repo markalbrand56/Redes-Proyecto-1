@@ -134,7 +134,7 @@ const statusColor = computed(() => {
       return 'orange'
 
     default:
-      return 'green'
+      return 'gray'
   }
 })
 
