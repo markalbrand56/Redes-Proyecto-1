@@ -31,6 +31,12 @@ Universidad del Valle de Guatemala
   - [Project Structure](#project-structure)
   - [How to Run](#how-to-run)
   - [Image Gallery](#image-gallery)
+  - [Reflection](#reflection)
+    - [Challenges](#challenges)
+      - [Developing a chat client in a month](#developing-a-chat-client-in-a-month)
+      - [Finding a XMPP library](#finding-a-xmpp-library)
+      - [Overcoming Library Limitations](#overcoming-library-limitations)
+    - [Lessons Learned](#lessons-learned)
   - [License](#license)
 
 ## Project Description
@@ -197,6 +203,88 @@ wails build
 ![Conversation with files](assets/demo_2.png)
 
 ![Register screen](assets/register.png)
+
+![Contacts](assets/contacts.png)
+
+![Conferences](assets/conferences.png)
+
+![Actions](assets/actions.png)
+
+![Account](assets/account.png)
+
+## Reflection
+
+### Challenges
+
+#### Developing a chat client in a month
+
+One of the main challenges of this project was the deadline. We were required to develop this project in a month, with a full-fledged frontend and backend. This was a challenge, as it required us to learn new technologies, frameworks and the XMPP protocol in a short amount of time. As a student, this also meant that we had to balance this project with other courses and responsibilities, in a semester full of projects. Adittionally, as a backend developer, I don't have much experience with frontend development, which made this project even more challenging, specially because it was an individual project.
+
+For this reason, the approach taken was to choose a language were I felt comfortable with, and to choose a framework that would allow me to build the project quickly. This is why I chose Go. As a backend developer, Go is currently my favorite language, and I have profesional experience building applications with it. Additionally, I chose to learn Wails, as it seemed like a good framework to build desktop applications with Go. For the frontend, I chose Vue.js, as I have little professional experience with frontend development, and I wanted a framework that would allow me to build the frontend quickly and with less boilerplate than React. This project was the second time I used Vue.js, and I felt comfortable with it.
+
+#### Finding a XMPP library
+
+Another challenge was to find a good XMPP library. The first week of the project was spent researching XMPP libraries for different languages, and trying to find a library that would allow me to build the project quickly. Technical issues with the server delayed this process, as I had to wait for the server to be fixed in order to test the libraries. For example, the server did not allow connections over WebSockets, nor did it have any security certificates, which made it difficult to test most libraries. Additionally, the server did not support some XMPP extensions, which made it difficult to test some functionalities. Most notably, Python's `slixmpp` library had trouble connecting to the server.
+
+When the server finally allowed connections over WebSockets, I was able to test the `gosrc.io/xmpp` library, which worked well with the server. Over the second week of the project, I focused on learning the library and building the chat client's backend.
+
+#### Overcoming Library Limitations
+
+The library `gosrc.io/xmpp` was chosen because it was one of the few XMPP libraries for Go with a solid documentation and examples. However, this library was not build around the different actions a XMPP server has. What I mean is that this library is very well built to handle incoming and outgoing transactions/stanzas, but the only methods it provides is `Send()` and `SendIQ()`. It also provided some basic stanzas, but this ment that most of the work revolved around building the stanzas and handling their responses.
+
+For example, this is what the function to create a new stanza to request the archive for the active user looks like:
+
+```go
+
+func NewArchiveQuery(jid string, max int) Archive {
+    return Archive{
+        XMLName: xml.Name{Space: "urn:xmpp:mam:2", Local: "query"},
+        Type:    "set",
+        ID:      "mam_query_1",
+        Query: Query{
+            XMLName: xml.Name{Local: "query"},
+            X: X{
+                XMLName: xml.Name{Local: "x"},
+                XMLNS:   "jabber:x:data",
+                Type:    "submit",
+                Field: []Field{
+                    {
+                        XMLName: xml.Name{Local: "field"},
+                        Var:     "FORM_TYPE",
+                        Type:    "hidden",
+                        Value:   "urn:xmpp:mam:2",
+                    },
+                    {
+                        XMLName: xml.Name{Local: "field"},
+                        Var:     "with",
+                        Value:   jid,
+                    },
+                },
+            },
+            Set: Set{
+                XMLName: xml.Name{Local: "set"},
+                XMLNS:   "http://jabber.org/protocol/rsm",
+                Max: Max{
+                    XMLName: xml.Name{Local: "max"},
+                    Value:   fmt.Sprintf("%d", max),
+                },
+            },
+        },
+    }
+}
+```
+
+All of the structs used were built by me, as the library did not provide them. This function builds a new `Archive` stanza to request the archive for the active user. This is a simple example, but it shows how most of the work was to build the stanzas and handle their responses.
+
+This was a challenge, as it required me to learn the XMPP protocol and the server's implementation of it. The solution was to carefully read the library's documentation and examples, and to my surprise, the library was very well documented and had a lot of examples. The most useful was precisely an exmple of [how to build a custom stanza](https://github.com/FluuxIO/go-xmpp/tree/master/_examples/custom_stanza). This example was very useful to understand how to build a custom stanza and how to handle its response.
+
+On the other hand, this approach of developing the project allowed me to have more control over the application, and to build the application in a way that was more tailored to the server's implementation. Additionally, this framework did help a lot in the handling of the application's events as a whole. Its good management of `goroutines` and `channels` allowed me to build a solid event handling system.
+
+### Lessons Learned
+
+This project was a great learning experience. I learned a lot about the XMPP protocol, the Wails framework, and the Vue.js framework. I also had the opportunity to learn more about Go, and to build a desktop application with it. This project was a great opportunity to learn new technologies and to build a full-fledged application in a short amount of time.
+
+Learning a complex protocol like XMPP was a challenge, but it was also very rewarding. I learned a lot about how chat clients work, and how to build a chat client from scratch. I also learned a lot about the different features of the XMPP protocol, and how to implement them in a chat client. This project was a great opportunity to learn more about networking, and to build a real-world application that uses a complex protocol.
 
 ## License
 
